@@ -1,0 +1,14 @@
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+
+@include md-register-theme(
+  "default",
+  (
+    // The primary color of our brand
+      //primary: #00B0A0,
+      primary: md-get-palette-color(teal, 500),
+    accent: #fec019,
+    theme: light
+  )
+);
+
+@import "~vue-material/dist/theme/all"; // Apply the theme

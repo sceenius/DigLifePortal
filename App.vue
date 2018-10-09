@@ -81,17 +81,18 @@
     </md-drawer>
 
     <md-content style="height: 800px;">
-      <center>
+      <particlesJS/>
       <img id="logo" width=50% src="https://diglife.com/brand/logo_primary.svg" />
-      </center>
       <iframe name="theApp" id="theApp" style="width:100%; height:100%;" frameBorder="0"></iframe>
     </md-content>
   </div>
 </template>
 
 <script>
+  import particlesJS from './components/Particles'
   export default {
     name: 'Temporary',
+    components: { particlesJS },
     data: () => ({
       showNavigation: false,
       showSidepanel: false,
@@ -104,6 +105,8 @@
     open: function (menu) {
       document.getElementById("drawer").classList.remove('md-active');
       var element = document.getElementById("logo");
+      if(element !== null) { element.parentNode.removeChild(element); }
+      element = document.getElementById("particles-js");
       if(element !== null) { element.parentNode.removeChild(element); }
       switch(menu) {
         case "chat":
@@ -159,4 +162,15 @@
     padding: 16px;
   }
   
+  .md-content img {
+     position: absolute;
+   top: 50%;
+   left: 50%;
+   width: 500px;
+   height: 500px;
+   margin-top: -250px; /* Half the height */
+   margin-left: -250px; /* Half the width */
+  
+  }
+ 
 </style>

@@ -2,8 +2,9 @@
   "name": "vue-material-drawer",
   "keywords": [],
   "dependencies": {
-    "vue-material": "latest",
-    "vue": "latest"
+    "particles.js": "2.0.0",
+    "vue": "latest",
+    "vue-material": "latest"
   },
   "description": ""
 }

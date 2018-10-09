@@ -10,7 +10,7 @@
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
         <md-button @click="nav('Projects')" v-bind:style="[selected == 'Projects' ? {color: '#fec019'} : {color: '#fff'}]">Projects</md-button>
         <md-button @click="nav('Operations')" v-bind:style="[selected == 'Operations' ? {color: '#fec019'} : {color: '#fff'}]">Ops</md-button>
-        <img style="height: 35px" src="./assets/images/logo_secondary.svg" />
+        <img style="height: 35px" src="https://diglife.com/brand/logo_secondary.svg" />
       </div>
     </md-toolbar>
 
@@ -82,7 +82,7 @@
 
     <md-content style="height: 800px;">
       <center>
-      <img id="logo" width=50% src="./assets/images/logo_primary.svg" />
+      <img id="logo" width=50% src="https://diglife.com/brand/logo_primary.svg" />
       </center>
       <iframe name="theApp" id="theApp" style="width:100%; height:100%;" frameBorder="0"></iframe>
     </md-content>

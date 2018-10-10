@@ -9,6 +9,7 @@ export default {
 
   mounted() {
     require("particles.js");
+    // https://stackoverflow.com/questions/47634258/what-is-nexttick-or-what-does-it-do-in-vuejs
     this.$nextTick(() => {
       this.initParticlesJS();
     });
@@ -66,9 +67,9 @@ export default {
           },
           line_linked: {
             enable: true,
-            distance: 300,
+            distance: 200,
             color: "#ccc",
-            opacity: 0.4,
+            opacity: 1,
             width: 2
           },
           move: {

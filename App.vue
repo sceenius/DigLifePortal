@@ -4,7 +4,7 @@
       <md-button class="md-icon-button" @click="showNavigation = true">
         <md-icon>menu</md-icon>
       </md-button>
-      <span class="md-title">DigLife {{selected}}</span>
+      <span class="md-title">DigLife {{selected}} {{service}}</span>
 
       <div class="md-toolbar-section-end">
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
@@ -96,14 +96,17 @@
     data: () => ({
       showNavigation: false,
       showSidepanel: false,
-      selected: 'Home'
+      selected: 'Home',
+      service: ''
     }),
     methods: { 
     nav: function (menu) {
       this.selected = menu;
+      this.service = '';
     },
     open: function (menu) {
       document.getElementById("drawer").classList.remove('md-active');
+      this.service = menu.charAt(0).toUpperCase() + menu.substring(1);
       var element = document.getElementById("logo");
       if(element !== null) { element.parentNode.removeChild(element); }
       element = document.getElementById("particles-js");

@@ -6,6 +6,11 @@ https://www.thepolyglotdeveloper.com/2018/04/vuejs-app-using-axios-vuex/
 https://zendev.com/2018/05/21/vuex-perfect-interface-frontend-backend.html
 https://stackoverflow.com/questions/40813975/how-to-structure-api-calls-in-vue-js 
 
+Vue structure and guides
+https://vuejs.org/v2/style-guide/
+https://itnext.io/how-to-structure-a-vue-js-project-29e4ddc1aeeb (all in /src)
+
+
 
 > A Vue.js project
 

@@ -1,4 +1,18 @@
 # DigLife Portal
+## Purpose
+This is the implementation of the DigLife portal/dashboard, a single place from where authorized members can access all DigLife Services. THe portal is structured into four domains:
+
+### DigLife Home
+Access to main services available for all members. This also include Communities of Interest (i.e. non-workteam related groups) 
+### DigLife Projects
+These are value-added projects and supporting services.
+### DigLife Operations
+These are internal operations, such as Marketing, Finance, Legal, etc.
+### DigLife Friends
+These are external spaces to invite non-members such as guests, partners, sponsors, etc.
+
+
+
 
 Vuex and APIs
 https://vuex.vuejs.org/

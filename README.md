@@ -1,4 +1,11 @@
-# test-project
+# DigLife Portal
+
+Vuex and APIs
+https://vuex.vuejs.org/
+https://www.thepolyglotdeveloper.com/2018/04/vuejs-app-using-axios-vuex/
+https://zendev.com/2018/05/21/vuex-perfect-interface-frontend-backend.html
+https://stackoverflow.com/questions/40813975/how-to-structure-api-calls-in-vue-js 
+
 
 > A Vue.js project
 

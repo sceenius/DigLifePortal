@@ -24,17 +24,27 @@
       <md-list>
         <md-list-item @click="open('chat')" v-if="selected == 'Home'">   
         <md-icon>chat</md-icon>
-          <span class="md-list-item-text">Chat</span>
+          <span class="md-list-item-text">DigLife Chat</span>
         </md-list-item>
 
+        <md-list-item @click="open('publishing')" v-if="selected == 'Home'">
+        <md-icon>web</md-icon>
+          <span class="md-list-item-text">DigLife Posts</span>
+        </md-list-item> 
+
+        <md-list-item @click="open('newsletters')" v-if="selected == 'Operations'">
+        <md-icon>email</md-icon>
+          <span class="md-list-item-text">DigLife News</span>
+        </md-list-item>
+        
         <md-list-item @click="open('projects')" v-if="selected == 'Projects'">
-        <md-icon>assignment</md-icon>
-          <span class="md-list-item-text">Projects</span>
+        <md-icon>chat</md-icon>
+          <span class="md-list-item-text">Project Chat</span>
         </md-list-item>
 
         <md-list-item @click="open('operations')" v-if="selected == 'Operations'">
-        <md-icon>build</md-icon>
-          <span class="md-list-item-text">Operations</span>
+        <md-icon>chat</md-icon>
+          <span class="md-list-item-text">Operations Chat</span>
         </md-list-item>
 
         <md-list-item @click="open('folder')" v-if="selected == 'Home'">
@@ -44,18 +54,10 @@
 
         <md-list-item @click="open('governance')" v-if="selected == 'Home'">
         <md-icon>thumb_up</md-icon>
-          <span class="md-list-item-text">Governance</span>
+          <span class="md-list-item-text">Decision Making</span>
         </md-list-item>
 
-        <md-list-item @click="open('publishing')" v-if="selected == 'Operations'">
-        <md-icon>web</md-icon>
-          <span class="md-list-item-text">Publishing</span>
-        </md-list-item> 
 
-        <md-list-item @click="open('newsletters')" v-if="selected == 'Operations'">
-        <md-icon>email</md-icon>
-          <span class="md-list-item-text">Newsletters</span>
-        </md-list-item>
 
         <md-list-item v-if="selected == 'Home'">
         <md-icon>local_library</md-icon>

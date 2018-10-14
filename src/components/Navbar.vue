@@ -1,10 +1,12 @@
 <template>
  <div class="page-container md-layout-column">
+
     <md-toolbar class="md-primary">
       <md-button class="md-icon-button" @click="showNavigation = true">
         <md-icon>menu</md-icon>
       </md-button>
-      <span class="md-title">DigLife {{selected}} {{service}}</span>
+      <!-- Show the title and navigation path here -->
+      <span class="md-title">DigLife {{service ? '' : selected }} {{service}}</span>
 
       <div class="md-toolbar-section-end">
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
@@ -14,6 +16,19 @@
       </div>
     </md-toolbar>
 
+   <!-- Show secondary navigation buttons -->
+   <div v-if="service" style="position: absolute; right:15px; bottom:0px;">
+      <md-button @click="sub('wikiLink')" class="md-fab md-mini md-plain">
+        <md-icon>language</md-icon>
+      </md-button>
+      <md-button @click="sub('appLink')" class="md-fab md-mini md-plain">
+        <md-icon>fullscreen</md-icon>
+      </md-button>
+      <md-button @click="sub('mapLink')" class="md-fab md-mini md-plain">
+        <md-icon>map</md-icon>
+      </md-button>
+   </div>
+
     <!-- for more info on the drawer component: https://vuematerial.io/components/drawer -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
@@ -22,42 +37,40 @@
 
     <!-- for more info on the list component: https://vuematerial.io/components/list/ -->
       <md-list>
-        <md-list-item @click="open('chat')" v-if="selected == 'Home'">   
+        <md-list-item @click="open('Chat')" v-if="selected == 'Home'">   
         <md-icon>chat</md-icon>
           <span class="md-list-item-text">DigLife Chat</span>
         </md-list-item>
 
-        <md-list-item @click="open('publishing')" v-if="selected == 'Home'">
+        <md-list-item @click="open('Ghost Publishing')" v-if="selected == 'Home'">
         <md-icon>web</md-icon>
           <span class="md-list-item-text">DigLife Posts</span>
         </md-list-item> 
 
-        <md-list-item @click="open('newsletters')" v-if="selected == 'Operations'">
+        <md-list-item @click="open('Mailtrain News')" v-if="selected == 'Operations'">
         <md-icon>email</md-icon>
           <span class="md-list-item-text">DigLife News</span>
         </md-list-item>
         
-        <md-list-item @click="open('projects')" v-if="selected == 'Projects'">
+        <md-list-item @click="open('Project Chat')" v-if="selected == 'Projects'">
         <md-icon>chat</md-icon>
           <span class="md-list-item-text">Project Chat</span>
         </md-list-item>
 
-        <md-list-item @click="open('operations')" v-if="selected == 'Operations'">
+        <md-list-item @click="open('Operations Chat')" v-if="selected == 'Operations'">
         <md-icon>chat</md-icon>
           <span class="md-list-item-text">Operations Chat</span>
         </md-list-item>
 
-        <md-list-item @click="open('folder')" v-if="selected == 'Home'">
+        <md-list-item @click="open('Shared Folder')" v-if="selected == 'Home'">
         <md-icon>folder</md-icon>
           <span class="md-list-item-text">Shared Drive</span>
         </md-list-item>
 
-        <md-list-item @click="open('governance')" v-if="selected == 'Home'">
+        <md-list-item @click="open('Decision Making')" v-if="selected == 'Home'">
         <md-icon>thumb_up</md-icon>
           <span class="md-list-item-text">Decision Making</span>
         </md-list-item>
-
-
 
         <md-list-item v-if="selected == 'Home'">
         <md-icon>local_library</md-icon>
@@ -85,7 +98,9 @@
     <md-content style="height: 800px;">
       <particlesJS/>
       <img id="logo" width=50% src="https://diglife.com/brand/logo_primary.svg" />
-      <iframe name="theApp" id="theApp" style="width:100%; height:100%;" frameBorder="0"></iframe>
+      <iframe name="theApp" id="theApp" style="width:100%; height:95%;" frameBorder="0"></iframe>
+  
+  
     </md-content>
   </div>
 </template>
@@ -99,16 +114,36 @@ export default {
     showNavigation: false,
     showSidepanel: false,
     selected: "Home",
-    service: ""
+    service: "",
+    appLink: "",
+    wikiLink: "",
+    mapLink: ""
   }),
+
+  computed: {
+    //https://vuejs.org/v2/guide/computed.html
+  },
   methods: {
     nav: function(menu) {
       this.selected = menu;
       this.service = "";
     },
+     sub: function(menu) {
+      switch (menu) {
+      case "appLink":
+          window.open(this.appLink,"_blank")
+         break;
+      case "wikiLink":
+          window.open(this.wikiLink, "theApp");
+        break;
+      case "mapLink":
+          window.open(this.mapLink, "theApp");
+        break;
+      }
+     },
     open: function(menu) {
       document.getElementById("drawer").classList.remove("md-active");
-      this.service = menu.charAt(0).toUpperCase() + menu.substring(1);
+      this.service = menu;
       var element = document.getElementById("logo");
       if (element !== null) {
         element.parentNode.removeChild(element);
@@ -118,45 +153,54 @@ export default {
         element.parentNode.removeChild(element);
       }
       switch (menu) {
-        case "chat":
-          window.open(
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat",
-            "theApp"
-          );
-          break;
-        case "projects":
-          window.open(
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat",
-            "theApp"
-          );
-          break;
-        case "operations":
-          window.open(
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat",
-            "theApp"
-          );
-          break;
-        case "folder":
-          window.open(
-            "https://drive.google.com/embeddedfolderview?id=0B_zdMVo5TxZQS0dmYlhXaUJIams#list",
-            "theApp"
-          );
-          break;
-        case "publishing":
-          window.open("https://diglife.com/ghost", "theApp");
-          break;
-        case "newsletters":
-          window.open("https://mailtrain.diglife.com/", "theApp");
-          break;
-        case "governance":
-          window.open(
-            "https://tree.taiga.io/project/sceenius-digital-life-collective/issues?type=857455,857456&order_by=type",
-            "_blank"
-          );
-          break;
-        case "coding":
-          window.open("https://codesandbox.io/s/984253v014", "theApp");
-          break;
+        case "Chat":
+         this.appLink = "https://chat.diglife.com/the-collective/channels/collective-open-chat";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Project Chat":
+         this.appLink = "https://chat.diglife.com/the-collective/channels/collective-open-chat";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Operations Chat":
+         this.appLink = "https://chat.diglife.com/the-collective/channels/collective-open-chat";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Shared Folder":
+         this.appLink = "https://drive.google.com/embeddedfolderview?id=0B_zdMVo5TxZQS0dmYlhXaUJIams#list";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Ghost Publishing":
+         this.appLink = "https://diglife.com/ghost";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Mailtrain News":
+         this.appLink = "https://mailtrain.diglife.com/";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "Taiga Governance":
+         this.appLink = "https://tree.taiga.io/project/sceenius-digital-life-collective/issues?type=857455,857456&order_by=type";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
+        case "CodeSandBox Editing":
+         this.appLink = "https://codesandbox.io/s/mok0knm7l9";
+         this.wikiLink = "";
+         this.mapLink = "";
+          window.open( this.appLink, "theApp");
+         break;
       }
     }
   }

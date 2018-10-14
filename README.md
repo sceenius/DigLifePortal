@@ -5,7 +5,7 @@ This is the implementation of the DigLife portal, a single place from where auth
 ### DigLife Home
 Access to main services available for all members. This also include Communities of Interest (i.e. non-workteam related groups) 
 ### DigLife Projects
-These are workteams organized around value-added projects with access to supporting services.
+These are workteams organized around value-producing (service-providing) projects with access to supporting services.
 ### DigLife Operations
 These are workteams organized around internal operations, such as Marketing, Finance, Legal, etc.
 ### DigLife Friends
@@ -19,7 +19,7 @@ https://itnext.io/how-to-structure-a-vue-js-project-29e4ddc1aeeb (all in /src)
 https://vuejs.org/v2/style-guide/
 
 ### CSS Framework
-We are using the [Vue Material](https://vuematerial.io/) CSS framework to accelerat the development of key UI elements, such as Navigation and Cards. 
+We are using the [Vue Material](https://vuematerial.io/) CSS framework to accelerate the development of key UI elements, such as [Navigation](https://vuematerial.io/components/drawer) and [Cards](https://vuematerial.io/components/card). 
 
 ### Authorization
 We authorize members through Cloudron API services (or Auth0). 

@@ -136,7 +136,7 @@ export default {
 <style>
 #particles-js {
   width: 100%;
-  height: 100%;
+  height: 100vh !important;
   background: white;
 }
 </style>

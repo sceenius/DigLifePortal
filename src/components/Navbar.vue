@@ -1,26 +1,26 @@
 <template>
  <div class="page-container md-layout-column" >
 
-    <md-toolbar class="md-primary" st yle="background-image: url('https://diglife.com/brand/logo_secondary.svg'); background-repeat: no-repeat; background-position: center center; background-size: 100px;">
+    <md-toolbar class="md-primary">
       <md-button class="md-icon-button" @click="showNavigation = true">
         <md-icon>menu</md-icon>
       </md-button>
       <!-- Show the title and navigation path here -->
-      <span class="md-title">DigLife {{service ? '' : selected }} {{service}}</span>
+      <img src="https://diglife.com/brand/logo_primary.svg" />
+      <span class="md-title">{{service ? '' : selected }} {{service}}</span>
 
       <div class="md-toolbar-section-end">
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
         <md-button @click="nav('Projects')" v-bind:style="[selected == 'Projects' ? {color: '#fec019'} : {color: '#fff'}]">projects</md-button>
         <md-button @click="nav('Operations')" v-bind:style="[selected == 'Operations' ? {color: '#fec019'} : {color: '#fff'}]">ops</md-button>
         <md-button @click="nav('Friends')" v-bind:style="[selected == 'Friends' ? {color: '#fec019'} : {color: '#fff'}]">friends</md-button>
-        <i mg style="height: 35px" src="https://diglife.com/brand/logo_secondary.svg" />
       </div>
     </md-toolbar>
 
    <!-- Show secondary navigation buttons -->
    <div v-if="service" style="position: absolute; right:10px; bottom:10px;">
       <md-button title="Get more help" @click="sub('wikiLink')" class="md-fab md-mini md-plain">
-        <md-icon>language</md-icon>
+        <md-icon>help_outline</md-icon>
       </md-button>
       <md-button title="Open in new window" @click="sub('appLink')" class="md-fab md-mini md-plain">
         <md-icon>fullscreen</md-icon>
@@ -28,8 +28,8 @@
       <md-button title="Request access" @click="sub('inviteLink')" class="md-fab md-mini md-plain">
         <md-icon>lock_open</md-icon>
       </md-button>
-      <md-button title="Map the context" @click="sub('mapLink')" class="md-fab md-mini md-plain">
-        <md-icon>map</md-icon>
+      <md-button title="Show more context" @click="sub('mapLink')" class="md-fab md-mini md-plain">
+        <md-icon>blur_on</md-icon>
       </md-button>
    </div>
 
@@ -101,7 +101,11 @@
 
  <md-content>
       <particlesJS/>
-      <img id="logo" width=50% src="https://diglife.com/brand/logo_primary.svg" />
+      <img v-if="selected == 'Home'" id="logo" src="https://diglife.com/brand/logo_domain_all.svg" />
+      <img v-if="selected == 'Home2'" id="logo" src="https://diglife.com/brand/logo_domain_diglife.svg" />
+      <img v-if="selected == 'Projects'" id="logo" src="https://diglife.com/brand/logo_domain_project.svg" />
+      <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_domain_ops.svg" />
+      <img v-if="selected == 'Friends'" id="logo" src="https://diglife.com/brand/logo_domain_friend.svg" />
       <iframe name="theApp" id="theApp" style="display: none; width:100%; height:85vh;" frameBorder="0"></iframe>
  </md-content>
 
@@ -131,6 +135,12 @@ export default {
     nav: function(menu) {
       this.selected = menu;
       this.service = "";
+      var element = document.getElementById("theApp");
+      element.style.display = "none";
+      element = document.getElementById("particles-js");
+      element.style.display = "block";
+      element = document.getElementById("logo");
+      element.style.display = "block";
     },
      sub: function(menu) {
       switch (menu) {
@@ -149,13 +159,11 @@ export default {
       document.getElementById("drawer").classList.remove("md-active");
       this.service = menu;
       var element = document.getElementById("logo");
-      if (element !== null) {
-        element.parentNode.removeChild(element);
-      }
+      element.style.display = "none";
+
       element = document.getElementById("particles-js");
-      if (element !== null) {
-        element.parentNode.removeChild(element);
-      }
+      element.style.display = "none";
+
       element = document.getElementById("theApp");
       element.style.display = "block";
 
@@ -168,13 +176,13 @@ export default {
          break;
         case "Project Chat":
          this.appLink = "https://chat.diglife.com/the-collective/channels/collective-open-chat";
-         this.wikiLink = "";
+         this.wikiLink = "https://docs.google.com/document/d/10WLH45PCo952P1L6lLryrw1IMk0JtwWjFkC0E5HukAY/view";
          this.mapLink = "";
           window.open( this.appLink, "theApp");
          break;
         case "Operations Chat":
          this.appLink = "https://chat.diglife.com/the-collective/channels/collective-open-chat";
-         this.wikiLink = "";
+         this.wikiLink = "https://docs.google.com/document/d/10WLH45PCo952P1L6lLryrw1IMk0JtwWjFkC0E5HukAY/view";
          this.mapLink = "";
           window.open( this.appLink, "theApp");
          break;
@@ -216,6 +224,27 @@ export default {
 
 <style>
 
+.md-title {
+  font-size: 24px !important;
+  margin-left: 0px !important;
+  color: #404040 !important;
+  font-weight: bold !important;
+}
+.md-toolbar {
+  background-color: #00b0a0 !important;
+}
+
+.md-toolbar img {
+  height: 55px !important;
+}
+
+.md-fab {
+  background-color: #fec019 !important;
+}
+
+.md-icon {
+    color: #404040 !important;
+}
 .md-content {  
   min-height: 90vh;
   max-height: 90vh;
@@ -243,10 +272,8 @@ export default {
 .md-content img {
   position: absolute;
   top: 10%;
-  left: 5%;
-  width: 70vh;
-  height: 70vh;
-  marg in-top: -25%; /* Half the height */
-  mar gin-left: -25%; /* Half the width */
+  left: 3%;
+  width: 60vh;
+  height: 60vh;
 }
 </style>

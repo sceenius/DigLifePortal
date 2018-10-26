@@ -2,8 +2,12 @@
   "name": "vue-material-drawer",
   "keywords": [],
   "dependencies": {
+    "axios": "0.18.0",
+    "node-slack": "0.0.7",
     "particles.js": "2.0.0",
     "vue": "2.5.17",
+    "vue-axios": "2.1.4",
+    "vue-cookies": "1.5.7",
     "vue-material": "1.0.0-beta-10.2"
   },
   "description": ""

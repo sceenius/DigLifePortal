@@ -21,8 +21,17 @@ https://vuejs.org/v2/style-guide/
 ### CSS Framework
 We are using the [Vue Material](https://vuematerial.io/) CSS framework to accelerate the development of key UI elements, such as [Navigation](https://vuematerial.io/components/drawer) and [Cards](https://vuematerial.io/components/card). 
 
-### Authorization
-We authorize members through Cloudron API services (or Auth0). 
+### Authentication
+Stripe (payment) > Mailtrain (member list) > Mattermost Invite (account) > DigLife.coop (OAuth 2)
+https://docs.mattermost.com/developer/oauth-2-0-applications.html (OAuth for DigLife.coop)
+https://cloudron.io/blog/2017-03-21-oauth-provider.html (OAuth for Cloudron  apps)
+https://auth0.com/authenticate/vuejs/oauth2/ (OAuth for social apps)
+https://auth0.com/docs/connections/social/github (OAuth for Auth0 and GitHub)
+https://www.npmjs.com/package/client-oauth2 
+https://alligator.io/vuejs/vue-jwt-patterns/ (w/o Vuex)
+https://blog.sqreen.io/authentication-best-practices-vue/ (w/ vuex)
+http://jasonwatmore.com/post/2018/09/21/vuejs-basic-http-authentication-tutorial-example 
+https://blog.pusher.com/fullstack-graphql-app-prisma-apollo-vue/ (w/ Apollo)
 
 ##### Vuex and APIs
 https://vuex.vuejs.org/

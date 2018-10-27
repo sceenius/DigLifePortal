@@ -56,7 +56,7 @@
       </md-button>
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
-      <span class="md-title">{{service ? '' : selected }} {{service}}</span>
+      <span class="md-title">DigLife {{service ? '' : selected }} {{service}}</span>
 
       <div class="md-toolbar-section-end">
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
@@ -88,7 +88,7 @@
     <!-- for more info on the drawer component: https://vuematerial.io/components/drawer -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
-        <span class="md-title">DigLife Services</span>
+        <span class="md-title" style="color: white;">{{selected}} Services</span>
       </md-toolbar>
 
     <!-- for more info on the list component: https://vuematerial.io/components/list/ -->
@@ -172,8 +172,13 @@
           <md-icon v-if="verifiedSysadmin" style="color: green;">verified_user</md-icon>
         </md-list-item>
 
-<!-- {{channel.display_name}} needs to be computed  -->
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="open('{{channel.display_name}}')" v-if="selected == 'Operations'">
+        <md-list-item @click="openService('Operations Calendar', 'https://calendar.google.com/calendar/embed?src=0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com&ctz=America%2FNew_York')" v-if="selected == 'Operations'">
+        <md-icon>event</md-icon>
+          <span class="md-list-item-text">Operations Calendar</span>
+          <md-icon style="color: green;">verified_user</md-icon>
+        </md-list-item>
+
+        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openSudoService(index)" v-if="selected == 'Operations' && channels.message !== 'No channels were found' && channel.name != 'town-square'">
           <md-icon>{{channel.purpose.substring(1, channel.purpose.indexOf(': '))}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
         </md-list-item>
@@ -186,13 +191,10 @@
       <p v-if="users && !service" class="counter">{{users.length}}</p>
       <particlesJS/>
 
-      <img id="logo" src="https://diglife.com/brand/logo_primary.svg" />
-
-      <!-- img v-if="selected == 'Home3'" id="logo" src="https://diglife.com/brand/logo_domain_all.svg" />
-      <img v-if="selected == 'Home1'" id="logo" src="https://diglife.com/brand/logo_domain_diglife.svg" />
-      <img v-if="selected == 'Projects'" id="logo" src="https://diglife.com/brand/logo_domain_project.svg" />
-      <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_domain_ops.svg" />
-      <img v-if="selected == 'Friends'" id="logo" src="https://diglife.com/brand/logo_domain_friend.svg" / -->
+      <img v-if="selected == 'Home'" id="logo" src="https://diglife.com/brand/logo_secondary_home.svg" />
+      <img v-if="selected == 'Projects'" id="logo" src="https://diglife.com/brand/logo_secondary_projects.svg" />
+      <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_secondary_operations.svg" />
+      <img v-if="selected == 'Friends'" id="logo" src="https://diglife.com/brand/logo_secondary_friends.svg" />
       <iframe name="theApp" id="theApp" style="display: none; width:100%; height:95vh;" frameBorder="0"></iframe>
  </md-content>
 
@@ -225,6 +227,7 @@ export default {
     users: "",
     profile: "",
     groups: "",
+    channels: "",
     total: ""
   }),
   created: function() {
@@ -372,6 +375,11 @@ export default {
         this.$cookies.set("verifiedChat", false);
         //this.activeUser = true;
       }
+
+      // set the number of nodes displayed in the particle animation
+      this.$cookies.set("particles", parseInt(this.users.length,10)-5);
+      console.log(parseInt(this.users.length,10)-5);
+
       // this forces Vue to recalc all computed props
       this.$forceUpdate();
     },
@@ -406,9 +414,60 @@ export default {
         default:
       }
     },
+    
+    openService: function(name,link) {
+      // remove overlay
+     var overlay = document.getElementsByClassName("md-overlay")[0];
+      overlay.parentNode.removeChild(overlay);
+
+      document.getElementById("drawer").classList.remove("md-active");
+      // remove background
+      this.service = name; 
+      console.log(this.service);
+      var element = document.getElementById("logo");
+      element.style.display = "none";
+
+      element = document.getElementById("particles-js");
+      element.style.display = "none";
+
+      element = document.getElementById("theApp");
+      element.style.display = "block";
+
+       window.open(link, "theApp");
+    },
+    openSudoService: function(index) {
+      // remove overlay
+     var overlay = document.getElementsByClassName("md-overlay")[0];
+      overlay.parentNode.removeChild(overlay);
+
+      document.getElementById("drawer").classList.remove("md-active");
+      // remove background
+      this.service = this.channels[index].display_name; 
+      console.log(this.service);
+      var element = document.getElementById("logo");
+      element.style.display = "none";
+
+      element = document.getElementById("particles-js");
+      element.style.display = "none";
+
+      element = document.getElementById("theApp");
+      element.style.display = "block";
+
+      if (this.$cookies.get("verified" + this.service.replace(" ", ""))) {
+        // Access has been granted
+        window.open("https://www.goairlinkshuttle.com/nyc-share-ride-shuttle-service/", "theApp");
+      } else {
+        // Open dialoug to request access
+        this.serviceDescription = this.channels[index].purpose.substring(this.channels[index].purpose.indexOf(': ')+2,this.channels[index].purpose.length);
+
+        this.activeAccess = true;
+      }
+    },
     open: function(menu) {
-      // set the number of nodes displayed in the particle animation
-      this.$cookies.set("particles", this.users.length);
+
+      // remove overlay
+     var overlay = document.getElementsByClassName("md-overlay")[0];
+      overlay.parentNode.removeChild(overlay);
 
       document.getElementById("drawer").classList.remove("md-active");
       this.service = menu;
@@ -513,11 +572,21 @@ export default {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 500px;
-  height: 500px;
-  margin-top: -250px; /* Half the height */
-  margin-left: -250px; /* Half the width */
+  width: 450px;
+  height: 450px;
+  margin-top: -225px; /* Half the height */
+  margin-left: -225px; /* Half the width */
 }
+
+@media only screen and (max-width: 600px) {
+#logo {
+  width: 250px;
+  height: 250px;
+  margin-top: -125px; /* Half the height */
+  margin-left: -125px; /* Half the width */
+}
+}
+
 #actions {
   position: absolute;
   width: 40px;
@@ -531,10 +600,15 @@ export default {
   font-size: 24px !important;
   margin-left: 0px !important;
   color: #white !important;
-  font-weight: bold !important;
+  fo nt-weight: bold !important;
 }
 .md-toolbar {
   background-color: #00b0a0 !important;
+}
+
+.md-tab p {
+  font-size: 1.2em;
+  padding: 30px 0 0 10px;
 }
 
 .md-toolbar img {

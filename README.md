@@ -43,6 +43,9 @@ https://stackoverflow.com/questions/40813975/how-to-structure-api-calls-in-vue-j
 http://vuejs-templates.github.io/webpack
 http://vuejs.github.io/vue-loader
 
+### Known issues
+The main limitation of cookies on mobile browsers is that they reset when the browser is closed or when the phone is shut down/restarted.
+
 ``` bash
 # install dependencies
 npm install

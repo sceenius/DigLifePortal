@@ -1,6 +1,5 @@
 <template>
  <div class="page-container md-layout-column" >
- 
 <!-- div class="md-dialog-container" tabindex="-1" :md-active.sync="activeUser">
     <form novalidate  @submit.prevent="validateUser">
       <md-card class="md-layout-item md-size-50 md-small-size-100">

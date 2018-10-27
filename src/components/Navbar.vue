@@ -1,29 +1,10 @@
 <template>
  <div class="page-container md-layout-column" >
-<!-- div class="md-dialog-container" tabindex="-1" :md-active.sync="activeUser">
-    <form novalidate  @submit.prevent="validateUser">
-      <md-card class="md-layout-item md-size-50 md-small-size-100">
-        <md-card-header>
-          <div class="md-title">What is your Mattermost username?</div>
-        </md-card-header>
 
-        <md-card-content>
-          <div class="md-layout md-gutter">
-            <div class="md-layout-item md-small-size-100">
-              <md-field>
-                <label for="username">Username</label>
-                <md-input name="username" id="username" v-model="form.username" />
-              </md-field>
-            </div>
-          </div>
-        </md-card-content>
-
-        <md-card-actions>
-          <md-button type="submit" class="md-primary">Enter</md-button>
-        </md-card-actions>
-      </md-card>
-    </form>
-</div -->
+    <md-snackbar :md-duration="4000" :md-active.sync="showSnackbar" md-persistent>
+      <span>Thank you! Your request has been submitted.</span>
+      <md-button class="md-primary" @click="showSnackbar = false">Close</md-button>
+    </md-snackbar>
 
     <md-dialog-prompt
       :md-active.sync="activeUser"
@@ -36,13 +17,11 @@
 
    <md-dialog :md-active.sync="activeAccess">
       <md-dialog-title>Request Access</md-dialog-title>
-
       <md-tabs md-dynamic-height>
         <md-tab md-label="About this service">
-          <p>{{serviceDescription}}</p>
+          <p>{{channel.header}}</p>
         </md-tab>
       </md-tabs>
-
       <md-dialog-actions>
         <md-button class="" @click="cancelAccess()">Cancel</md-button>
         <md-button class="md-success md-raised" @click="requestAccess()"><md-icon>lock_open</md-icon> Request Access</md-button>
@@ -171,15 +150,12 @@
           <md-icon v-if="verifiedSysadmin" style="color: green;">verified_user</md-icon>
         </md-list-item>
 
-        <md-list-item @click="openService('Operations Calendar', 'https://calendar.google.com/calendar/embed?src=0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com&ctz=America%2FNew_York')" v-if="selected == 'Operations'">
-        <md-icon>event</md-icon>
-          <span class="md-list-item-text">Operations Calendar</span>
-          <md-icon style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openSudoService(index)" v-if="selected == 'Operations' && channels.message !== 'No channels were found' && channel.name != 'town-square'">
-          <md-icon>{{channel.purpose.substring(1, channel.purpose.indexOf(': '))}}</md-icon>
+        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openSudoService(index)" v-if="selected == channel.purpose.domain && channels.message !== 'No channels were found' ">
+          <md-icon>{{channel.purpose.icon}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
+         <!-- check the channel membership of the current user OR public channel-->
+          <md-icon v-if="groups.includes(channel.name) || channel.type == 'O'" style="color: green;">verified_user</md-icon>
+
         </md-list-item>
 
       </md-list>
@@ -227,7 +203,9 @@ export default {
     profile: "",
     groups: "",
     channels: "",
-    total: ""
+    total: "",
+    channel: "",
+    showSnackbar: false
   }),
   created: function() {
     this.axios
@@ -321,7 +299,13 @@ export default {
   },
   methods: {
     cancelAccess: function() {
+      // BUG - cannot open menu anymore
       this.activeAccess = false;
+      this.service = "";
+      var element = document.getElementById("particles-js");
+      element.style.display = "block";
+      element = document.getElementById("logo");
+      element.style.display = "block";
     },
     requestAccess: function() {
       this.activeAccess = false;
@@ -329,27 +313,30 @@ export default {
       // from MM - if a user is a member of the support group
       this.$cookies.set("verified" + this.service.replace(" ", ""), true);
 
-      var slack = new Slack(CHATURL + "hooks/1tkzjp34i3gr5f7i4zze5sg81e");
+      var slack = new Slack(CHATURL + "hooks/"+this.channel.purpose.hook);
       var err = slack.send({
         text:
-          "#### :closed_lock_with_key: Request for Access\n@" +
+          "##### :closed_lock_with_key: Request for Access\n@" +
           this.username +
           " is requesting sudo access to the [" +
           this.service +
           " Service](" +
-          this.accessLink +
+          this.channel.purpose.link +
           ")",
-        channel: "social-ledger-bot",
+        channel: this.channel.name,
         username: "Access Bot",
         icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
         unfurl_links: true,
         link_names: 1
       });
-      window.open(
-        "https://chat.diglife.com/practices/channels/social-ledger-bot",
-        "theApp"
-      );
-      //alert("Your request has been submitted!");
+      this.activeAccess = false;
+      this.service = "";
+      var element = document.getElementById("particles-js");
+      element.style.display = "block";
+      element = document.getElementById("logo");
+      element.style.display = "block";
+      this.showSnackbar = true;
+
     },
     onConfirm: function() {
       this.username = this.username.replace("@", "").toLowerCase();
@@ -440,9 +427,8 @@ export default {
       overlay.parentNode.removeChild(overlay);
 
       document.getElementById("drawer").classList.remove("md-active");
-      // remove background
       this.service = this.channels[index].display_name; 
-      console.log(this.service);
+
       var element = document.getElementById("logo");
       element.style.display = "none";
 
@@ -452,13 +438,13 @@ export default {
       element = document.getElementById("theApp");
       element.style.display = "block";
 
-      if (this.$cookies.get("verified" + this.service.replace(" ", ""))) {
+      if (this.groups.includes(this.channels[index].name) || this.channels[index].type === 'O') {
         // Access has been granted
-        window.open("https://www.goairlinkshuttle.com/nyc-share-ride-shuttle-service/", "theApp");
+        window.open(this.channels[index].purpose.link, "theApp");
       } else {
         // Open dialoug to request access
-        this.serviceDescription = this.channels[index].purpose.substring(this.channels[index].purpose.indexOf(': ')+2,this.channels[index].purpose.length);
-
+        this.serviceDescription = this.channels[index].header;
+        this.channel = this.channels[index];
         this.activeAccess = true;
       }
     },

@@ -14,6 +14,7 @@ These are external spaces to invite non-members such as guests, partners, sponso
 ## Implementation
 We are developing this portal with a [Vue JavaScript frontend](https://vuejs.org/) using the [CodeSandBox online IDE](https://codesandbox.io/). 
 CodeSandBox can be forked to allow multiple parties to co-develop the application. As a single owner, make sure to commit your work to GitHub before changing machines and refresh the code on new machines. 
+There is also a live-coding feature to allow multiple parties edit the code concurrently in realtime.
 
 ### Structure and guides
 https://itnext.io/how-to-structure-a-vue-js-project-29e4ddc1aeeb (all in /src)

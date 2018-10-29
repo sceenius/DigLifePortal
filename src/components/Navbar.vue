@@ -46,20 +46,17 @@
 
    <!-- Show action buttons -->
    <div v-if="service" id="actions" >
-      <md-button title="Get more help" @click="sub('wikiLink')" class="md-fab md-mini md-plain">
-        <md-icon>help_outline</md-icon>
-      </md-button>
-      <md-button title="Open in new window" @click="sub('appLink')" class="md-fab md-mini md-plain">
-        <md-icon>fullscreen</md-icon>
-      </md-button>
-      <md-button title="Request access" @click="sub('accessLink')" class="md-fab md-mini md-plain">
-        <md-icon>lock_open</md-icon>
-      </md-button>
-      <md-button title="Open support group" @click="sub('supportLink')" class="md-fab md-mini md-plain">
+      <md-button title="Open support group" @click="sub('chatLink')" class="md-fab md-mini md-plain">
         <md-icon>chat_bubble_outline</md-icon>
       </md-button>
-      <md-button title="Show more context" @click="sub('mapLink')" class="md-fab md-mini md-plain">
-        <md-icon>blur_on</md-icon>
+      <md-button title="Open app in new window" @click="sub('appLink')" class="md-fab md-mini md-plain">
+        <md-icon>fullscreen</md-icon>
+      </md-button>
+      <md-button title="Social Ledger Social Objects" @click="sub('dashboardLink')" class="md-fab md-mini md-plain">
+        <md-icon>apps</md-icon>
+      </md-button>
+      <md-button title="Social Ledger Holonic Chart" @click="sub('mapLink')" class="md-fab md-mini md-plain">
+        <md-icon>blur_circular</md-icon>
       </md-button>
    </div>
 
@@ -84,77 +81,12 @@
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
 
-        <md-list-item @click="open('Chat')" v-if="selected == 'Home'">   
-        <md-icon>chat</md-icon>
-          <span class="md-list-item-text">DigLife Chat {{verifiedChat}}</span>
-          <md-icon v-if="verifiedChat" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Ghost Publishing')" v-if="selected == 'Home'">
-        <md-icon>web</md-icon>
-          <span class="md-list-item-text">DigLife Publishing {{verifiedGhostPublishing}}</span>
-          <md-icon v-if="verifiedGhostPublishing" style="color: green;">verified_user</md-icon>
-        </md-list-item> 
-
-        <md-list-item @click="open('Mailtrain News')" v-if="selected == 'Operations'">
-        <md-icon>email</md-icon>
-          <span class="md-list-item-text">DigLife News</span>
-          <md-icon v-if="verifiedMailtrainNews" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-        
-        <md-list-item @click="open('Projects Chat')" v-if="selected == 'Projects'">
-        <md-icon>chat</md-icon>
-          <span class="md-list-item-text">Projects Chat</span>
-          <md-icon v-if="verifiedProjectsChat" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Operations Chat')" v-if="selected == 'Operations'">
-        <md-icon>chat</md-icon>
-          <span class="md-list-item-text">Operations Chat</span>
-          <md-icon v-if="verifiedOperationsChat" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Shared Drive')" v-if="selected == 'Home'">
-        <md-icon>folder</md-icon>
-          <span class="md-list-item-text">Shared Drive</span>
-          <md-icon v-if="verifiedSharedDrive" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Decision Making')" v-if="selected == 'Home'">
-        <md-icon>thumb_up</md-icon>
-          <span class="md-list-item-text">Decision Making</span>
-          <md-icon v-if="verifiedDecisionMaking" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Library')" v-if="selected == 'Home'">
-        <md-icon>local_library</md-icon>
-          <span class="md-list-item-text">Library</span>
-          <md-icon v-if="verifiedLibrary" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Calendar')" v-if="selected == 'Home'">
-        <md-icon>event</md-icon>
-          <span class="md-list-item-text">Calendar</span>
-          <md-icon v-if="verifiedCalendar" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('Zoom')" v-if="selected == 'Home'">
-        <md-icon>videocam</md-icon>
-          <span class="md-list-item-text">Zoom Calls</span>
-          <md-icon v-if="verifiedZoom" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item @click="open('System Administration')" v-if="selected == 'Operations'">
-        <md-icon>code</md-icon>
-          <span class="md-list-item-text">System Administration</span>
-          <md-icon v-if="verifiedSysadmin" style="color: green;">verified_user</md-icon>
-        </md-list-item>
-
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openSudoService(index)" v-if="selected == channel.purpose.domain && channels.message !== 'No channels were found' ">
+        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="selected == channel.purpose.domain">
           <md-icon>{{channel.purpose.icon}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
          <!-- check the channel membership of the current user OR public channel-->
           <md-icon v-if="groups.includes(channel.name) || channel.type == 'O'" style="color: green;">verified_user</md-icon>
+          <md-icon v-else style="color: lightgray;">verified_user</md-icon>
 
         </md-list-item>
 
@@ -162,7 +94,7 @@
     </md-drawer>
 
  <md-content>
-      <p id="welcome" v-if="username" >Welcome back, <a @click="onReopen()">{{profile.first_name}} {{profile.last_name}}</a></p>
+      <p id="welcome" v-if="username && !service" >Welcome back, <a @click="onReopen()">{{profile.first_name}} {{profile.last_name}}</a></p>
       <p v-if="users && !service" class="counter">{{users.length}}</p>
       <particlesJS/>
 
@@ -244,7 +176,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife.php&team_id=qrgqzehi97bduyz874ep6q8ije&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
+          "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
       )
       .then(response => (this.channels = response.data));
 
@@ -256,41 +188,20 @@ export default {
   },
 
   computed: {
-    verifiedChat: function() {
-      return this.$cookies.get("verifiedChat");
-    },
-    verifiedProjectsChat: function() {
-      return this.$cookies.get("verifiedProjectsChat");
-    },
-    verifiedOperationsChat: function() {
-      return this.$cookies.get("verifiedOperationsChat");
-    },
-    verifiedGhostPublishing: function() {
-      return this.groups.includes("ghost-authors"); // NEW WAY
-    },
-    verifiedMailtrainNews: function() {
-      return this.$cookies.get("verifiedMailtrainNews");
-    },
-    verifiedSharedDrive: function() {
-      return this.$cookies.get("verifiedSharedDrive");
-    },
-    verifiedDecisionMaking: function() {
-      return this.$cookies.get("verifiedDecisionMaking");
-    },
-    verifiedLibrary: function() {
-      return this.$cookies.get("verifiedLibrary");
-    },
-    verifiedCalendar: function() {
-      return this.$cookies.get("verifiedCalendar");
-    },
-    verifiedZoom: function() {
-      return this.$cookies.get("verifiedZoom");
-    },
-    verifiedSysadmin: function() {
-      return this.groups.includes("testing");
-    },
     avatarLink: function() {
       return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
+    },
+    dashboardLink: function() {
+      return BASEURL + "webhooks/dashboard.php?user=" + this.username + "&username=" + this.username + "&team=" + this.channel.team + "&channel=" + this.channel.name + "&database=tokens&scope=none&search=";
+    },
+    mapLink: function() {
+      return BASEURL + "portal_circle.php?command=view&team=" + this.channel.team + "&channel=" + this.channel.name + "&user=" + this.username + "&username=" + this.username;
+    },
+    chatLink: function() {
+      return CHATURL + this.channel.team + "the-collective/channels/" + this.channel.name;
+    },
+    appLink: function() {
+      return this.link;
     }
   },
 
@@ -309,9 +220,6 @@ export default {
     },
     requestAccess: function() {
       this.activeAccess = false;
-      // we set the cookie immediately to true, later this will be pulled
-      // from MM - if a user is a member of the support group
-      this.$cookies.set("verified" + this.service.replace(" ", ""), true);
 
       var slack = new Slack(CHATURL + "hooks/"+this.channel.purpose.hook);
       var err = slack.send({
@@ -329,7 +237,6 @@ export default {
         unfurl_links: true,
         link_names: 1
       });
-      this.activeAccess = false;
       this.service = "";
       var element = document.getElementById("particles-js");
       element.style.display = "block";
@@ -352,14 +259,11 @@ export default {
         this.username === this.profile.username
       ) {
         this.$cookies.set("userid", this.profile.id);
-        this.$cookies.set("verifiedChat", true);
 
         console.log(this.profile.id);
         //this.activeUser = false;
       } else {
-        //this.$cookies.remove("username");
-        this.$cookies.set("verifiedChat", false);
-        //this.activeUser = true;
+
       }
 
       // set the number of nodes displayed in the particle animation
@@ -375,6 +279,7 @@ export default {
     },
     nav: function(menu) {
       this.selected = menu;
+      this.showNavigation = false;
       this.service = "";
       var element = document.getElementById("theApp");
       element.style.display = "none";
@@ -388,10 +293,10 @@ export default {
         case "appLink":
           window.open(this.appLink, "_blank");
           break;
-        case "wikiLink":
+        case "dashboardLink":
           window.open(this.wikiLink, "theApp");
           break;
-        case "accessLink":
+        case "chatLink":
           this.requestAccess();
           break;
         case "mapLink":
@@ -400,33 +305,13 @@ export default {
         default:
       }
     },
-    
-    openService: function(name,link) {
-      // remove overlay
-     var overlay = document.getElementsByClassName("md-overlay")[0];
-      overlay.parentNode.removeChild(overlay);
+    openService: function(index) {
+      // remove overlay, beware, this will kill the menu
+      //document.getElementsByClassName("md-overlay")[0].style.display = "none";
+      //var overlay = document.getElementsByClassName("md-overlay")[0];
+      //overlay.parentNode.removeChild(overlay);
 
-      document.getElementById("drawer").classList.remove("md-active");
-      // remove background
-      this.service = name; 
-      console.log(this.service);
-      var element = document.getElementById("logo");
-      element.style.display = "none";
-
-      element = document.getElementById("particles-js");
-      element.style.display = "none";
-
-      element = document.getElementById("theApp");
-      element.style.display = "block";
-
-       window.open(link, "theApp");
-    },
-    openSudoService: function(index) {
-      // remove overlay
-     var overlay = document.getElementsByClassName("md-overlay")[0];
-      overlay.parentNode.removeChild(overlay);
-
-      document.getElementById("drawer").classList.remove("md-active");
+       document.getElementById("drawer").classList.remove("md-active");
       this.service = this.channels[index].display_name; 
 
       var element = document.getElementById("logo");
@@ -448,99 +333,6 @@ export default {
         this.activeAccess = true;
       }
     },
-    open: function(menu) {
-
-      // remove overlay
-     var overlay = document.getElementsByClassName("md-overlay")[0];
-      overlay.parentNode.removeChild(overlay);
-
-      document.getElementById("drawer").classList.remove("md-active");
-      this.service = menu;
-      var element = document.getElementById("logo");
-      element.style.display = "none";
-
-      element = document.getElementById("particles-js");
-      element.style.display = "none";
-
-      element = document.getElementById("theApp");
-      element.style.display = "block";
-
-      // this switch menu only assigns variables for the links
-      switch (menu) {
-        case "Chat":
-          this.appLink =
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat";
-          this.wikiLink =
-            "https://diglife.com/webhooks/dashboard.php?user=joachim&username=joachim&team=practices&channel=social-ledger-lab&database=tokens&scope=none&search=";
-          this.mapLink =
-            "https://diglife.com/webhooks/circle.php?command=view&team=practices&channel=social-ledger-lab&user=joachim&username=joachim&activity=social-ledger-training-videos";
-          this.accessLink =
-            "https://chat.diglife.com/technology-crew/channels/mattermost-admin-grp";
-          break;
-        case "Projects Chat":
-          this.appLink =
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat";
-          this.wikiLink =
-            "https://docs.google.com/document/d/10WLH45PCo952P1L6lLryrw1IMk0JtwWjFkC0E5HukAY/view";
-          this.mapLink = "";
-          this.accessLink =
-            "https://chat.diglife.com/technology-crew/channels/projects-chat";
-          break;
-        case "Operations Chat":
-          this.appLink =
-            "https://chat.diglife.com/the-collective/channels/collective-open-chat";
-          this.wikiLink =
-            "https://docs.google.com/document/d/10WLH45PCo952P1L6lLryrw1IMk0JtwWjFkC0E5HukAY/view";
-          this.mapLink = "";
-          break;
-        case "Shared Drive":
-          this.appLink =
-            "https://drive.google.com/embeddedfolderview?id=0B_zdMVo5TxZQS0dmYlhXaUJIams";
-          this.wikiLink = "";
-          this.mapLink = "";
-          break;
-        case "Ghost Publishing":
-          this.serviceDescription =
-            "Ghost is our main publishing platform. All web pages you see on http://diglife.com are published through Ghost. If you would like to become an author and publish your own articles on Ghost, please click on the Request Access button below";
-          this.appLink = "https://diglife.com/ghost";
-          this.wikiLink = "";
-          this.mapLink = "";
-          this.accessLink =
-            "https://chat.diglife.com/technology-crew/channels/ghost-publishing";
-          break;
-        case "Mailtrain News":
-          this.appLink = "https://mailtrain.diglife.com/";
-          this.wikiLink = "";
-          this.mapLink = "";
-          break;
-        case "Decision Making":
-          this.appLink =
-            "https://tree.taiga.io/project/sceenius-digital-life-collective/issues?type=857455,857456&order_by=type";
-          this.wikiLink = "";
-          this.mapLink = "";
-          break;
-        case "System Administration":
-          this.appLink = "https://codesandbox.io/s/mok0knm7l9";
-          this.wikiLink = "";
-          this.mapLink = "";
-          this.accessLink =
-            "https://chat.diglife.com/technology-crew/channels/sysadmin";
-          break;
-
-        default:
-      }
-      // For now, we check if the cookie has been set, then open the app
-      // This will be tied to an API call in MM to check if user is a
-      // member of the corresponding support group for this service
-      // this.groups.includes("ghost-authors")
-      if (this.$cookies.get("verified" + this.service.replace(" ", ""))) {
-        // Access has been granted
-        window.open(this.appLink, "theApp");
-      } else {
-        // Open dialoug to request access
-        this.activeAccess = true;
-      }
-    }
   }
 };
 </script>
@@ -576,7 +368,7 @@ export default {
   position: absolute;
   width: 40px;
   right: 20px;
-  bottom: 10px;
+  bottom: 40%;
 }
 #actions .md-button {
   margin-left: 0;

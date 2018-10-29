@@ -34,7 +34,7 @@
       </md-button>
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
-      <span class="md-title">DigLife {{service ? '' : selected }} {{service}}</span>
+      <span class="md-title">{{service ? '' : 'DigLife' }} {{service ? '' : selected }} {{service}}</span>
 
       <div class="md-toolbar-section-end">
         <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
@@ -85,6 +85,7 @@
           <md-icon>{{channel.purpose.icon}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
          <!-- check the channel membership of the current user OR public channel-->
+         <!-- need to fix a case if there is a partial string match -->
           <md-icon v-if="groups.includes(channel.name) || channel.type == 'O'" style="color: green;">verified_user</md-icon>
           <md-icon v-else style="color: lightgray;">verified_user</md-icon>
 
@@ -123,10 +124,6 @@ export default {
     showSidepanel: false,
     selected: "Home",
     service: "",
-    appLink: "",
-    wikiLink: "",
-    mapLink: "",
-    accessLink: "",
     serviceDescription: "",
     username: "",
     activeUser: false,
@@ -165,9 +162,7 @@ export default {
     // get all channels for current user and domain=governance
     this.axios
       .get(
-        BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife.php&team_id=qrgqzehi97bduyz874ep6q8ije&user_id=" +
-          this.$cookies.get("userid")
+        BASEURL + "webhooks/portal_groups.php?file=base-diglife.php&user_id=" + this.$cookies.get("userid")
       )
       .then(response => (this.groups = response.data));
 
@@ -175,8 +170,7 @@ export default {
     // to build the menu structure for a given domain (team)
     this.axios
       .get(
-        BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
+        BASEURL + "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
       )
       .then(response => (this.channels = response.data));
 
@@ -191,18 +185,6 @@ export default {
     avatarLink: function() {
       return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
     },
-    dashboardLink: function() {
-      return BASEURL + "webhooks/dashboard.php?user=" + this.username + "&username=" + this.username + "&team=" + this.channel.team + "&channel=" + this.channel.name + "&database=tokens&scope=none&search=";
-    },
-    mapLink: function() {
-      return BASEURL + "portal_circle.php?command=view&team=" + this.channel.team + "&channel=" + this.channel.name + "&user=" + this.username + "&username=" + this.username;
-    },
-    chatLink: function() {
-      return CHATURL + this.channel.team + "the-collective/channels/" + this.channel.name;
-    },
-    appLink: function() {
-      return this.link;
-    }
   },
 
   mounted: function() {
@@ -259,8 +241,8 @@ export default {
         this.username === this.profile.username
       ) {
         this.$cookies.set("userid", this.profile.id);
-
-        console.log(this.profile.id);
+         console.log(this.profile);
+         console.log(this.groups);
         //this.activeUser = false;
       } else {
 
@@ -269,6 +251,13 @@ export default {
       // set the number of nodes displayed in the particle animation
       this.$cookies.set("particles", parseInt(this.users.length,10)-5);
       console.log(parseInt(this.users.length,10)-5);
+
+      // update groups for newly logged in user
+      this.axios
+      .get(
+        BASEURL + "webhooks/portal_groups.php?file=base-diglife.php&user_id=" + this.profile.id
+      )
+      .then(response => (this.groups = response.data));
 
       // this forces Vue to recalc all computed props
       this.$forceUpdate();
@@ -289,18 +278,19 @@ export default {
       element.style.display = "block";
     },
     sub: function(menu) {
+      // Open the contextual action button
       switch (menu) {
         case "appLink":
-          window.open(this.appLink, "_blank");
+          window.open(this.channel.purpose.link, "_blank");
           break;
         case "dashboardLink":
-          window.open(this.wikiLink, "theApp");
+          window.open(BASEURL + "webhooks/portal_dashboard.php?user=" + this.username + "&username=" + this.username + "&team=" + this.channel.team + "&channel=" + this.channel.name + "&database=tokens&scope=none&search=", "theApp");
           break;
         case "chatLink":
-          this.requestAccess();
+          window.open(CHATURL + this.channel.team + "/channels/" + this.channel.name, "theApp");
           break;
         case "mapLink":
-          window.open(this.mapLink, "theApp");
+          window.open(BASEURL + "webhooks/portal_circle.php?command=view&team=" + this.channel.team + "&channel=" + this.channel.name + "&user=" + this.username + "&username=" + this.username, "theApp");
           break;
         default:
       }
@@ -313,6 +303,8 @@ export default {
 
        document.getElementById("drawer").classList.remove("md-active");
       this.service = this.channels[index].display_name; 
+      this.channel = this.channels[index];
+      //this.channel.namebrackets = '{'+this.channel.name+'}';
 
       var element = document.getElementById("logo");
       element.style.display = "none";
@@ -329,7 +321,6 @@ export default {
       } else {
         // Open dialoug to request access
         this.serviceDescription = this.channels[index].header;
-        this.channel = this.channels[index];
         this.activeAccess = true;
       }
     },

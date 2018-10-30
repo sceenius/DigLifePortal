@@ -18,8 +18,20 @@
    <md-dialog :md-active.sync="activeAccess">
       <md-dialog-title>Request Access</md-dialog-title>
       <md-tabs md-dynamic-height>
-        <md-tab md-label="About this service">
+        <md-tab md-label="About This Service">
           <p>{{channel.header}}</p>
+        </md-tab>
+        <md-tab md-label="Team Members">      
+          <md-list style="padding: 30px;"> 
+           <md-list-item v-for="(member, index) in members" :key="member.id">
+              <md-avatar><img style="top:0; left: 0; width: 50px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
+              <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
+              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
+                <!-- Create a direct message channel -->
+                <md-icon class="md-primary">chat_bubble</md-icon>
+              </md-button>
+            </md-list-item>
+          </md-list>
         </md-tab>
       </md-tabs>
       <md-dialog-actions>
@@ -127,10 +139,12 @@ export default {
     username: "",
     activeUser: false,
     activeAccess: false,
+    activeBackdrop: false,
     users: "",
     profile: "",
     groups: "",
     channels: "",
+    members: "",
     total: "",
     channel: "",
     showSnackbar: false
@@ -197,6 +211,28 @@ export default {
     this.$cookies.config("365d");
   },
   methods: {
+    directMessage: function(member_id) {
+    // create new direct message channel, if not exists
+    this.axios
+      .get(
+        BASEURL + "webhooks/portal_direct_message.php?file=base-diglife.php&user_id="+this.profile.id+"&member_id="+member_id
+      )
+      .then(response => (this.directUser = response.data))
+      .then(response => (window.open(
+            CHATURL + "/the-collective/channels/" + this.directUser.name,
+            "theApp"
+          ))
+      );
+    this.activeAccess = false;
+    this.showNavigation = false;
+    document.getElementsByClassName("md-overlay")[0].style.display = "none";
+
+
+    },
+
+    avatarLink2: function(index) {
+      return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
+    },
     showDomain: function(index) {
       return this.channels[index].purpose.domain
         ? this.channels[index].purpose.domain.includes(this.selected)
@@ -276,7 +312,7 @@ export default {
               return item.username === this.username;
             }))
         );
-console.log(this.profile);
+console.log(this.groups);
       // this forces Vue to recalc all computed props
       this.$forceUpdate();
     },
@@ -340,15 +376,24 @@ console.log(this.profile);
       }
     },
     openService: function(index) {
-      // remove overlay, beware, this will kill the menu
-      //document.getElementsByClassName("md-overlay")[0].style.display = "none";
-      //var overlay = document.getElementsByClassName("md-overlay")[0];
-      //overlay.parentNode.removeChild(overlay);
 
-      document.getElementById("drawer").classList.remove("md-active");
+    // close both the dialog and the md-overlay
+    this.showNavigation = false;
+    document.getElementsByClassName("md-overlay")[0].style.display = "none";
+
+
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
       //this.channel.namebrackets = '{'+this.channel.name+'}';
+
+      // get all users (members) for channel
+      // to show in members tab
+      this.axios
+      .get(
+        BASEURL +
+          "webhooks/portal_members.php?file=base-diglife.php&channel_id="+this.channel.id
+      )
+      .then(response => (this.members = response.data));
 
       var element = document.getElementById("logo");
       element.style.display = "none";

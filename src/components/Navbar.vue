@@ -75,13 +75,12 @@
             <div class="md-list-item-text">
               <p style="font-weight: bold; font-size: 1.4em">{{profile.first_name}} {{profile.last_name}}</p>
               <p style="color: #aaa;">{{profile.email}}</p>
-            </div>
-        
+            </div>   
         </md-list-item>
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
 
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="selected == channel.purpose.domain">
+        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="showDomain(index)">
           <md-icon>{{channel.purpose.icon}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
          <!-- check the channel membership of the current user OR public channel-->
@@ -159,18 +158,21 @@ export default {
           (this.activeUser = typeof this.profile === "undefined" ? true : false)
       );
 
-    // get all channels for current user and domain=governance
+    // get all channels for current user
     this.axios
       .get(
-        BASEURL + "webhooks/portal_groups.php?file=base-diglife.php&user_id=" + this.$cookies.get("userid")
+        BASEURL +
+          "webhooks/portal_groups.php?file=base-diglife.php&user_id=" +
+          this.$cookies.get("userid")
       )
       .then(response => (this.groups = response.data));
 
-    // get all channels for lederbot user and domain=governance
+    // get all channels for lederbot user
     // to build the menu structure for a given domain (team)
     this.axios
       .get(
-        BASEURL + "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
+        BASEURL +
+          "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
       )
       .then(response => (this.channels = response.data));
 
@@ -185,12 +187,21 @@ export default {
     avatarLink: function() {
       return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
     },
+    //https://lodash.com/
+    orderedUsers: function() {
+      return _.orderBy(this.channel, "display_name");
+    }
   },
 
   mounted: function() {
     this.$cookies.config("365d");
   },
   methods: {
+    showDomain: function(index) {
+      return this.channels[index].purpose.domain
+        ? this.channels[index].purpose.domain.includes(this.selected)
+        : false;
+    },
     cancelAccess: function() {
       // BUG - cannot open menu anymore
       this.activeAccess = false;
@@ -203,7 +214,7 @@ export default {
     requestAccess: function() {
       this.activeAccess = false;
 
-      var slack = new Slack(CHATURL + "hooks/"+this.channel.purpose.hook);
+      var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
       var err = slack.send({
         text:
           "##### :closed_lock_with_key: Request for Access\n@" +
@@ -225,40 +236,47 @@ export default {
       element = document.getElementById("logo");
       element.style.display = "block";
       this.showSnackbar = true;
-
     },
     onConfirm: function() {
       this.username = this.username.replace("@", "").toLowerCase();
+      // cookies are not stored on mobile devices, new prommpt for every session
       this.$cookies.set("username", this.username);
-      for (var i = 0; i < this.users.length; i++) {
-        if (this.users[i].username === this.username) {
-          this.profile = this.users[i];
-        }
-      }
+      // for (var i = 0; i < this.users.length; i++) {
+      //   if (this.users[i].username === this.username) {
+      //     this.profile = this.users[i];
+      //   }
+      // }
 
       if (
         typeof this.profile !== "undefined" &&
         this.username === this.profile.username
       ) {
         this.$cookies.set("userid", this.profile.id);
-         console.log(this.profile);
-         console.log(this.groups);
+        //console.log(this.profile);
+        //console.log(this.groups);
         //this.activeUser = false;
       } else {
-
       }
 
       // set the number of nodes displayed in the particle animation
-      this.$cookies.set("particles", parseInt(this.users.length,10)-5);
-      console.log(parseInt(this.users.length,10)-5);
+      this.$cookies.set("particles", parseInt(this.users.length, 10) - 5);
+      console.log(parseInt(this.users.length, 10) - 5);
 
-      // update groups for newly logged in user
+      // update groups and profile for newly logged in user (no cookie set)
       this.axios
-      .get(
-        BASEURL + "webhooks/portal_groups.php?file=base-diglife.php&user_id=" + this.profile.id
-      )
-      .then(response => (this.groups = response.data));
-
+        .get(
+          BASEURL +
+            "webhooks/portal_groups.php?file=base-diglife.php&user_id=" +
+            this.profile.id
+        )
+        .then(response => (this.groups = response.data))
+        .then(
+          response =>
+            (this.profile = this.users.find(item => {
+              return item.username === this.username;
+            }))
+        );
+console.log(this.profile);
       // this forces Vue to recalc all computed props
       this.$forceUpdate();
     },
@@ -284,13 +302,39 @@ export default {
           window.open(this.channel.purpose.link, "_blank");
           break;
         case "dashboardLink":
-          window.open(BASEURL + "webhooks/portal_dashboard.php?user=" + this.username + "&username=" + this.username + "&team=" + this.channel.team + "&channel=" + this.channel.name + "&database=tokens&scope=none&search=", "theApp");
+          window.open(
+            BASEURL +
+              "webhooks/portal_dashboard.php?user=" +
+              this.username +
+              "&username=" +
+              this.username +
+              "&team=" +
+              this.channel.team +
+              "&channel=" +
+              this.channel.name +
+              "&database=tokens&scope=none&search=",
+            "theApp"
+          );
           break;
         case "chatLink":
-          window.open(CHATURL + this.channel.team + "/channels/" + this.channel.name, "theApp");
+          window.open(
+            CHATURL + this.channel.team + "/channels/" + this.channel.name,
+            "theApp"
+          );
           break;
         case "mapLink":
-          window.open(BASEURL + "webhooks/portal_circle.php?command=view&team=" + this.channel.team + "&channel=" + this.channel.name + "&user=" + this.username + "&username=" + this.username, "theApp");
+          window.open(
+            BASEURL +
+              "webhooks/portal_circle.php?command=view&team=" +
+              this.channel.team +
+              "&channel=" +
+              this.channel.name +
+              "&user=" +
+              this.username +
+              "&username=" +
+              this.username,
+            "theApp"
+          );
           break;
         default:
       }
@@ -301,8 +345,8 @@ export default {
       //var overlay = document.getElementsByClassName("md-overlay")[0];
       //overlay.parentNode.removeChild(overlay);
 
-       document.getElementById("drawer").classList.remove("md-active");
-      this.service = this.channels[index].display_name; 
+      document.getElementById("drawer").classList.remove("md-active");
+      this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
       //this.channel.namebrackets = '{'+this.channel.name+'}';
 
@@ -315,7 +359,10 @@ export default {
       element = document.getElementById("theApp");
       element.style.display = "block";
 
-      if (this.groups.includes(this.channels[index].name) || this.channels[index].type === 'O') {
+      if (
+        this.groups.includes(this.channels[index].name) ||
+        this.channels[index].type === "O"
+      ) {
         // Access has been granted
         window.open(this.channels[index].purpose.link, "theApp");
       } else {
@@ -323,7 +370,7 @@ export default {
         this.serviceDescription = this.channels[index].header;
         this.activeAccess = true;
       }
-    },
+    }
   }
 };
 </script>
@@ -347,12 +394,12 @@ export default {
 }
 
 @media only screen and (max-width: 600px) {
-#logo {
-  width: 250px;
-  height: 250px;
-  margin-top: -125px; /* Half the height */
-  margin-left: -125px; /* Half the width */
-}
+  #logo {
+    width: 250px;
+    height: 250px;
+    margin-top: -125px; /* Half the height */
+    margin-left: -125px; /* Half the width */
+  }
 }
 
 #actions {
@@ -368,7 +415,7 @@ export default {
   font-size: 24px !important;
   margin-left: 0px !important;
   color: #white !important;
-  fo nt-weight: bold !important;
+  font-wei ght: bold !important;
 }
 .md-toolbar {
   background-color: #00b0a0 !important;

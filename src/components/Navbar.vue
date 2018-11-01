@@ -6,16 +6,36 @@
       <md-button class="md-primary" @click="showSnackbar = false">Close</md-button>
     </md-snackbar>
 
-    <md-dialog-prompt
+    <!-- md-dialog-prompt
       :md-active.sync="activeUser"
       v-model="username"
+      md-input-name="username"
       md-title="What is your Mattermost username?"
       md-input-maxlength="30"
       md-input-placeholder="Please type your username..."
       md-confirm-text="Enter" 
-      @md-confirm="onConfirm()"  />
+      @md-confirm="onConfirm()"  /-->
+
+    <md-dialog :md-active.sync="activeUser" >
+      <md-dialog-title>Welcome to DigLife!</md-dialog-title>
+      <div style="padding: 0 25px ;">
+        <md-field class="invalidate">
+          <label>Username</label>
+          <md-input v-model="username" @keyup.prevent.esc="onConfirm()" @keyup.enter="onConfirm()" required></md-input>
+          <span class="md-helper-text">Enter your Mattermost username</span>
+          <span class="md-error" >The username is required</span>
+        </md-field>
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button class="md-success md-raised" @click="onConfirm()" style="background: #00b0a0; color: white;" ><md-icon style="color: white;">exit_to_app</md-icon> Enter</md-button>
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
+
+
 
    <md-dialog :md-active.sync="activeAccess">
+   <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title>Request Access</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
@@ -26,7 +46,7 @@
            <md-list-item v-for="(member, index) in members" :key="member.id">
               <md-avatar><img style="top:0; left: 0; width: 50px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
               <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
-              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
+              <md-button class="md-icon-button md-list-action">
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -84,7 +104,7 @@
             <md-avatar>
               <img v-bind:src="avatarLink" >
             </md-avatar>
-            <div class="md-list-item-text">
+            <div v-if="profile" class="md-list-item-text">
               <p style="font-weight: bold; font-size: 1.4em">{{profile.first_name}} {{profile.last_name}}</p>
               <p style="color: #aaa;">{{profile.email}}</p>
             </div>   
@@ -109,7 +129,6 @@
       <p id="welcome" v-if="username && !service" >Welcome back, <a @click="onReopen()">{{profile.first_name}} {{profile.last_name}}</a></p>
       <p v-if="users && !service" class="counter">{{users.length}}</p>
       <particlesJS/>
-
       <img v-if="selected == 'Home'" id="logo" src="https://diglife.com/brand/logo_secondary_home.svg" />
       <img v-if="selected == 'Projects'" id="logo" src="https://diglife.com/brand/logo_secondary_projects.svg" />
       <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_secondary_operations.svg" />
@@ -139,15 +158,15 @@ export default {
     username: "",
     activeUser: false,
     activeAccess: false,
-    activeBackdrop: false,
     users: "",
-    profile: "",
+    profile: false,
     groups: "",
     channels: "",
     members: "",
     total: "",
     channel: "",
-    showSnackbar: false
+    showSnackbar: false,
+    invalid: false,
   }),
   created: function() {
     this.axios
@@ -176,8 +195,8 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife.php&user_id=" +
-          this.$cookies.get("userid")
+          "webhooks/portal_groups.php?file=base-diglife.php&username=" +
+          this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
 
@@ -204,32 +223,16 @@ export default {
     //https://lodash.com/
     orderedUsers: function() {
       return _.orderBy(this.channel, "display_name");
-    }
+    },
+    invalidate: function() {
+      return (this.invalid ? 'md-invalid' : "");
+    },
   },
 
   mounted: function() {
     this.$cookies.config("365d");
   },
   methods: {
-    directMessage: function(member_id) {
-    // create new direct message channel, if not exists
-    this.axios
-      .get(
-        BASEURL + "webhooks/portal_direct_message.php?file=base-diglife.php&user_id="+this.profile.id+"&member_id="+member_id
-      )
-      .then(response => (this.directUser = response.data))
-      .then(response => (window.open(
-            CHATURL + "/the-collective/channels/" + this.directUser.name,
-            "theApp"
-          ))
-      );
-    this.activeAccess = false;
-    this.showNavigation = false;
-    document.getElementsByClassName("md-overlay")[0].style.display = "none";
-
-
-    },
-
     avatarLink2: function(index) {
       return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
     },
@@ -274,36 +277,21 @@ export default {
       this.showSnackbar = true;
     },
     onConfirm: function() {
-      this.username = this.username.replace("@", "").toLowerCase();
-      // cookies are not stored on mobile devices, new prommpt for every session
-      this.$cookies.set("username", this.username);
-      // for (var i = 0; i < this.users.length; i++) {
-      //   if (this.users[i].username === this.username) {
-      //     this.profile = this.users[i];
-      //   }
-      // }
 
-      if (
-        typeof this.profile !== "undefined" &&
-        this.username === this.profile.username
-      ) {
-        this.$cookies.set("userid", this.profile.id);
-        //console.log(this.profile);
-        //console.log(this.groups);
-        //this.activeUser = false;
-      } else {
-      }
+      if (!this.username || !JSON.stringify(this.users).includes("\"username\":\""+this.username.toLowerCase()+"\"")) {  
+        this.activeUser= true; this.invalid = true; }
+      else {
+        this.activeUser= false;
+        this.username = this.username.replace("@", "").toLowerCase();
+        // cookies are not stored on mobile devices, new prommpt for every session
+        this.$cookies.set("username", this.username);
 
-      // set the number of nodes displayed in the particle animation
-      this.$cookies.set("particles", parseInt(this.users.length, 10) - 5);
-      console.log(parseInt(this.users.length, 10) - 5);
-
-      // update groups and profile for newly logged in user (no cookie set)
-      this.axios
+        // update groups and profile for newly logged in user (no cookie set)
+        this.axios
         .get(
           BASEURL +
-            "webhooks/portal_groups.php?file=base-diglife.php&user_id=" +
-            this.profile.id
+            "webhooks/portal_groups.php?file=base-diglife.php&username=" +
+            this.username
         )
         .then(response => (this.groups = response.data))
         .then(
@@ -312,9 +300,19 @@ export default {
               return item.username === this.username;
             }))
         );
-console.log(this.groups);
-      // this forces Vue to recalc all computed props
-      this.$forceUpdate();
+
+        // update theme for user
+        this.axios
+        .get(
+          BASEURL +
+            "webhooks/portal_prefs.php?file=base-diglife.php&username=" +
+            this.username
+        )
+
+        // this forces Vue to recalc all computed props
+        //this.$forceUpdate();
+      }
+
     },
     onReopen: function() {
       // Open dialoug box again to change name
@@ -376,12 +374,12 @@ console.log(this.groups);
       }
     },
     openService: function(index) {
+      // remove overlay, beware, this will kill the menu
+      //document.getElementsByClassName("md-overlay")[0].style.display = "none";
+      //var overlay = document.getElementsByClassName("md-overlay")[0];
+      //overlay.parentNode.removeChild(overlay);
 
-    // close both the dialog and the md-overlay
-    this.showNavigation = false;
-    document.getElementsByClassName("md-overlay")[0].style.display = "none";
-
-
+      document.getElementById("drawer").classList.remove("md-active");
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
       //this.channel.namebrackets = '{'+this.channel.name+'}';

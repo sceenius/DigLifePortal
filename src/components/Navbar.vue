@@ -19,11 +19,12 @@
     <md-dialog :md-active.sync="activeUser" >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
-        <md-field class="invalidate">
+        <md-field id="username">
           <label>Username</label>
           <md-input v-model="username" @keyup.prevent.esc="onConfirm()" @keyup.enter="onConfirm()" required></md-input>
           <span class="md-helper-text">Enter your Mattermost username</span>
-          <span class="md-error" >The username is required</span>
+          <span class="md-error">The username does not exist</span>
+          <md-icon>person</md-icon>
         </md-field>
         <md-dialog-actions style="padding: 25px 0;">
           <md-button class="md-success md-raised" @click="onConfirm()" style="background: #00b0a0; color: white;" ><md-icon style="color: white;">exit_to_app</md-icon> Enter</md-button>
@@ -34,7 +35,7 @@
 
 
 
-   <md-dialog :md-active.sync="activeAccess">
+   <md-dialog :md-active.sync="activeAccess" id="access">
    <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title>Request Access</md-dialog-title>
       <md-tabs md-dynamic-height>
@@ -54,9 +55,9 @@
           </md-list>
         </md-tab>
       </md-tabs>
-      <md-dialog-actions>
+      <md-dialog-actions style="padding: 25px">
         <md-button class="" @click="cancelAccess()">Cancel</md-button>
-        <md-button class="md-success md-raised" @click="requestAccess()"><md-icon>lock_open</md-icon> Request Access</md-button>
+        <md-button class="md-success md-raised" @click="requestAccess()" style="background: #00b0a0; color: white;" ><md-icon style="color: white;">lock_open</md-icon> Request Access</md-button>
       </md-dialog-actions>
     </md-dialog>   
 
@@ -106,7 +107,7 @@
             </md-avatar>
             <div v-if="profile" class="md-list-item-text">
               <p style="font-weight: bold; font-size: 1.4em">{{profile.first_name}} {{profile.last_name}}</p>
-              <p style="color: #aaa;">{{profile.email}}</p>
+              <p style="color: #aaa;">{{profile.position}}</p>
             </div>   
         </md-list-item>
 
@@ -166,7 +167,7 @@ export default {
     total: "",
     channel: "",
     showSnackbar: false,
-    invalid: false,
+    invalid: true,
   }),
   created: function() {
     this.axios
@@ -200,14 +201,19 @@ export default {
       )
       .then(response => (this.groups = response.data));
 
-    // get all channels for lederbot user
+    function SortByName(x,y) {
+      return ((x.display_name === y.display_name) ? 0 : ((x.display_name > y.display_name) ? 1 : -1 ));
+    }
+
+    // get all channels for lederbot user and sort them 
     // to build the menu structure for a given domain (team)
     this.axios
       .get(
         BASEURL +
           "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
       )
-      .then(response => (this.channels = response.data));
+      .then(response => (this.channels = response.data))
+      .then(response => (this.channels.sort(SortByName)));
 
     //  this.axios
     //   .get(
@@ -225,7 +231,7 @@ export default {
       return _.orderBy(this.channel, "display_name");
     },
     invalidate: function() {
-      return (this.invalid ? 'md-invalid' : "");
+      return (this.invalid === true ? 'md-invalid' : "");
     },
   },
 
@@ -242,7 +248,6 @@ export default {
         : false;
     },
     cancelAccess: function() {
-      // BUG - cannot open menu anymore
       this.activeAccess = false;
       this.service = "";
       var element = document.getElementById("particles-js");
@@ -276,12 +281,13 @@ export default {
       element.style.display = "block";
       this.showSnackbar = true;
     },
-    onConfirm: function() {
 
+    onConfirm: function() {
       if (!this.username || !JSON.stringify(this.users).includes("\"username\":\""+this.username.toLowerCase()+"\"")) {  
-        this.activeUser= true; this.invalid = true; }
+        this.activeUser= true; document.getElementById("username").classList.add("md-invalid") }
       else {
         this.activeUser= false;
+         document.getElementById("username").classList.remove("md-invalid")
         this.username = this.username.replace("@", "").toLowerCase();
         // cookies are not stored on mobile devices, new prommpt for every session
         this.$cookies.set("username", this.username);
@@ -379,7 +385,8 @@ export default {
       //var overlay = document.getElementsByClassName("md-overlay")[0];
       //overlay.parentNode.removeChild(overlay);
 
-      document.getElementById("drawer").classList.remove("md-active");
+       document.getElementById("drawer").classList.remove("md-active");
+      this.showNavigation = false;
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
       //this.channel.namebrackets = '{'+this.channel.name+'}';

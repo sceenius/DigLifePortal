@@ -47,7 +47,7 @@
            <md-list-item v-for="(member, index) in members" :key="member.id">
               <md-avatar><img style="top:0; left: 0; width: 50px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
               <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
-              <md-button class="md-icon-button md-list-action">
+              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -79,6 +79,9 @@
 
    <!-- Show action buttons -->
    <div v-if="service" id="actions" >
+      <md-button title="Learn more" @click="sub('infoLink')" class="md-fab md-mini md-plain">
+        <md-icon>info_outline</md-icon>
+      </md-button>
       <md-button title="Open support group" @click="sub('chatLink')" class="md-fab md-mini md-plain">
         <md-icon>chat_bubble_outline</md-icon>
       </md-button>
@@ -155,7 +158,6 @@ export default {
     showSidepanel: false,
     selected: "Home",
     service: "",
-    serviceDescription: "",
     username: "",
     activeUser: false,
     activeAccess: false,
@@ -242,11 +244,30 @@ export default {
     avatarLink2: function(index) {
       return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
     },
+
     showDomain: function(index) {
       return this.channels[index].purpose.domain
         ? this.channels[index].purpose.domain.includes(this.selected)
         : false;
     },
+
+    directMessage: function(member_id) {
+    // create new direct message channel, if not exists
+    this.axios
+      .get(
+        BASEURL + "webhooks/portal_direct_message.php?file=base-diglife.php&user_id="+this.profile.id+"&member_id="+member_id
+      )
+      .then(response => (this.directUser = response.data))
+      .then(response => (window.open(
+            CHATURL + "/the-collective/channels/" + this.directUser.name,
+            "theApp"
+          ))
+      );
+    this.activeAccess = false;
+    this.showNavigation = false;
+    document.getElementsByClassName("md-overlay")[0].style.display = "none";
+     },
+
     cancelAccess: function() {
       this.activeAccess = false;
       this.service = "";
@@ -255,6 +276,7 @@ export default {
       element = document.getElementById("logo");
       element.style.display = "block";
     },
+
     requestAccess: function() {
       this.activeAccess = false;
 
@@ -320,10 +342,12 @@ export default {
       }
 
     },
+
     onReopen: function() {
       // Open dialoug box again to change name
       this.activeUser = true;
     },
+
     nav: function(menu) {
       this.selected = menu;
       this.showNavigation = false;
@@ -335,9 +359,14 @@ export default {
       element = document.getElementById("logo");
       element.style.display = "block";
     },
+
     sub: function(menu) {
       // Open the contextual action button
       switch (menu) {
+        case "infoLink":
+          // Open dialoug to request access
+          this.activeAccess = true;
+          break;
         case "appLink":
           window.open(this.channel.purpose.link, "_blank");
           break;
@@ -379,6 +408,7 @@ export default {
         default:
       }
     },
+
     openService: function(index) {
       // remove overlay, beware, this will kill the menu
       //document.getElementsByClassName("md-overlay")[0].style.display = "none";
@@ -417,7 +447,6 @@ export default {
         window.open(this.channels[index].purpose.link, "theApp");
       } else {
         // Open dialoug to request access
-        this.serviceDescription = this.channels[index].header;
         this.activeAccess = true;
       }
     }

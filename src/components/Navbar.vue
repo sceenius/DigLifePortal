@@ -34,16 +34,40 @@
 
 
 
-
-   <md-dialog :md-active.sync="activeAccess" id="access">
+   <md-dialog :md-active.sync="activeInfo" id="info">
    <!-- https://github.com/vuematerial/vue-material/issues/201 -->
-      <md-dialog-title>Request Access</md-dialog-title>
+      <md-dialog-title>{{service}}</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
           <p>{{channel.header}}</p>
         </md-tab>
         <md-tab md-label="Team Members">      
-          <md-list style="padding: 30px;"> 
+          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;"> 
+           <md-list-item v-for="(member, index) in members" :key="member.id">
+              <md-avatar><img style="top:0; left: 0; width: 60px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
+              <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
+              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
+                <!-- Create a direct message channel -->
+                <md-icon class="md-primary">chat_bubble</md-icon>
+              </md-button>
+            </md-list-item>
+          </md-list>
+        </md-tab>
+      </md-tabs>
+      <md-dialog-actions style="padding: 25px">
+        <md-button class="" @click="cancelAccess()">Close</md-button>
+      </md-dialog-actions>
+    </md-dialog>   
+
+   <md-dialog :md-active.sync="activeAccess" id="access">
+   <!-- https://github.com/vuematerial/vue-material/issues/201 -->
+      <md-dialog-title>{{service}}</md-dialog-title>
+      <md-tabs md-dynamic-height>
+        <md-tab md-label="About This Service">
+          <p>{{channel.header}}</p>
+        </md-tab>
+        <md-tab md-label="Team Members">      
+          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;"> 
            <md-list-item v-for="(member, index) in members" :key="member.id">
               <md-avatar><img style="top:0; left: 0; width: 50px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
               <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
@@ -161,6 +185,7 @@ export default {
     username: "",
     activeUser: false,
     activeAccess: false,
+    activeInfo: false,
     users: "",
     profile: false,
     groups: "",
@@ -270,6 +295,7 @@ export default {
 
     cancelAccess: function() {
       this.activeAccess = false;
+      this.activeInfo = false;
       this.service = "";
       var element = document.getElementById("particles-js");
       element.style.display = "block";
@@ -365,7 +391,7 @@ export default {
       switch (menu) {
         case "infoLink":
           // Open dialoug to request access
-          this.activeAccess = true;
+          this.activeInfo = true;
           break;
         case "appLink":
           window.open(this.channel.purpose.link, "_blank");

@@ -21,7 +21,7 @@ export default {
       particlesJS("particles-js", {
         particles: {
           number: {
-            value: this.$cookies.get('particles') || 10,
+            value: 50 || this.$cookies.get('particles'),
             density: {
               enable: true,
               value_area: 800

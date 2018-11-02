@@ -1,5 +1,5 @@
 {
-  "name": "vue-material-drawer",
+  "name": "diglife-portal-dev",
   "keywords": [],
   "dependencies": {
     "axios": "0.18.0",
@@ -10,5 +10,5 @@
     "vue-cookies": "1.5.7",
     "vue-material": "1.0.0-beta-10.2"
   },
-  "description": ""
+  "description": "This is in sync with GitHub."
 }

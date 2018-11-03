@@ -1,6 +1,10 @@
-# DigLife Portal ################TEST
+# DigLife Portal
 ## Purpose
-This is the implementation of the DigLife portal, a single place from where authorized members can access all DigLife Services. THe portal is structured into four domains:
+The DigLife Portal is a gateway for all members of the DigLife Collective to discover and access shared services, project teams and operational areas organized into four domains - Home, Projects, Ops and Friends. The purpose of the portal is to make easy for members to (1) discover all services and teams the Collective has to offer, (2) to request access to services and teams (some are public, most are private) and (3) to decentralize the operation of the portal as much as possible. 
+
+Each service has a corresponding support channel in Mattermost, which is the conversation/chat tool of the Collective. As soon as a new channel is created in Mattermost and configured to work with the portal, it will show up in the navigation panel on the left side. To open the panel, simply click on the hamburger menu icon on the top left. To switch to a different domain, click on one of the menu items on the right side. 
+
+The best way to get started is to sign up with Mattermost (as a new member you should receive an email invitation) and log into the portal with your username. Then explore the services and teams for each of the four domains and request access to those that are of interest to you. Since each service and team has a corresponding channel on Mattermost, we will get back to you as soon as we have receive your access request. If you have have any questions, please drop a note in the [TECH SUPPORT] channel on Mattermost. 
 
 ### DigLife Home
 Access to main services available for all members. This also include Communities of Interest (i.e. non-workteam related groups) 

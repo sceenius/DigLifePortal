@@ -1,10 +1,10 @@
 # DigLife Portal
 ## Purpose
-The DigLife Portal is a gateway for all members of the DigLife Collective to discover and access shared services, project teams and operational areas organized into four domains - Home, Projects, Ops and Friends. The purpose of the portal is to make easy for members to (1) discover all services and teams the Collective has to offer, (2) to request access to services and teams (some are public, most are private) and (3) to decentralize the operation of the portal as much as possible. 
+The DigLife Portal is a gateway for all members of the DigLife Collective to discover and access shared services, project teams and operational areas organized into four domains - Home, Projects, Ops and Friends. The purpose of the portal is to make it easy for members (1) to discover all services and teams the Collective has to offer, (2) to request access to services and teams (via a Sudo Protocol) and (3) to decentralize the operation of the Collective as much as possible. 
 
 Each service has a corresponding support channel in Mattermost, which is the conversation/chat tool of the Collective. As soon as a new channel is created in Mattermost and configured to work with the portal, it will show up in the navigation panel on the left side. To open the panel, simply click on the hamburger menu icon on the top left. To switch to a different domain, click on one of the menu items on the right side. 
 
-The best way to get started is to sign up with Mattermost (as a new member you should receive an email invitation) and log into the portal with your username. Then explore the services and teams for each of the four domains and request access to those that are of interest to you. Since each service and team has a corresponding channel on Mattermost, we will get back to you as soon as we have receive your access request. If you have have any questions, please drop a note in the [TECH SUPPORT] channel on Mattermost. 
+The best way to get started is to sign up with Mattermost (as a new member you should receive an email invitation) and log into the portal with your username. Then explore the services and teams for each of the four domains and request access to those that are of interest to you. Since each service and team has a corresponding channel on Mattermost, we will get back to you as soon as we have received your access request. If you have have any questions, please drop a note in the [TECH SUPPORT] channel on Mattermost. 
 
 ### DigLife Home
 Access to main services available for all members. This also include Communities of Interest (i.e. non-workteam related groups) 
@@ -51,25 +51,3 @@ http://vuejs.github.io/vue-loader
 
 ### Known issues
 The main limitation of cookies on mobile browsers is that they reset when the browser is closed or when the phone is shut down/restarted.
-
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:8080
-npm run dev
-
-# build for production with minification
-npm run build
-
-# build for production and view the bundle analyzer report
-npm run build --report
-
-# run unit tests
-npm run unit
-
-# run all tests
-npm test
-```
-
-For a detailed explanation on how things work, check out the [guide](.

@@ -1,20 +1,15 @@
 <template>
  <div class="page-container md-layout-column" >
 
+    <!--
+         ----------------------------------------------------------------------
+           DIALOG BOXES  - https://vuematerial.io/components/dialog                      
+         ----------------------------------------------------------------------
+    -->  
     <md-snackbar :md-duration="4000" :md-active.sync="showSnackbar" md-persistent>
       <span>Thank you! Your request has been submitted.</span>
       <md-button class="md-primary" @click="showSnackbar = false">Close</md-button>
     </md-snackbar>
-
-    <!-- md-dialog-prompt
-      :md-active.sync="activeUser"
-      v-model="username"
-      md-input-name="username"
-      md-title="What is your Mattermost username?"
-      md-input-maxlength="30"
-      md-input-placeholder="Please type your username..."
-      md-confirm-text="Enter" 
-      @md-confirm="onConfirm()"  /-->
 
     <md-dialog :md-active.sync="activeUser" >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
@@ -31,8 +26,6 @@
         </md-dialog-actions>
       </div>
     </md-dialog>
-
-
 
    <md-dialog :md-active.sync="activeInfo" id="info">
    <!-- https://github.com/vuematerial/vue-material/issues/201 -->
@@ -85,6 +78,12 @@
       </md-dialog-actions>
     </md-dialog>   
 
+
+    <!--
+         ----------------------------------------------------------------------
+           TOOLBAR - https://vuematerial.io/components/toolbar/                       
+         ----------------------------------------------------------------------
+    -->
     <md-toolbar class="md-primary">
       <md-button class="md-icon-button" @click="showNavigation = true">
         <md-icon>menu</md-icon>
@@ -101,7 +100,11 @@
       </div>
     </md-toolbar>
 
-   <!-- Show action buttons -->
+    <!--
+         ----------------------------------------------------------------------
+           CONTEXTUAL ACTION BUTTONS                        
+         ----------------------------------------------------------------------
+    -->
    <div v-if="service" id="actions" >
       <md-button title="Learn more" @click="sub('infoLink')" class="md-fab md-mini md-plain">
         <md-icon>info_outline</md-icon>
@@ -120,14 +123,22 @@
       </md-button>
    </div>
 
-    <!-- for more info on the drawer component: https://vuematerial.io/components/drawer -->
+    <!--
+         ----------------------------------------------------------------------
+           DRAWER MENU BAR - https://vuematerial.io/components/drawer                         
+         ----------------------------------------------------------------------
+    -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
-        <md-switch class="md-toolbar-section-end" title="show only my services" v-model="showServices" @click="switchServices()"></md-switch>
+        <md-switch class="md-toolbar-section-end" title="show only my services" v-model="showServices"></md-switch>
         <span class="md-title" style="color: white;">{{selected}}</span>
       </md-toolbar>
 
-    <!-- for more info on the list component: https://vuematerial.io/components/list/ -->
+      <!--
+         ----------------------------------------------------------------------
+           LIST - https://vuematerial.io/components/list/                          
+         ----------------------------------------------------------------------
+      -->
       <md-list>
          <md-list-item v-if="username">
             <md-avatar>
@@ -154,7 +165,12 @@
       </md-list>
     </md-drawer>
 
- <md-content>
+    <!--
+         ----------------------------------------------------------------------
+           PAGE CONTENT                         
+         ----------------------------------------------------------------------
+    -->
+    <md-content>
       <p id="welcome" v-if="username && !service" >Welcome back, <a @click="onReopen()">{{profile.first_name}} {{profile.last_name}}</a></p>
       <p v-if="users && !service" class="counter">{{users.length}}</p>
       <particlesJS/>
@@ -163,9 +179,10 @@
       <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_secondary_operations.svg" />
       <img v-if="selected == 'Friends'" id="logo" src="https://diglife.com/brand/logo_secondary_friends.svg" />
       <iframe name="theApp" id="theApp" style="display: none; width:100%; height:95vh;" frameBorder="0"></iframe>
- </md-content>
+    </md-content>
 
-  </div>
+  </div><!-- END page-container md-layout-column -->
+
 </template>
 
 <script>
@@ -198,6 +215,10 @@ export default {
     showSnackbar: false,
     invalid: true,
   }),
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  CREATED - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.axios
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife.php")
@@ -252,6 +273,9 @@ export default {
     //   .then(response => (this.total = response.data));
   },
 
+  ///////////////////////////////////////////////////////////////////////////////
+  //  COMPUTED - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
   computed: {
     avatarLink: function() {
       return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
@@ -265,17 +289,26 @@ export default {
     },
   },
 
+  ///////////////////////////////////////////////////////////////////////////////
+  //  MOUNTED - https://vuejs.org/v2/guide/instance.html
+  /////////////////////////////////////////////////////////////////////////////// 
   mounted: function() {
     this.$cookies.config("365d");
     this.showServices = this.$cookies.get("showServices");
   },
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
   beforeDestroy: function() {
     this.$cookies.set("showServices", this.showServices); // not working
   },
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  METHODS - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
   methods: {
-    switchServices: function() {
-        this.$cookies.set("showServices", !this.showServices);
-    },    
+    
     avatarLink2: function(index) {
       return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
     },

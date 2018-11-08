@@ -123,7 +123,8 @@
     <!-- for more info on the drawer component: https://vuematerial.io/components/drawer -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
-        <span class="md-title" style="color: white;">{{selected}} Services</span>
+        <md-switch class="md-toolbar-section-end" title="show only my services" v-model="showServices" @click="switchServices()"></md-switch>
+        <span class="md-title" style="color: white;">{{selected}}</span>
       </md-toolbar>
 
     <!-- for more info on the list component: https://vuematerial.io/components/list/ -->
@@ -140,7 +141,7 @@
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
 
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="showDomain(index)">
+        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="(!showServices && showDomain(index)) || (showServices && (groups.includes(channel.name) || channel.type == 'O') && showDomain(index))">
           <md-icon>{{channel.purpose.icon}}</md-icon>
           <span class="md-list-item-text">{{channel.display_name}}</span>
          <!-- check the channel membership of the current user OR public channel-->
@@ -180,6 +181,7 @@ export default {
     },
     showNavigation: false,
     showSidepanel: false,
+    showServices: false,
     selected: "Home",
     service: "",
     username: "",
@@ -242,6 +244,7 @@ export default {
       .then(response => (this.channels = response.data))
       .then(response => (this.channels.sort(SortByName)));
 
+
     //  this.axios
     //   .get(
     //     BASEURL + "assets/total.json"
@@ -264,8 +267,15 @@ export default {
 
   mounted: function() {
     this.$cookies.config("365d");
+    this.showServices = this.$cookies.get("showServices");
+  },
+  beforeDestroy: function() {
+    this.$cookies.set("showServices", this.showServices); // not working
   },
   methods: {
+    switchServices: function() {
+        this.$cookies.set("showServices", !this.showServices);
+    },    
     avatarLink2: function(index) {
       return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
     },
@@ -533,6 +543,22 @@ export default {
 
 .md-toolbar img {
   height: 55px !important;
+}
+
+.md-switch {
+  margin: 0px 5px;
+}
+
+.md-checked .md-switch-container {
+      background-color: #6DCEC5 !important; /* not selected switch color */
+}
+
+.md-checked .md-switch-thumb {
+    background-color: #fff !important; /* 00E4CF */
+}
+
+.md-switch-thumb {
+    background-color: #6DCEC5 !important; /* 00E4CF */
 }
 
 .md-fab {

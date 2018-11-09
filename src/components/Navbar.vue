@@ -154,7 +154,7 @@
 
         <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="(!showServices && showDomain(index)) || (showServices && (groups.includes(channel.name) || channel.type == 'O') && showDomain(index))">
           <md-icon>{{channel.purpose.icon}}</md-icon>
-          <span class="md-list-item-text">{{channel.display_name}}</span>
+          <span class="md-list-item-text">{{channel.display_name.replace(/[!#*@%/.+><"'\\&]/, "")}}</span>
          <!-- check the channel membership of the current user OR public channel-->
          <!-- need to fix a case if there is a partial string match -->
           <md-icon v-if="groups.includes(channel.name) || channel.type == 'O'" style="color: green;">verified_user</md-icon>
@@ -287,6 +287,7 @@ export default {
     invalidate: function() {
       return (this.invalid === true ? 'md-invalid' : "");
     },
+   
   },
 
   ///////////////////////////////////////////////////////////////////////////////

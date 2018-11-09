@@ -1,45 +1,100 @@
 <template>
- <div class="page-container md-layout-column" >
-
+  <div class="page-container md-layout-column">
     <!--
-         ----------------------------------------------------------------------
-           DIALOG BOXES  - https://vuematerial.io/components/dialog                      
-         ----------------------------------------------------------------------
-    -->  
-    <md-snackbar :md-duration="4000" :md-active.sync="showSnackbar" md-persistent>
+      ----------------------------------------------------------------------
+        DIALOG BOXES  - https://vuematerial.io/components/dialog
+      ----------------------------------------------------------------------
+    -->
+    <md-snackbar
+      :md-duration="4000"
+      :md-active.sync="showSnackbar"
+      md-persistent
+    >
       <span>Thank you! Your request has been submitted.</span>
-      <md-button class="md-primary" @click="showSnackbar = false">Close</md-button>
+      <md-button class="md-primary" @click="showSnackbar = false;"
+        >Close</md-button
+      >
     </md-snackbar>
 
-    <md-dialog :md-active.sync="activeUser" >
+    <md-dialog :md-active.sync="activeTags">
+      <md-dialog-title
+        >My Tags<md-icon style="color: #00b0a0">label</md-icon></md-dialog-title
+      >
+      <div style="padding: 0 25px ;">
+        <p>
+          Please click on the <b>Add Tag</b> link below and add your personal
+          tags (hit enter to add or click on the X to delete).Tags are very
+          important for the Collective as they describe your skillsets,
+          expertise and areas of interest. We regularly update tag lists so you
+          can match your tags with existing tags. Also, try to keep your tags
+          up-to-date since we will be using them for different services in the
+          Collective.
+        </p>
+        <Tags />
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button
+            class="md-success md-raised"
+            @click="onTagsConfirm();"
+            style="background: #00b0a0; color: white;"
+            ><md-icon style="color: white;">label</md-icon> Save</md-button
+          >
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
+    <md-dialog :md-active.sync="activeUser">
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
         <md-field id="username">
           <label>Username</label>
-          <md-input v-model="username" @keyup.prevent.esc="onConfirm()" @keyup.enter="onConfirm()" required></md-input>
+          <md-input
+            v-model="username"
+            @keyup.prevent.esc="onConfirm();"
+            @keyup.enter="onConfirm();"
+            required
+          ></md-input>
           <span class="md-helper-text">Enter your Mattermost username</span>
           <span class="md-error">The username does not exist</span>
           <md-icon>person</md-icon>
         </md-field>
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button class="md-success md-raised" @click="onConfirm()" style="background: #00b0a0; color: white;" ><md-icon style="color: white;">exit_to_app</md-icon> Enter</md-button>
+          <md-button
+            class="md-success md-raised"
+            @click="onConfirm();"
+            style="background: #00b0a0; color: white;"
+            ><md-icon style="color: white;">exit_to_app</md-icon>
+            Enter</md-button
+          >
         </md-dialog-actions>
       </div>
     </md-dialog>
 
-   <md-dialog :md-active.sync="activeInfo" id="info">
-   <!-- https://github.com/vuematerial/vue-material/issues/201 -->
-      <md-dialog-title>{{service}}</md-dialog-title>
+    <md-dialog :md-active.sync="activeInfo" id="info">
+      <!-- https://github.com/vuematerial/vue-material/issues/201 -->
+      <md-dialog-title>{{ service }}</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
-          <p>{{channel.header}}</p>
+          <p>{{ channel.header }}</p>
         </md-tab>
-        <md-tab md-label="Team Members">      
-          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;"> 
-           <md-list-item v-for="(member, index) in members" :key="member.id">
-              <md-avatar><img style="top:0; left: 0; width: 60px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
-              <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
-              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
+        <md-tab md-label="Team Members">
+          <md-list
+            style="margin: 50px; overflow: auto; height: 55vh !important;"
+          >
+            <md-list-item v-for="(member, index) in members" :key="member.id">
+              <md-avatar
+                ><img
+                  style="top:0; left: 0; width: 60px; height: 50px;"
+                  v-bind:src="avatarLink2(index)"
+              /></md-avatar>
+              <span class="md-list-item-text"
+                >{{ member.first_name }} {{ member.last_name }} ({{
+                  member.username
+                }})</span
+              >
+              <md-button
+                @click="directMessage(member.id);"
+                class="md-icon-button md-list-action"
+              >
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -48,23 +103,36 @@
         </md-tab>
       </md-tabs>
       <md-dialog-actions style="padding: 25px">
-        <md-button class="" @click="cancelAccess()">Close</md-button>
+        <md-button class="" @click="cancelAccess();">Close</md-button>
       </md-dialog-actions>
-    </md-dialog>   
+    </md-dialog>
 
-   <md-dialog :md-active.sync="activeAccess" id="access">
-   <!-- https://github.com/vuematerial/vue-material/issues/201 -->
-      <md-dialog-title>{{service}}</md-dialog-title>
+    <md-dialog :md-active.sync="activeAccess" id="access">
+      <!-- https://github.com/vuematerial/vue-material/issues/201 -->
+      <md-dialog-title>{{ service }}</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
-          <p>{{channel.header}}</p>
+          <p>{{ channel.header }}</p>
         </md-tab>
-        <md-tab md-label="Team Members">      
-          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;"> 
-           <md-list-item v-for="(member, index) in members" :key="member.id">
-              <md-avatar><img style="top:0; left: 0; width: 50px; height: 50px;" v-bind:src="avatarLink2(index)" ></md-avatar>
-              <span class="md-list-item-text">{{member.first_name}} {{member.last_name}} ({{member.username}})</span>
-              <md-button @click="directMessage(member.id)" class="md-icon-button md-list-action">
+        <md-tab md-label="Team Members">
+          <md-list
+            style="margin: 50px; overflow: auto; height: 55vh !important;"
+          >
+            <md-list-item v-for="(member, index) in members" :key="member.id">
+              <md-avatar
+                ><img
+                  style="top:0; left: 0; width: 50px; height: 50px;"
+                  v-bind:src="avatarLink2(index)"
+              /></md-avatar>
+              <span class="md-list-item-text"
+                >{{ member.first_name }} {{ member.last_name }} ({{
+                  member.username
+                }})</span
+              >
+              <md-button
+                @click="directMessage(member.id);"
+                class="md-icon-button md-list-action"
+              >
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -73,125 +141,223 @@
         </md-tab>
       </md-tabs>
       <md-dialog-actions style="padding: 25px">
-        <md-button class="" @click="cancelAccess()">Cancel</md-button>
-        <md-button class="md-success md-raised" @click="requestAccess()" style="background: #00b0a0; color: white;" ><md-icon style="color: white;">lock_open</md-icon> Request Access</md-button>
+        <md-button class="" @click="cancelAccess();">Cancel</md-button>
+        <md-button
+          class="md-success md-raised"
+          @click="requestAccess();"
+          style="background: #00b0a0; color: white;"
+          ><md-icon style="color: white;">lock_open</md-icon> Request
+          Access</md-button
+        >
       </md-dialog-actions>
-    </md-dialog>   
-
+    </md-dialog>
 
     <!--
-         ----------------------------------------------------------------------
-           TOOLBAR - https://vuematerial.io/components/toolbar/                       
-         ----------------------------------------------------------------------
+      ----------------------------------------------------------------------
+        TOOLBAR - https://vuematerial.io/components/toolbar/
+      ----------------------------------------------------------------------
     -->
     <md-toolbar class="md-primary">
-      <md-button class="md-icon-button" @click="showNavigation = true">
+      <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
-      <span class="md-title">{{service ? '' : 'DigLife' }} {{service ? '' : selected }} {{service}}</span>
+      <span class="md-title"
+        >{{ service ? "" : "DigLife" }} {{ service ? "" : selected }}
+        {{ service }}</span
+      >
 
       <div class="md-toolbar-section-end">
-        <md-button @click="nav('Home')" v-bind:style="[selected == 'Home' ? {color: '#fec019'} : {color: '#fff'}]">Home</md-button>
-        <md-button @click="nav('Projects')" v-bind:style="[selected == 'Projects' ? {color: '#fec019'} : {color: '#fff'}]">projects</md-button>
-        <md-button @click="nav('Operations')" v-bind:style="[selected == 'Operations' ? {color: '#fec019'} : {color: '#fff'}]">ops</md-button>
-        <md-button @click="nav('Friends')" v-bind:style="[selected == 'Friends' ? {color: '#fec019'} : {color: '#fff'}]">friends</md-button>
+        <md-button
+          @click="nav('Home');"
+          v-bind:style="[
+            selected == 'Home' ? { color: '#fec019' } : { color: '#fff' }
+          ]"
+          >Home</md-button
+        >
+        <md-button
+          @click="nav('Projects');"
+          v-bind:style="[
+            selected == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
+          ]"
+          >projects</md-button
+        >
+        <md-button
+          @click="nav('Operations');"
+          v-bind:style="[
+            selected == 'Operations' ? { color: '#fec019' } : { color: '#fff' }
+          ]"
+          >ops</md-button
+        >
+        <md-button
+          @click="nav('Friends');"
+          v-bind:style="[
+            selected == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
+          ]"
+          >friends</md-button
+        >
       </div>
     </md-toolbar>
 
     <!--
-         ----------------------------------------------------------------------
-           CONTEXTUAL ACTION BUTTONS                        
-         ----------------------------------------------------------------------
+      ----------------------------------------------------------------------
+        CONTEXTUAL ACTION BUTTONS
+      ----------------------------------------------------------------------
     -->
-   <div v-if="service" id="actions" >
-      <md-button title="Learn more" @click="sub('infoLink')" class="md-fab md-mini md-plain">
+    <div v-if="service" id="actions">
+      <md-button
+        title="Learn more"
+        @click="sub('infoLink');"
+        class="md-fab md-mini md-plain"
+      >
         <md-icon>info_outline</md-icon>
       </md-button>
-      <md-button title="Open support group" @click="sub('chatLink')" class="md-fab md-mini md-plain">
+      <md-button
+        title="Open support group"
+        @click="sub('chatLink');"
+        class="md-fab md-mini md-plain"
+      >
         <md-icon>chat_bubble_outline</md-icon>
       </md-button>
-      <md-button title="Open app in new window" @click="sub('appLink')" class="md-fab md-mini md-plain">
+      <md-button
+        title="Open app in new window"
+        @click="sub('appLink');"
+        class="md-fab md-mini md-plain"
+      >
         <md-icon>fullscreen</md-icon>
       </md-button>
-      <md-button title="Social Ledger Social Objects" @click="sub('dashboardLink')" class="md-fab md-mini md-plain">
+      <md-button
+        title="Social Ledger Social Objects"
+        @click="sub('dashboardLink');"
+        class="md-fab md-mini md-plain"
+      >
         <md-icon>apps</md-icon>
       </md-button>
-      <md-button title="Social Ledger Holonic Chart" @click="sub('mapLink')" class="md-fab md-mini md-plain">
+      <md-button
+        title="Social Ledger Holonic Chart"
+        @click="sub('mapLink');"
+        class="md-fab md-mini md-plain"
+      >
         <md-icon>blur_circular</md-icon>
       </md-button>
-   </div>
+    </div>
 
     <!--
-         ----------------------------------------------------------------------
-           DRAWER MENU BAR - https://vuematerial.io/components/drawer                         
-         ----------------------------------------------------------------------
+      ----------------------------------------------------------------------
+        DRAWER MENU BAR - https://vuematerial.io/components/drawer
+      ----------------------------------------------------------------------
     -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
-        <md-switch class="md-toolbar-section-end" title="show only my services" v-model="showServices"></md-switch>
-        <span class="md-title" style="color: white;">{{selected}}</span>
+        <md-switch
+          class="md-toolbar-section-end"
+          title="show only my services"
+          v-model="showServices"
+        ></md-switch>
+        <span class="md-title" style="color: white;">{{ selected }}</span>
       </md-toolbar>
 
       <!--
-         ----------------------------------------------------------------------
-           LIST - https://vuematerial.io/components/list/                          
-         ----------------------------------------------------------------------
+        ----------------------------------------------------------------------
+          LIST - https://vuematerial.io/components/list/
+        ----------------------------------------------------------------------
       -->
       <md-list>
-         <md-list-item v-if="username">
-            <md-avatar>
-              <img v-bind:src="avatarLink" >
-            </md-avatar>
-            <div v-if="profile" class="md-list-item-text">
-              <p style="font-weight: bold; font-size: 1.4em">{{profile.first_name}} {{profile.last_name}}</p>
-              <p style="color: #aaa;">{{profile.position}}</p>
-            </div>   
+        <md-list-item v-if="username">
+          <md-avatar> <img v-bind:src="avatarLink" /> </md-avatar>
+          <div v-if="profile" class="md-list-item-text">
+            <p style="font-weight: bold; font-size: 1.4em">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </p>
+            <p style="color: #aaa;">{{ profile.position }}</p>
+          </div>
         </md-list-item>
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
 
-        <md-list-item v-for="(channel, index) in channels" :key="channel.id" @click="openService(index)" v-if="(!showServices && showDomain(index)) || (showServices && (groups.includes(channel.name) || channel.type == 'O') && showDomain(index))">
-          <md-icon>{{channel.purpose.icon}}</md-icon>
-          <span class="md-list-item-text">{{channel.display_name.replace(/[!#*@%/.+><"'\\&]/, "")}}</span>
-         <!-- check the channel membership of the current user OR public channel-->
-         <!-- need to fix a case if there is a partial string match -->
-          <md-icon v-if="groups.includes(channel.name) || channel.type == 'O'" style="color: green;">verified_user</md-icon>
+        <md-list-item
+          v-for="(channel, index) in channels"
+          :key="channel.id"
+          @click="openService(index);"
+          v-if="
+            (!showServices && showDomain(index)) ||
+              (showServices &&
+                (groups.includes(channel.name) || channel.type == 'O') &&
+                showDomain(index))
+          "
+        >
+          <md-icon>{{ channel.purpose.icon }}</md-icon>
+          <span class="md-list-item-text">{{
+            channel.display_name.replace(/[!#*@%/.+><"'\\&]/, "")
+          }}</span>
+          <!--
+            check the channel membership of the current user OR public channel
+          -->
+          <!-- need to fix a case if there is a partial string match -->
+          <md-icon
+            v-if="groups.includes(channel.name) || channel.type == 'O'"
+            style="color: green;"
+            >verified_user</md-icon
+          >
           <md-icon v-else style="color: lightgray;">verified_user</md-icon>
-
         </md-list-item>
-
       </md-list>
     </md-drawer>
 
     <!--
-         ----------------------------------------------------------------------
-           PAGE CONTENT                         
-         ----------------------------------------------------------------------
+      ----------------------------------------------------------------------
+        PAGE CONTENT
+      ----------------------------------------------------------------------
     -->
     <md-content>
-      <p id="welcome" v-if="username && !service" >Welcome back, <a @click="onReopen()">{{profile.first_name}} {{profile.last_name}}</a></p>
-      <p v-if="users && !service" class="counter">{{users.length}}</p>
-      <particlesJS/>
-      <img v-if="selected == 'Home'" id="logo" src="https://diglife.com/brand/logo_secondary_home.svg" />
-      <img v-if="selected == 'Projects'" id="logo" src="https://diglife.com/brand/logo_secondary_projects.svg" />
-      <img v-if="selected == 'Operations'" id="logo" src="https://diglife.com/brand/logo_secondary_operations.svg" />
-      <img v-if="selected == 'Friends'" id="logo" src="https://diglife.com/brand/logo_secondary_friends.svg" />
-      <iframe name="theApp" id="theApp" style="display: none; width:100%; height:95vh;" frameBorder="0"></iframe>
+      <p id="welcome" v-if="username && !service">
+        Welcome back,
+        <a @click="onReopen();"
+          >{{ profile.first_name }} {{ profile.last_name }}</a
+        >
+      </p>
+      <p v-if="users && !service" class="counter">{{ users.length }}</p>
+      <Particles />
+      <img
+        v-if="selected == 'Home'"
+        id="logo"
+        src="https://diglife.com/brand/logo_secondary_home.svg"
+      />
+      <img
+        v-if="selected == 'Projects'"
+        id="logo"
+        src="https://diglife.com/brand/logo_secondary_projects.svg"
+      />
+      <img
+        v-if="selected == 'Operations'"
+        id="logo"
+        src="https://diglife.com/brand/logo_secondary_operations.svg"
+      />
+      <img
+        v-if="selected == 'Friends'"
+        id="logo"
+        src="https://diglife.com/brand/logo_secondary_friends.svg"
+      />
+      <iframe
+        name="theApp"
+        id="theApp"
+        style="display: none; width:100%; height:95vh;"
+        frameborder="0"
+      ></iframe>
     </md-content>
-
-  </div><!-- END page-container md-layout-column -->
-
+  </div>
+  <!-- END page-container md-layout-column -->
 </template>
 
 <script>
 import { BASEURL, CHATURL } from "/constants.js";
-import particlesJS from "./Particles";
+import Particles from "./Particles";
+import Tags from "./Tags";
 import Slack from "node-slack";
 export default {
   name: "Navbar",
-  components: { particlesJS },
+  components: { Particles, Tags },
   data: () => ({
     form: {
       username: null
@@ -205,6 +371,7 @@ export default {
     activeUser: false,
     activeAccess: false,
     activeInfo: false,
+    activeTags: true,
     users: "",
     profile: false,
     groups: "",
@@ -213,7 +380,7 @@ export default {
     total: "",
     channel: "",
     showSnackbar: false,
-    invalid: true,
+    invalid: true
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -251,11 +418,15 @@ export default {
       )
       .then(response => (this.groups = response.data));
 
-    function SortByName(x,y) {
-      return ((x.display_name === y.display_name) ? 0 : ((x.display_name > y.display_name) ? 1 : -1 ));
+    function SortByName(x, y) {
+      return x.display_name === y.display_name
+        ? 0
+        : x.display_name > y.display_name
+        ? 1
+        : -1;
     }
 
-    // get all channels for lederbot user and sort them 
+    // get all channels for lederbot user and sort them
     // to build the menu structure for a given domain (team)
     this.axios
       .get(
@@ -263,8 +434,7 @@ export default {
           "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
       )
       .then(response => (this.channels = response.data))
-      .then(response => (this.channels.sort(SortByName)));
-
+      .then(response => this.channels.sort(SortByName));
 
     //  this.axios
     //   .get(
@@ -285,14 +455,13 @@ export default {
       return _.orderBy(this.channel, "display_name");
     },
     invalidate: function() {
-      return (this.invalid === true ? 'md-invalid' : "");
-    },
-   
+      return this.invalid === true ? "md-invalid" : "";
+    }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  MOUNTED - https://vuejs.org/v2/guide/instance.html
-  /////////////////////////////////////////////////////////////////////////////// 
+  ///////////////////////////////////////////////////////////////////////////////
   mounted: function() {
     this.$cookies.config("365d");
     this.showServices = this.$cookies.get("showServices");
@@ -309,9 +478,13 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
-    
     avatarLink2: function(index) {
-      return BASEURL + "webhooks/images/avatar_" + this.members[index].username + ".png";
+      return (
+        BASEURL +
+        "webhooks/images/avatar_" +
+        this.members[index].username +
+        ".png"
+      );
     },
 
     showDomain: function(index) {
@@ -321,21 +494,26 @@ export default {
     },
 
     directMessage: function(member_id) {
-    // create new direct message channel, if not exists
-    this.axios
-      .get(
-        BASEURL + "webhooks/portal_direct_message.php?file=base-diglife.php&user_id="+this.profile.id+"&member_id="+member_id
-      )
-      .then(response => (this.directUser = response.data))
-      .then(response => (window.open(
+      // create new direct message channel, if not exists
+      this.axios
+        .get(
+          BASEURL +
+            "webhooks/portal_direct_message.php?file=base-diglife.php&user_id=" +
+            this.profile.id +
+            "&member_id=" +
+            member_id
+        )
+        .then(response => (this.directUser = response.data))
+        .then(response =>
+          window.open(
             CHATURL + "/the-collective/channels/" + this.directUser.name,
             "theApp"
-          ))
-      );
-    this.activeAccess = false;
-    this.showNavigation = false;
-    document.getElementsByClassName("md-overlay")[0].style.display = "none";
-     },
+          )
+        );
+      this.activeAccess = false;
+      this.showNavigation = false;
+      document.getElementsByClassName("md-overlay")[0].style.display = "none";
+    },
 
     cancelAccess: function() {
       this.activeAccess = false;
@@ -374,43 +552,49 @@ export default {
       this.showSnackbar = true;
     },
 
+    onTagsConfirm: function() {},
+
     onConfirm: function() {
-      if (!this.username || !JSON.stringify(this.users).includes("\"username\":\""+this.username.toLowerCase()+"\"")) {  
-        this.activeUser= true; document.getElementById("username").classList.add("md-invalid") }
-      else {
-        this.activeUser= false;
-         document.getElementById("username").classList.remove("md-invalid")
+      if (
+        !this.username ||
+        !JSON.stringify(this.users).includes(
+          '"username":"' + this.username.toLowerCase() + '"'
+        )
+      ) {
+        this.activeUser = true;
+        document.getElementById("username").classList.add("md-invalid");
+      } else {
+        this.activeUser = false;
+        document.getElementById("username").classList.remove("md-invalid");
         this.username = this.username.replace("@", "").toLowerCase();
         // cookies are not stored on mobile devices, new prommpt for every session
         this.$cookies.set("username", this.username);
 
         // update groups and profile for newly logged in user (no cookie set)
         this.axios
-        .get(
-          BASEURL +
-            "webhooks/portal_groups.php?file=base-diglife.php&username=" +
-            this.username
-        )
-        .then(response => (this.groups = response.data))
-        .then(
-          response =>
-            (this.profile = this.users.find(item => {
-              return item.username === this.username;
-            }))
-        );
+          .get(
+            BASEURL +
+              "webhooks/portal_groups.php?file=base-diglife.php&username=" +
+              this.username
+          )
+          .then(response => (this.groups = response.data))
+          .then(
+            response =>
+              (this.profile = this.users.find(item => {
+                return item.username === this.username;
+              }))
+          );
 
         // update theme for user
-        this.axios
-        .get(
+        this.axios.get(
           BASEURL +
             "webhooks/portal_prefs.php?file=base-diglife.php&username=" +
             this.username
-        )
+        );
 
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();
       }
-
     },
 
     onReopen: function() {
@@ -485,7 +669,7 @@ export default {
       //var overlay = document.getElementsByClassName("md-overlay")[0];
       //overlay.parentNode.removeChild(overlay);
 
-       document.getElementById("drawer").classList.remove("md-active");
+      document.getElementById("drawer").classList.remove("md-active");
       this.showNavigation = false;
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
@@ -494,11 +678,12 @@ export default {
       // get all users (members) for channel
       // to show in members tab
       this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_members.php?file=base-diglife.php&channel_id="+this.channel.id
-      )
-      .then(response => (this.members = response.data));
+        .get(
+          BASEURL +
+            "webhooks/portal_members.php?file=base-diglife.php&channel_id=" +
+            this.channel.id
+        )
+        .then(response => (this.members = response.data));
 
       var element = document.getElementById("logo");
       element.style.display = "none";
@@ -564,7 +749,7 @@ export default {
   font-size: 24px !important;
   margin-left: 0px !important;
   color: #white !important;
-  font-wei ght: bold !important;
+  font-weight: bold !important;
 }
 .md-toolbar {
   background-color: #00b0a0 !important;
@@ -584,15 +769,15 @@ export default {
 }
 
 .md-checked .md-switch-container {
-      background-color: #6DCEC5 !important; /* not selected switch color */
+  background-color: #6dcec5 !important; /* not selected switch color */
 }
 
 .md-checked .md-switch-thumb {
-    background-color: #fff !important; /* 00E4CF */
+  background-color: #fff !important; /* 00E4CF */
 }
 
 .md-switch-thumb {
-    background-color: #6DCEC5 !important; /* 00E4CF */
+  background-color: #6dcec5 !important; /* 00E4CF */
 }
 
 .md-fab {

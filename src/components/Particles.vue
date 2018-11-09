@@ -1,11 +1,11 @@
 <template>
-  <div id='particles-js'></div>
+  <div id="particles-js"></div>
 </template>
 
 <script>
 //https://vincentgarreau.com/particles.js/
 export default {
-  name: "ParticlesJS",
+  name: "Particles",
 
   mounted() {
     require("particles.js");
@@ -21,7 +21,7 @@ export default {
       particlesJS("particles-js", {
         particles: {
           number: {
-            value: 50 || this.$cookies.get('particles'),
+            value: 50 || this.$cookies.get("particles"),
             density: {
               enable: true,
               value_area: 800

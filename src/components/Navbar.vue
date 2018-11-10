@@ -16,7 +16,7 @@
       >
     </md-snackbar>
 
-    <md-dialog :md-active.sync="activeTags">
+    <md-dialog :md-active.sync="activeSettings">
       <md-dialog-title
         >My Tags<md-icon style="color: #00b0a0">label</md-icon></md-dialog-title
       >
@@ -34,7 +34,7 @@
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
             class="md-success md-raised"
-            @click="onTagsConfirm();"
+            @click="onSettingsConfirm();"
             style="background: #00b0a0; color: white;"
             >Save Tags</md-button
           >
@@ -272,6 +272,14 @@
             </p>
             <p style="color: #aaa;">{{ profile.position }}</p>
           </div>
+          <md-button
+            title="Open Settings"
+            @click="openSettings();"
+            class="md-icon-button md-list-action"
+          >
+            <!-- Create a direct message channel -->
+            <md-icon>settings</md-icon>
+          </md-button>
         </md-list-item>
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
@@ -371,7 +379,7 @@ export default {
     activeUser: false,
     activeAccess: false,
     activeInfo: false,
-    activeTags: true,
+    activeSettings: false,
     users: "",
     profile: false,
     groups: "",
@@ -451,9 +459,9 @@ export default {
       return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
     },
     //https://lodash.com/
-    orderedUsers: function() {
-      return _.orderBy(this.channel, "display_name");
-    },
+    // orderedUsers: function() {
+    //   return _.orderBy(this.channel, "display_name");
+    // },
     invalidate: function() {
       return this.invalid === true ? "md-invalid" : "";
     }
@@ -525,6 +533,11 @@ export default {
       element.style.display = "block";
     },
 
+    openSettings: function() {
+      document.getElementById("drawer").classList.remove("md-active");
+      this.showNavigation = false;
+      this.activeSettings = true;
+    },
     requestAccess: function() {
       this.activeAccess = false;
 
@@ -552,7 +565,9 @@ export default {
       this.showSnackbar = true;
     },
 
-    onTagsConfirm: function() {},
+    onSettingsConfirm: function() {
+      this.activeSettings = false;
+    },
 
     onConfirm: function() {
       if (

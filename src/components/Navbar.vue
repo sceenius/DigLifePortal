@@ -36,7 +36,7 @@
             class="md-success md-raised"
             @click="onTagsConfirm();"
             style="background: #00b0a0; color: white;"
-            ><md-icon style="color: white;">label</md-icon> Save</md-button
+            >Save Tags</md-button
           >
         </md-dialog-actions>
       </div>

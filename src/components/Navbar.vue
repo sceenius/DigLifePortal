@@ -17,29 +17,30 @@
     </md-snackbar>
 
     <md-dialog :md-active.sync="activeSettings">
-      <md-dialog-title
-        >My Tags<md-icon style="color: #00b0a0">label</md-icon></md-dialog-title
-      >
-      <div style="padding: 0 25px ;">
-        <p>
-          Please click on the <b>Add Tag</b> link below and add your personal
-          tags (hit enter to add or click on the X to delete).Tags are very
-          important for the Collective as they describe your skillsets,
-          expertise and areas of interest. We regularly update tag lists so you
-          can match your tags with existing tags. Also, try to keep your tags
-          up-to-date since we will be using them for different services in the
-          Collective.
-        </p>
-        <Tags />
-        <md-dialog-actions style="padding: 25px 0;">
-          <md-button
-            class="md-success md-raised"
-            @click="onSettingsConfirm();"
-            style="background: #00b0a0; color: white;"
-            >Save Tags</md-button
-          >
-        </md-dialog-actions>
-      </div>
+      <md-dialog-title>My Settings</md-dialog-title>
+      <md-tabs md-dynamic-height>
+        <md-tab md-label="Personal Tags">
+          <div style="padding: 0 25px ;">
+            <p>
+              Please click on the <b>Add Tag</b> link below and add your
+              personal tags (hit enter to add, click on a tag to edit, or X to
+              delete).Tags are very important as they describe your skillsets,
+              expertise and areas of interest and can be used to personalize
+              services. Please keep your tags up-to-date!
+            </p>
+            <Tags />
+            <md-dialog-actions style="padding: 25px 0;">
+              <md-button
+                class="md-success md-raised"
+                @click="onSettingsConfirm();"
+                style="background: #00b0a0; color: white;"
+                ><md-icon style="color: white;">label</md-icon>&nbsp;Save
+                Tags</md-button
+              >
+            </md-dialog-actions>
+          </div>
+        </md-tab>
+      </md-tabs>
     </md-dialog>
 
     <md-dialog :md-active.sync="activeUser">
@@ -251,6 +252,7 @@
     <md-drawer :md-active.sync="showNavigation" id="drawer">
       <md-toolbar class="md-transparent" md-elevation="0">
         <md-switch
+          id="switch"
           class="md-toolbar-section-end"
           title="show only my services"
           v-model="showServices"
@@ -373,13 +375,14 @@ export default {
     showNavigation: false,
     showSidepanel: false,
     showServices: false,
-    selected: "Home",
-    service: "",
-    username: "",
+    showSnackbar: false,
     activeUser: false,
     activeAccess: false,
     activeInfo: false,
     activeSettings: false,
+    selected: "Home",
+    service: "",
+    username: "",
     users: "",
     profile: false,
     groups: "",
@@ -387,7 +390,6 @@ export default {
     members: "",
     total: "",
     channel: "",
-    showSnackbar: false,
     invalid: true
   }),
 
@@ -398,20 +400,17 @@ export default {
     this.axios
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife.php")
       .then(response => (this.users = response.data))
-
       .then(
         response =>
           (this.profile = this.users.find(item => {
             return item.username === this.$cookies.get("username");
           }))
       )
-
       .then(
         response =>
           (this.username =
             typeof this.profile === "undefined" ? "" : this.profile.username)
       )
-
       .then(
         response =>
           (this.activeUser = typeof this.profile === "undefined" ? true : false)
@@ -472,14 +471,22 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   mounted: function() {
     this.$cookies.config("365d");
+    // Cookies are strings, so need to convert to boolean!
     this.showServices = this.$cookies.get("showServices");
+    if (this.showServices === "true") {
+      this.showServices = true;
+    } else {
+      this.showServices = false;
+    }
+    //this.$forceUpdate();
   },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   beforeDestroy: function() {
-    this.$cookies.set("showServices", this.showServices); // not working
+    //this.$cookies.set("showServices", this.showServices); not working
+    console.log(this.showServices);
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -538,6 +545,7 @@ export default {
       this.showNavigation = false;
       this.activeSettings = true;
     },
+
     requestAccess: function() {
       this.activeAccess = false;
 
@@ -567,6 +575,8 @@ export default {
 
     onSettingsConfirm: function() {
       this.activeSettings = false;
+      console.log(this.showServices);
+      this.$cookies.set("showServices", this.showServices); // not working
     },
 
     onConfirm: function() {
@@ -598,7 +608,8 @@ export default {
               (this.profile = this.users.find(item => {
                 return item.username === this.username;
               }))
-          );
+          )
+          .then(response => console.log(this.groups));
 
         // update theme for user
         this.axios.get(
@@ -683,7 +694,6 @@ export default {
       //document.getElementsByClassName("md-overlay")[0].style.display = "none";
       //var overlay = document.getElementsByClassName("md-overlay")[0];
       //overlay.parentNode.removeChild(overlay);
-
       document.getElementById("drawer").classList.remove("md-active");
       this.showNavigation = false;
       this.service = this.channels[index].display_name;

@@ -472,6 +472,7 @@ export default {
   mounted: function() {
     this.$cookies.config("365d");
     // Cookies are strings, so need to convert to boolean!
+    // need to find a place to save cookie (e.g. My Settings)
     this.showServices = this.$cookies.get("showServices");
     if (this.showServices === "true") {
       this.showServices = true;

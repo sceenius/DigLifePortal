@@ -6,12 +6,28 @@
       :allow-edit-tags="true"
       :autocomplete-items="filteredItems"
       @tags-changed="newTags => (tags = newTags)"
-    />
+      @before-adding-tag="formatTag"
+      @adding-duplicate="addDupe"
+    >
+      <div
+        slot="tagLeft"
+        class="my-tag-left"
+        slot-scope="props"
+        @click="props.performOpenEdit(props.index);"
+      >
+        <md-icon
+          v-if="props.tag.verified"
+          style="color: white; margin: -2px 3px 0 0; font-size: 20px !important;"
+          >verified_user</md-icon
+        >
+      </div>
+    </vue-tags-input>
 
     <div style="overflow: auto; height: 45vh;">
       <p style="margin: -20px 0px 10px -10px ">Suggested tags:</p>
       <md-chip
         style="margin: 3px;"
+        v-bind:style="{ opacity: 1 - 1 / tag.frequency + 0.5 }"
         :md-clickable="true"
         v-for="(tag, index) in autocompleteItems"
         :key="tag.id"
@@ -36,77 +52,77 @@ export default {
     return {
       tag: "",
       tags: [
-        { text: "Knowledge Management" },
-        { text: "Web Design" },
-        { text: "Social Collaboration" },
+        { text: "Knowledge Management", verified: true },
+        { text: "Web Design", verified: true },
+        { text: "Social Collaboration", verified: true },
         { text: "Governance" },
-        { text: "Social Ledger" }
+        { text: "Social Ledger", verified: true }
       ],
       autocompleteItems: [
         { text: "Accessibility", frequency: 1 },
-        { text: "Administration", frequency: 1 },
-        { text: "Artificial Intelligence", frequency: 1 },
-        { text: "Authentication", frequency: 1 },
-        { text: "Automation", frequency: 1 },
+        { text: "Administration", frequency: 2 },
+        { text: "Artificial Intelligence", frequency: 4 },
+        { text: "Authentication", frequency: 8 },
+        { text: "Automation", frequency: 3 },
         { text: "Biometrics", frequency: 1 },
-        { text: "Bitcoin", frequency: 1 },
+        { text: "Bitcoin", frequency: 3 },
         { text: "Blockchain", frequency: 1 },
-        { text: "Collective Intelligence", frequency: 1 },
+        { text: "Collective Intelligence", frequency: 5 },
         { text: "Communication", frequency: 1 },
         { text: "Compliance", frequency: 1 },
         { text: "Computer Science", frequency: 1 },
-        { text: "Conflict Resolution", frequency: 1 },
+        { text: "Conflict Resolution", frequency: 7 },
         { text: "Co-operative", frequency: 1 },
-        { text: "Cryptocurrency", frequency: 1 },
-        { text: "Data Analysis", frequency: 1 },
+        { text: "Cryptocurrency", frequency: 6 },
+        { text: "Data Analysis", frequency: 2 },
         { text: "Decentralization", frequency: 1 },
-        { text: "Decision Making", frequency: 1 },
-        { text: "Education Systems", frequency: 1 },
-        { text: "Finance Tech", frequency: 1 },
+        { text: "Decision Making", frequency: 2 },
+        { text: "Education Systems", frequency: 8 },
+        { text: "Finance Tech", frequency: 3 },
         { text: "GDPR", frequency: 1 },
-        { text: "Governance", frequency: 1 },
+        { text: "Governance", frequency: 8 },
         { text: "Healthcare Systems", frequency: 1 },
-        { text: "Human Intelligence", frequency: 1 },
-        { text: "Identity", frequency: 1 },
-        { text: "Inclusion", frequency: 1 },
-        { text: "Interviewing", frequency: 1 },
+        { text: "Human Intelligence", frequency: 8 },
+        { text: "Identity", frequency: 3 },
+        { text: "Inclusion", frequency: 3 },
+        { text: "Interviewing", frequency: 8 },
         { text: "Knowledge Management", frequency: 1 },
         { text: "Listening", frequency: 1 },
-        { text: "Marketing", frequency: 1 },
+        { text: "Marketing", frequency: 8 },
         { text: "Marketing Tech", frequency: 1 },
-        { text: "Member Development", frequency: 1 },
-        { text: "Member Engagement", frequency: 1 },
-        { text: "Onboarding", frequency: 1 },
-        { text: "Open source software", frequency: 1 },
-        { text: "Orientation", frequency: 1 },
+        { text: "Member Development", frequency: 8 },
+        { text: "Member Engagement", frequency: 8 },
+        { text: "Onboarding", frequency: 3 },
+        { text: "Open source software", frequency: 8 },
+        { text: "Orientation", frequency: 8 },
         { text: "Peer-to-peer networks", frequency: 1 },
         { text: "Presentation", frequency: 1 },
         { text: "Privacy", frequency: 1 },
-        { text: "Programming", frequency: 1 },
-        { text: "Project Management", frequency: 1 },
-        { text: "Qualitative Analysis", frequency: 1 },
+        { text: "Programming", frequency: 2 },
+        { text: "Project Management", frequency: 8 },
+        { text: "Qualitative Analysis", frequency: 8 },
         { text: "Quantitative Analysis", frequency: 1 },
         { text: "Quantum Informatics", frequency: 1 },
         { text: "Robotics", frequency: 1 },
-        { text: "Self-organization", frequency: 1 },
+        { text: "Self-organization", frequency: 2 },
         { text: "Semantic Analysis", frequency: 1 },
-        { text: "Social Awareness", frequency: 1 },
-        { text: "Social Collaboration", frequency: 1 },
+        { text: "Social Awareness", frequency: 2 },
+        { text: "Social Collaboration", frequency: 3 },
         { text: "Social intelligence", frequency: 1 },
-        { text: "Social Media", frequency: 1 },
-        { text: "Social Network Analysis", frequency: 1 },
-        { text: "Sociocracy", frequency: 1 },
+        { text: "Social Media", frequency: 5 },
+        { text: "Social Network Analysis", frequency: 5 },
+        { text: "Sociocracy", frequency: 4 },
         { text: "Speaking", frequency: 1 },
-        { text: "Statistics", frequency: 1 },
-        { text: "Surveillance", frequency: 1 },
+        { text: "Statistics", frequency: 5 },
+        { text: "Surveillance", frequency: 5 },
         { text: "Systems Architecture", frequency: 1 },
         { text: "Tor", frequency: 1 },
-        { text: "Usability", frequency: 1 },
+        { text: "Usability", frequency: 4 },
         { text: "User Experience", frequency: 1 },
-        { text: "User Interface Design", frequency: 1 },
-        { text: "Visualization", frequency: 1 },
-        { text: "Web Design ", frequency: 1 },
-        { text: "Web Development", frequency: 1 },
+        { text: "User Interface Design", frequency: 3 },
+        { text: "Visualization", frequency: 2 },
+        { text: "Web Design ", frequency: 3 },
+        { text: "Web Development", frequency: 8 },
         { text: "Writing", frequency: 1 }
       ]
     };
@@ -123,7 +139,26 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     addTag: function(index) {
-      this.tags.push(this.autocompleteItems[index]);
+      // check for dupes in This.tags
+      if (
+        !JSON.stringify(this.tags).includes(
+          '"' + this.autocompleteItems[index].text + '"'
+        )
+      ) {
+        this.tags.push(this.autocompleteItems[index]);
+      } else {
+        alert("This is a duplicate!");
+      }
+    },
+    formatTag(obj) {
+      let words = obj.tag.text.split(" ").filter(str => str !== "");
+      // capitalize
+      words = words.map(str => str[0].toUpperCase() + str.slice(1));
+      obj.tag.text = words.join(" ");
+      obj.addTag();
+    },
+    addDupe(obj) {
+      alert("This is a duplicate!");
     }
   }
 };
@@ -158,5 +193,9 @@ li.tag {
 
 .md-chip {
   cursor: pointer;
+}
+
+.shading1 {
+  opacity: 0.5;
 }
 </style>

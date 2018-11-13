@@ -22,11 +22,12 @@
         <md-tab md-label="Personal Tags">
           <div style="padding: 0 25px ;">
             <p>
-              Please click on the <b>Add Tag</b> link below and add your
-              personal tags (hit enter to add, click on a tag to edit, or X to
-              delete).Tags are very important as they describe your skillsets,
-              expertise and areas of interest and can be used to personalize
-              services. Please keep your tags up-to-date!
+              To build your Personal Tag list, please click on either
+              <b>Suggested Tags</b> or <b>Add Tag</b> (then hit enter to add,
+              click on a tag to edit, or X to delete).Tags are very important as
+              they describe your skillsets, expertise and areas of interest and
+              can be used to personalize services. Please keep your tags
+              up-to-date!
             </p>
             <Tags />
             <md-dialog-actions style="padding: 25px 0;">

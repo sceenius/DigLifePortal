@@ -24,7 +24,7 @@
       </div>
     </vue-tags-input>
 
-    <div style="overflow: auto; height: 45vh;">
+    <div>
       <p style="margin: -20px 0px 10px -10px ">Suggested tags:</p>
       <md-chip
         style="margin: 3px;"

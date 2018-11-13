@@ -19,8 +19,10 @@
     <md-dialog :md-active.sync="activeSettings">
       <md-dialog-title>My Settings</md-dialog-title>
       <md-tabs md-dynamic-height>
-        <md-tab md-label="Personal Tags">
-          <div style="padding: 0 25px ;">
+        <md-tab md-label="Tags">
+          <div
+            style="margin: 20px 0 0 10px; width: 95%; overflow: auto; height: 55vh !important;"
+          >
             <p>
               To build your Personal Tag list, please click on either
               <b>Suggested Tags</b> or <b>Add Tag</b> (then hit enter to add,
@@ -40,6 +42,25 @@
               >
             </md-dialog-actions>
           </div>
+        </md-tab>
+        <md-tab md-label="Groups">
+          <md-list
+            style="margin: 20px 0 0 10px; width: 90%; overflow: auto; height: 55vh !important;"
+          >
+            <md-list-item
+              v-for="(group, index) in groups.channels"
+              :key="index"
+            >
+              <span class="md-list-item-text">{{ group }}</span>
+              <md-button
+                @click="directMessage(index);"
+                class="md-icon-button md-list-action"
+              >
+                <!-- Create a direct message channel -->
+                <md-icon class="md-primary">chat_bubble</md-icon>
+              </md-button>
+            </md-list-item>
+          </md-list>
         </md-tab>
       </md-tabs>
     </md-dialog>
@@ -312,6 +333,7 @@
             groups is a promise that comes in later, hence part of the condition
           -->
           <md-icon
+            title="Verfied member of this group"
             v-if="
               groups &&
                 (JSON.stringify(groups.channels).includes(channel.name) ||
@@ -320,7 +342,37 @@
             style="color: green;"
             >verified_user</md-icon
           >
-          <md-icon v-else style="color: lightgray;">verified_user</md-icon>
+          <md-icon
+            title="Suggested group to join"
+            style="color: orange;"
+            v-if="
+              groups &&
+                channel.purpose.tags &&
+                (groups.tags.indexOf(channel.purpose.tags[0]) ||
+                  groups.tags.indexOf(channel.purpose.tags[1]) ||
+                  groups.tags.indexOf(channel.purpose.tags[2]) ||
+                  groups.tags.indexOf(channel.purpose.tags[3]) ||
+                  groups.tags.indexOf(channel.purpose.tags[4]))
+            "
+            >verified_user</md-icon
+          >
+          <md-icon
+            title="Not a member of this group"
+            v-if="
+              groups &&
+                !JSON.stringify(groups.channels).includes(channel.name) &&
+                channel.type !== 'O' &&
+                (!channel.purpose.tags ||
+                  (channel.purpose.tags &&
+                    !groups.tags.indexOf(channel.purpose.tags[0]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[1]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[2]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[3]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[4])))
+            "
+            style="color: lightgray;"
+            >verified_user</md-icon
+          >
         </md-list-item>
       </md-list>
     </md-drawer>
@@ -427,6 +479,7 @@ export default {
       );
 
     // get all channels and tags for current user
+    // BUG: the channels need a domain prefix, since the can reappear
     this.axios
       .get(
         BASEURL +

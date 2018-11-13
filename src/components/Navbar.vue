@@ -292,10 +292,12 @@
           :key="channel.id"
           @click="openService(index);"
           v-if="
-            (!showServices && showDomain(index)) ||
-              (showServices &&
-                (groups.includes(channel.name) || channel.type == 'O') &&
-                showDomain(index))
+            groups &&
+              ((!showServices && showDomain(index)) ||
+                (showServices &&
+                  (JSON.stringify(groups.channels).includes(channel.name) ||
+                    channel.type == 'O') &&
+                  showDomain(index)))
           "
         >
           <md-icon>{{ channel.purpose.icon }}</md-icon>
@@ -306,8 +308,15 @@
             check the channel membership of the current user OR public channel
           -->
           <!-- need to fix a case if there is a partial string match -->
+          <!--
+            groups is a promise that comes in later, hence part of the condition
+          -->
           <md-icon
-            v-if="groups.includes(channel.name) || channel.type == 'O'"
+            v-if="
+              groups &&
+                (JSON.stringify(groups.channels).includes(channel.name) ||
+                  channel.type == 'O')
+            "
             style="color: green;"
             >verified_user</md-icon
           >
@@ -421,7 +430,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife.php&username=" +
+          "webhooks/portal_groups2.php?file=base-diglife.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
@@ -601,7 +610,7 @@ export default {
         this.axios
           .get(
             BASEURL +
-              "webhooks/portal_groups.php?file=base-diglife.php&username=" +
+              "webhooks/portal_groups2.php?file=base-diglife.php&username=" +
               this.username
           )
           .then(response => (this.groups = response.data))
@@ -610,8 +619,7 @@ export default {
               (this.profile = this.users.find(item => {
                 return item.username === this.username;
               }))
-          )
-          .then(response => console.log(this.groups));
+          );
 
         // update theme for user
         this.axios.get(
@@ -620,6 +628,7 @@ export default {
             this.username
         );
 
+        console.log(JSON.stringify(this.groups.channels));
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();
       }
@@ -692,18 +701,12 @@ export default {
     },
 
     openService: function(index) {
-      // remove overlay, beware, this will kill the menu
-      //document.getElementsByClassName("md-overlay")[0].style.display = "none";
-      //var overlay = document.getElementsByClassName("md-overlay")[0];
-      //overlay.parentNode.removeChild(overlay);
       document.getElementById("drawer").classList.remove("md-active");
       this.showNavigation = false;
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
-      //this.channel.namebrackets = '{'+this.channel.name+'}';
 
-      // get all users (members) for channel
-      // to show in members tab
+      // get all users (members) for channel and show in members tab
       this.axios
         .get(
           BASEURL +
@@ -712,6 +715,7 @@ export default {
         )
         .then(response => (this.members = response.data));
 
+      // hide and show elements on UI
       var element = document.getElementById("logo");
       element.style.display = "none";
 
@@ -721,14 +725,17 @@ export default {
       element = document.getElementById("theApp");
       element.style.display = "block";
 
+      // open app link or request access dialog
       if (
-        this.groups.includes(this.channels[index].name) ||
+        JSON.stringify(this.groups.channels).includes(
+          this.channels[index].name
+        ) ||
         this.channels[index].type === "O"
       ) {
         // Access has been granted
         window.open(this.channels[index].purpose.link, "theApp");
       } else {
-        // Open dialoug to request access
+        // Open dialog to request access
         this.activeAccess = true;
       }
     }

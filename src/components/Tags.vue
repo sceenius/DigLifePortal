@@ -15,8 +15,9 @@
         slot-scope="props"
         @click="props.performOpenEdit(props.index);"
       >
+        <!-- v-if="props.tag.verified" -->
         <md-icon
-          v-if="props.tag.verified"
+          v-if="groups && JSON.stringify(groups.tags).includes(props.tag.text)"
           style="color: white; margin: -2px 3px 0 0; font-size: 20px !important;"
           >verified_user</md-icon
         >
@@ -42,6 +43,7 @@
 <script>
 // http://www.vue-tags-input.com/
 import VueTagsInput from "@johmun/vue-tags-input";
+import { BASEURL, CHATURL } from "/constants.js";
 
 export default {
   name: "Tags",
@@ -51,6 +53,7 @@ export default {
   data() {
     return {
       tag: "",
+      groups: "",
       tags: [
         { text: "Knowledge Management", verified: true },
         { text: "Web Design", verified: true },
@@ -184,6 +187,18 @@ export default {
         { text: "Writing", frequency: 2 }
       ]
     };
+  },
+  ///////////////////////////////////////////////////////////////////////////////
+  //  CREATED - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
+  created: function() {
+    this.axios
+      .get(
+        BASEURL +
+          "webhooks/portal_groups2.php?file=base-diglife.php&username=" +
+          this.$cookies.get("username")
+      )
+      .then(response => (this.groups = response.data));
   },
   computed: {
     filteredItems() {

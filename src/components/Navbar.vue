@@ -426,7 +426,7 @@ export default {
           (this.activeUser = typeof this.profile === "undefined" ? true : false)
       );
 
-    // get all channels for current user
+    // get all channels and tags for current user
     this.axios
       .get(
         BASEURL +

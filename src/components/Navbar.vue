@@ -2,7 +2,7 @@
   <div class="page-container md-layout-column">
     <!--
       ----------------------------------------------------------------------
-        DIALOG BOXES  - https://vuematerial.io/components/dialog
+        SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
     <md-snackbar
@@ -16,6 +16,22 @@
       >
     </md-snackbar>
 
+    <md-snackbar
+      :md-duration="6000"
+      :md-active.sync="showProfileReminder"
+      md-persistent
+    >
+      <span>Please update your personal profile!</span>
+      <md-button class="md-primary" @click="activeSettings = true;"
+        >Do now</md-button
+      >
+    </md-snackbar>
+
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES  - https://vuematerial.io/components/dialog
+      ----------------------------------------------------------------------
+    -->
     <md-dialog :md-active.sync="activeSettings">
       <md-dialog-title>My Settings</md-dialog-title>
       <md-tabs md-dynamic-height>
@@ -72,9 +88,9 @@
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
-        If you are a member of DigLife, please use your Mattermost username to
-        log into the portal. If you are not a member yet,
-        <a href="https://diglife.com/join-us/">join us!</a><br /><br />
+        If you are a member of the Digital Life Collective, please use your
+        Mattermost username to log into the portal. If you are not a member yet,
+        <a href="https://diglife.com/join-us/"><u>join us</u>!</a><br /><br />
         <md-field id="username">
           <label>Username</label>
           <md-input
@@ -340,6 +356,7 @@
             groups is a promise that comes in later, hence part of the condition
           -->
           <md-icon
+            title="Verfied member of this group"
             v-if="
               groups &&
                 (JSON.stringify(groups.channels).includes(channel.name) ||
@@ -348,7 +365,37 @@
             style="color: green;"
             >verified_user</md-icon
           >
-          <md-icon v-else style="color: lightgray;">verified_user</md-icon>
+          <md-icon
+            title="Suggested group to join"
+            style="color: orange;"
+            v-if="
+              groups &&
+                channel.purpose.tags &&
+                (groups.tags.indexOf(channel.purpose.tags[0]) ||
+                  groups.tags.indexOf(channel.purpose.tags[1]) ||
+                  groups.tags.indexOf(channel.purpose.tags[2]) ||
+                  groups.tags.indexOf(channel.purpose.tags[3]) ||
+                  groups.tags.indexOf(channel.purpose.tags[4]))
+            "
+            >verified_user</md-icon
+          >
+          <md-icon
+            title="Not a member of this group"
+            v-if="
+              groups &&
+                !JSON.stringify(groups.channels).includes(channel.name) &&
+                channel.type !== 'O' &&
+                (!channel.purpose.tags ||
+                  (channel.purpose.tags &&
+                    !groups.tags.indexOf(channel.purpose.tags[0]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[1]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[2]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[3]) &&
+                    !groups.tags.indexOf(channel.purpose.tags[4])))
+            "
+            style="color: lightgray;"
+            >verified_user</md-icon
+          >
         </md-list-item>
       </md-list>
     </md-drawer>
@@ -414,6 +461,7 @@ export default {
     showSidepanel: false,
     showServices: false,
     showSnackbar: false,
+    showProfileReminder: false,
     activeUser: false,
     activeAccess: false,
     activeInfo: false,
@@ -658,6 +706,7 @@ export default {
         );
 
         console.log(JSON.stringify(this.groups.channels));
+        this.showProfileReminder = true;
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();
       }

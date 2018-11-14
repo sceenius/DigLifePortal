@@ -25,7 +25,7 @@
     </vue-tags-input>
 
     <div>
-      <p style="margin: -20px 0px 10px -10px ">Suggested tags:</p>
+      <p>Suggested tags:</p>
       <md-chip
         style="margin: 3px;"
         v-bind:style="{ opacity: tag.frequency / 10 + 0.1 }"

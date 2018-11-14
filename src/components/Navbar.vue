@@ -32,16 +32,16 @@
               up-to-date!
             </p>
             <Tags />
-            <md-dialog-actions style="padding: 25px 0;">
-              <md-button
-                class="md-success md-raised"
-                @click="onSettingsConfirm();"
-                style="background: #00b0a0; color: white;"
-                ><md-icon style="color: white;">label</md-icon>&nbsp;Save
-                Tags</md-button
-              >
-            </md-dialog-actions>
           </div>
+          <md-dialog-actions style="padding: 25px;">
+            <md-button
+              class="md-success md-raised"
+              @click="onSettingsConfirm();"
+              style="background: #00b0a0; color: white;"
+              ><md-icon style="color: white;">label</md-icon>&nbsp;Save
+              Tags</md-button
+            >
+          </md-dialog-actions>
         </md-tab>
         <md-tab md-label="Groups">
           <md-list
@@ -72,6 +72,9 @@
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
+        If you are a member of DigLife, please use your Mattermost username to
+        log into the portal. If you are not a member yet,
+        <a href="https://diglife.com/join-us/">join us!</a><br /><br />
         <md-field id="username">
           <label>Username</label>
           <md-input
@@ -813,6 +816,11 @@ export default {
 }
 .md-toolbar {
   background-color: #00b0a0 !important;
+}
+
+.md-tabs-container {
+  height: 100% !important;
+  padding: 10px !important;
 }
 
 .md-tab p {

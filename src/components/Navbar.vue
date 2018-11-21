@@ -356,15 +356,15 @@
             groups is a promise that comes in later, hence part of the condition
           -->
           <md-icon
-            title="Verfied member of this group"
+            title="Verified member of this group"
+            style="color: green;"
             v-if="
               groups &&
                 (JSON.stringify(groups.channels).includes(channel.name) ||
                   channel.type == 'O')
             "
-            style="color: green;"
-            >verified_user</md-icon
-          >
+            >verified_user
+          </md-icon>
           <md-icon
             title="Suggested group to join"
             style="color: orange;"
@@ -377,10 +377,11 @@
                   groups.tags.indexOf(channel.purpose.tags[3]) ||
                   groups.tags.indexOf(channel.purpose.tags[4]))
             "
-            >verified_user</md-icon
-          >
+            >verified_user
+          </md-icon>
           <md-icon
             title="Not a member of this group"
+            style="color: lightgray;"
             v-if="
               groups &&
                 !JSON.stringify(groups.channels).includes(channel.name) &&
@@ -393,9 +394,8 @@
                     !groups.tags.indexOf(channel.purpose.tags[3]) &&
                     !groups.tags.indexOf(channel.purpose.tags[4])))
             "
-            style="color: lightgray;"
-            >verified_user</md-icon
-          >
+            >verified_user
+          </md-icon>
         </md-list-item>
       </md-list>
     </md-drawer>
@@ -484,7 +484,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.axios
-      .get(BASEURL + "webhooks/portal_users.php?file=base-diglife.php")
+      .get(BASEURL + "portal/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
       .then(
         response =>
@@ -507,7 +507,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_groups2.php?file=base-diglife.php&username=" +
+          "portal/portal_groups2.php?file=base-diglife-coop.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
@@ -525,7 +525,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife.php&user_id=r1jriqbx6tnkddxjgek5dn7xxa"
+          "portal/portal_channels.php?file=base-diglife-coop.php&user_id=383gpz7g4f8gjjby3om9j58fna"
       )
       .then(response => (this.channels = response.data))
       .then(response => this.channels.sort(SortByName));
@@ -601,7 +601,7 @@ export default {
       this.axios
         .get(
           BASEURL +
-            "webhooks/portal_direct_message.php?file=base-diglife.php&user_id=" +
+            "portal/portal_direct_message.php?file=base-diglife-coop.php&user_id=" +
             this.profile.id +
             "&member_id=" +
             member_id
@@ -687,7 +687,7 @@ export default {
         this.axios
           .get(
             BASEURL +
-              "webhooks/portal_groups2.php?file=base-diglife.php&username=" +
+              "portal/portal_groups2.php?file=base-diglife-coop.php&username=" +
               this.username
           )
           .then(response => (this.groups = response.data))
@@ -701,7 +701,7 @@ export default {
         // update theme for user
         this.axios.get(
           BASEURL +
-            "webhooks/portal_prefs.php?file=base-diglife.php&username=" +
+            "portal/portal_prefs.php?file=base-diglife-coop.php&username=" +
             this.username
         );
 
@@ -788,7 +788,7 @@ export default {
       this.axios
         .get(
           BASEURL +
-            "webhooks/portal_members.php?file=base-diglife.php&channel_id=" +
+            "portal/portal_members.php?file=base-diglife-coop.php&channel_id=" +
             this.channel.id
         )
         .then(response => (this.members = response.data));

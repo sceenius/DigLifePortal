@@ -34,8 +34,8 @@
         :key="tag.id"
         @click="addTag(index);"
       >
-        {{ tag.text }}</md-chip
-      >
+        {{ tag.text }} {{ tag.frequency }}
+      </md-chip>
     </div>
   </div>
 </template>

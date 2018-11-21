@@ -1,3 +1,3 @@
-export const BASEURL = "https://diglife.com/";
-export const CHATURL = "https://chat.diglife.com/";
+export const BASEURL = "https://ledger.diglife.coop/";
+export const CHATURL = "https://chat.diglife.coop/";
 export const TEAMID = "XXXXXXXXXXXXXXXXXXXX";

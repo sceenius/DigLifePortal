@@ -371,6 +371,7 @@
             v-if="
               groups &&
                 channel.purpose.tags &&
+                !JSON.stringify(groups.channels).includes(channel.name) &&
                 (groups.tags.indexOf(channel.purpose.tags[0]) ||
                   groups.tags.indexOf(channel.purpose.tags[1]) ||
                   groups.tags.indexOf(channel.purpose.tags[2]) ||

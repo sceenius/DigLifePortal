@@ -542,7 +542,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
     avatarLink: function() {
-      return BASEURL + "webhooks/images/avatar_" + this.username + ".png";
+      return BASEURL + "images/avatars/avatar_" + this.username + ".png";
     },
     //https://lodash.com/
     // orderedUsers: function() {
@@ -584,7 +584,7 @@ export default {
     avatarLink2: function(index) {
       return (
         BASEURL +
-        "webhooks/images/avatar_" +
+        "images/avatars/avatar_" +
         this.members[index].username +
         ".png"
       );

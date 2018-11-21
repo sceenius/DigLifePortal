@@ -507,7 +507,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "portal/portal_groups2.php?file=base-diglife-coop.php&username=" +
+          "portal/portal_groups.php?file=base-diglife-coop.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
@@ -525,7 +525,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "portal/portal_channels.php?file=base-diglife-coop.php&user_id=383gpz7g4f8gjjby3om9j58fna"
+          "portal/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
       .then(response => this.channels.sort(SortByName));
@@ -687,7 +687,7 @@ export default {
         this.axios
           .get(
             BASEURL +
-              "portal/portal_groups2.php?file=base-diglife-coop.php&username=" +
+              "portal/portal_groups.php?file=base-diglife-coop.php&username=" +
               this.username
           )
           .then(response => (this.groups = response.data))

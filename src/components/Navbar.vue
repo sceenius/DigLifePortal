@@ -211,7 +211,7 @@
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title"
         >{{ service ? "" : "DigLife" }} {{ service ? "" : selected }}
-        {{ service }}</span
+        {{ service.replace(/[!#*@%/.+><"'\\&]/, "") }}</span
       >
 
       <div class="md-toolbar-section-end">
@@ -371,6 +371,7 @@
             v-if="
               groups &&
                 channel.purpose.tags &&
+                channel.type !== 'O' &&
                 !JSON.stringify(groups.channels).includes(channel.name) &&
                 (groups.tags.indexOf(channel.purpose.tags[0]) ||
                   groups.tags.indexOf(channel.purpose.tags[1]) ||

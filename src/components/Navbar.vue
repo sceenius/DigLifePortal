@@ -408,11 +408,15 @@
       ----------------------------------------------------------------------
     -->
     <md-content>
-      <p id="welcome" v-if="username && !service">
+      <p id="welcome" v-if="profile.first_name && !service">
         Welcome back,
         <a @click="onReopen();"
           >{{ profile.first_name }} {{ profile.last_name }}</a
         >
+      </p>
+
+      <p id="welcome" v-else>
+        Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
       <p v-if="users && !service" class="counter">{{ users.length }}</p>
       <Particles />

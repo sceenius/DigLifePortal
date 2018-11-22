@@ -8,7 +8,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 
 Vue.config.productionTip = false;
-Vue.config.BASE = "https://diglife.com/webhooks";
+//Vue.config.BASE = "https://diglife.com/webhooks";
 
 Vue.use(VueAxios, axios);
 Vue.use(VueCookies);

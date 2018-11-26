@@ -409,16 +409,13 @@
     -->
     <md-content>
       <p id="welcome" v-if="profile.first_name && !service">
-        Welcome back,
-        <a @click="onReopen();"
-          >{{ profile.first_name }} {{ profile.last_name }}</a
-        >
+        Welcome back, <a @click="onReopen();">{{ profile.first_name }}</a>
       </p>
-
       <p id="welcome" v-else>
         Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
-      <p v-if="users && !service" class="counter">{{ users.length }}</p>
+
+      <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles />
       <img
         v-if="selected == 'Home'"
@@ -490,7 +487,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.axios
-      .get(BASEURL + "portal/portal_users.php?file=base-diglife-coop.php")
+      .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
       .then(
         response =>
@@ -513,7 +510,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "portal/portal_groups.php?file=base-diglife-coop.php&username=" +
+          "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
@@ -531,7 +528,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "portal/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+          "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
       .then(response => this.channels.sort(SortByName));
@@ -607,7 +604,7 @@ export default {
       this.axios
         .get(
           BASEURL +
-            "portal/portal_direct_message.php?file=base-diglife-coop.php&user_id=" +
+            "webhooks/portal_direct_message.php?file=base-diglife-coop.php&user_id=" +
             this.profile.id +
             "&member_id=" +
             member_id
@@ -693,7 +690,7 @@ export default {
         this.axios
           .get(
             BASEURL +
-              "portal/portal_groups.php?file=base-diglife-coop.php&username=" +
+              "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
               this.username
           )
           .then(response => (this.groups = response.data))
@@ -707,7 +704,7 @@ export default {
         // update theme for user
         this.axios.get(
           BASEURL +
-            "portal/portal_prefs.php?file=base-diglife-coop.php&username=" +
+            "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
             this.username
         );
 
@@ -767,6 +764,17 @@ export default {
           );
           break;
         case "mapLink":
+          alert(
+            BASEURL +
+              "webhooks/portal_circle.php?command=view&team=" +
+              this.channel.team +
+              "&channel=" +
+              this.channel.name +
+              "&user=" +
+              this.username +
+              "&username=" +
+              this.username
+          );
           window.open(
             BASEURL +
               "webhooks/portal_circle.php?command=view&team=" +
@@ -794,7 +802,7 @@ export default {
       this.axios
         .get(
           BASEURL +
-            "portal/portal_members.php?file=base-diglife-coop.php&channel_id=" +
+            "webhooks/portal_members.php?file=base-diglife-coop.php&channel_id=" +
             this.channel.id
         )
         .then(response => (this.members = response.data));

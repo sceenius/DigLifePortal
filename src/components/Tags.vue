@@ -195,7 +195,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "portal/portal_groups.php?file=base-diglife-coop.php&username=" +
+          "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));

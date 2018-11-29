@@ -43,8 +43,8 @@
               To build your Personal Tag list, please click on either
               <b>Suggested Tags</b> or <b>Add Tag</b> (then hit enter to add,
               click on a tag to edit, or X to delete).Tags are very important as
-              they describe your skillsets, expertise and areas of interest and
-              can be used to personalize services. Please keep your tags
+              they describe your skillsets and expertise (don't add interests)
+              and are used to personalize services - please keep them
               up-to-date!
             </p>
             <Tags />

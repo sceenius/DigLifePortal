@@ -44,6 +44,7 @@
 // http://www.vue-tags-input.com/
 import VueTagsInput from "@johmun/vue-tags-input";
 import { BASEURL, CHATURL } from "/constants.js";
+import db from "@/firebase/init";
 
 export default {
   name: "Tags",
@@ -192,6 +193,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    //console.log(db);
     this.axios
       .get(
         BASEURL +
@@ -199,6 +201,21 @@ export default {
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
+    // fetch data from Firestore
+    db.collection("members")
+      .doc("joachim")
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          this.tags = doc.data().tags;
+        } else {
+          // doc.data() will be undefined in this case
+          console.log("No such document!");
+        }
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      });
   },
   computed: {
     filteredItems() {

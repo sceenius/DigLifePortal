@@ -4,6 +4,7 @@
   "dependencies": {
     "@johmun/vue-tags-input": "1.5.9",
     "axios": "0.18.0",
+    "firebase": "5.5.9",
     "kinto-http": "4.6.1",
     "node-slack": "0.0.7",
     "particles.js": "2.0.0",

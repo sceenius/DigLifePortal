@@ -8,6 +8,7 @@
       @tags-changed="newTags => (tags = newTags)"
       @before-adding-tag="formatTag"
       @adding-duplicate="addDupe"
+      @before-deleting-tag="deleteTag"
     >
       <div
         slot="tagLeft"
@@ -56,11 +57,11 @@ export default {
       tag: "",
       groups: "",
       tags: [
-        { text: "Knowledge Management", verified: true },
-        { text: "Web Design", verified: true },
-        { text: "Social Collaboration", verified: true },
-        { text: "Governance" },
-        { text: "Social Ledger", verified: true }
+        // { text: "Knowledge Management", verified: true },
+        // { text: "Web Design", verified: true },
+        // { text: "Social Collaboration", verified: true },
+        // { text: "Governance" },
+        // { text: "Social Ledger", verified: true }
       ],
       autocompleteItems: [
         { text: "Accessibility", frequency: 5 },
@@ -203,14 +204,16 @@ export default {
       .then(response => (this.groups = response.data));
     // fetch data from Firestore
     db.collection("members")
-      .doc("joachim")
+      .doc(this.$cookies.get("username"))
       .get()
       .then(doc => {
         if (doc.exists) {
           this.tags = doc.data().tags;
         } else {
           // doc.data() will be undefined in this case
-          console.log("No such document!");
+          console.log(
+            "No document for user " + this.$cookies.get("username") + "!"
+          );
         }
       })
       .catch(function(error) {
@@ -236,9 +239,23 @@ export default {
         )
       ) {
         this.tags.push(this.autocompleteItems[index]);
+        db.collection("members")
+          .doc(this.$cookies.get("username"))
+          .update({
+            tags: this.tags
+          });
       } else {
         alert("This is a duplicate!");
       }
+    },
+    deleteTag(obj) {
+      console.log(this.tags[obj.index]);
+      obj.deleteTag();
+      db.collection("members")
+        .doc(this.$cookies.get("username"))
+        .set({
+          tags: this.tags
+        });
     },
     formatTag(obj) {
       let words = obj.tag.text.split(" ").filter(str => str !== "");
@@ -249,6 +266,13 @@ export default {
     },
     addDupe(obj) {
       alert("This is a duplicate!");
+    },
+    saveTags() {
+      db.collection("members")
+        .doc(this.$cookies.get("username"))
+        .update({
+          tags: this.tags
+        });
     }
   }
 };

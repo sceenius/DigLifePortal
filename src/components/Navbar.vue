@@ -49,15 +49,6 @@
             </p>
             <Tags />
           </div>
-          <md-dialog-actions style="padding: 25px;">
-            <md-button
-              class="md-success md-raised"
-              @click="onSettingsConfirm();"
-              style="background: #00b0a0; color: white;"
-              ><md-icon style="color: white;">label</md-icon>&nbsp;Save
-              Tags</md-button
-            >
-          </md-dialog-actions>
         </md-tab>
         <md-tab md-label="Groups">
           <md-list

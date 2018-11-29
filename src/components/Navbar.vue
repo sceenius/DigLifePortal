@@ -43,8 +43,8 @@
               To build your Personal Tag list, please click on either
               <b>Suggested Tags</b> or <b>Add Tag</b> (then hit enter to add,
               click on a tag to edit, or X to delete).Tags are very important as
-              they describe your skillsets, expertise and areas of interest and
-              can be used to personalize services. Please keep your tags
+              they describe your skillsets and expertise (don't add interests)
+              and are used to personalize services - please keep them
               up-to-date!
             </p>
             <Tags />
@@ -373,11 +373,11 @@
                 channel.purpose.tags &&
                 channel.type !== 'O' &&
                 !JSON.stringify(groups.channels).includes(channel.name) &&
-                (groups.tags.indexOf(channel.purpose.tags[0]) ||
-                  groups.tags.indexOf(channel.purpose.tags[1]) ||
-                  groups.tags.indexOf(channel.purpose.tags[2]) ||
-                  groups.tags.indexOf(channel.purpose.tags[3]) ||
-                  groups.tags.indexOf(channel.purpose.tags[4]))
+                (groups.tags.indexOf(channel.purpose.tags[0]) > -1 ||
+                  groups.tags.indexOf(channel.purpose.tags[1]) > -1 ||
+                  groups.tags.indexOf(channel.purpose.tags[2]) > -1 ||
+                  groups.tags.indexOf(channel.purpose.tags[3]) > -1 ||
+                  groups.tags.indexOf(channel.purpose.tags[4]) > -1)
             "
             >verified_user
           </md-icon>
@@ -390,11 +390,11 @@
                 channel.type !== 'O' &&
                 (!channel.purpose.tags ||
                   (channel.purpose.tags &&
-                    !groups.tags.indexOf(channel.purpose.tags[0]) &&
-                    !groups.tags.indexOf(channel.purpose.tags[1]) &&
-                    !groups.tags.indexOf(channel.purpose.tags[2]) &&
-                    !groups.tags.indexOf(channel.purpose.tags[3]) &&
-                    !groups.tags.indexOf(channel.purpose.tags[4])))
+                    !groups.tags.indexOf(channel.purpose.tags[0]) > -1 &&
+                    !groups.tags.indexOf(channel.purpose.tags[1]) > -1 &&
+                    !groups.tags.indexOf(channel.purpose.tags[2]) > -1 &&
+                    !groups.tags.indexOf(channel.purpose.tags[3]) > -1 &&
+                    !groups.tags.indexOf(channel.purpose.tags[4]) > -1))
             "
             >verified_user
           </md-icon>
@@ -408,7 +408,7 @@
       ----------------------------------------------------------------------
     -->
     <md-content>
-      <p id="welcome" v-if="profile.first_name && !service">
+      <p id="welcome" v-if="profile && profile.first_name && !service">
         Welcome back, <a @click="onReopen();">{{ profile.first_name }}</a>
       </p>
       <p id="welcome" v-else>
@@ -532,7 +532,6 @@ export default {
       )
       .then(response => (this.channels = response.data))
       .then(response => this.channels.sort(SortByName));
-
     //  this.axios
     //   .get(
     //     BASEURL + "assets/total.json"

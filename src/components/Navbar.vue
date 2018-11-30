@@ -194,7 +194,7 @@
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title"
         >{{ service ? "" : "DigLife" }} {{ service ? "" : selected }}
-        {{ service.replace(/[!#*@%/.+><"'\\&]/, "") }}</span
+        {{ service.replace(/[!#*@%/.><"'\\&]/, "") }}</span
       >
 
       <div class="md-toolbar-section-end">
@@ -329,7 +329,7 @@
         >
           <md-icon>{{ channel.purpose.icon }}</md-icon>
           <span class="md-list-item-text">{{
-            channel.display_name.replace(/[!#*@%/.+><"'\\&]/, "")
+            channel.display_name.replace(/[!#*@%/.><"'\\&]/, "")
           }}</span>
           <!--
             check the channel membership of the current user OR public channel
@@ -339,7 +339,7 @@
             groups is a promise that comes in later, hence part of the condition
           -->
           <md-icon
-            title="Verified member of this group"
+            title="You are a verified member of this group"
             style="color: green;"
             v-if="
               groups &&
@@ -349,35 +349,35 @@
             >verified_user
           </md-icon>
           <md-icon
-            title="Suggested group to join"
+            title="We suggest to join based on your profile"
             style="color: orange;"
             v-if="
               groups &&
                 channel.purpose.tags &&
                 channel.type !== 'O' &&
                 !JSON.stringify(groups.channels).includes(channel.name) &&
-                (groups.tags.indexOf(channel.purpose.tags[0]) > -1 ||
-                  groups.tags.indexOf(channel.purpose.tags[1]) > -1 ||
-                  groups.tags.indexOf(channel.purpose.tags[2]) > -1 ||
-                  groups.tags.indexOf(channel.purpose.tags[3]) > -1 ||
-                  groups.tags.indexOf(channel.purpose.tags[4]) > -1)
+                ((channel.purpose.tags &&
+                  tags.indexOf(channel.purpose.tags[0]) > -1) ||
+                  tags.indexOf(channel.purpose.tags[1]) > -1 ||
+                  tags.indexOf(channel.purpose.tags[2]) > -1 ||
+                  tags.indexOf(channel.purpose.tags[3]) > -1 ||
+                  tags.indexOf(channel.purpose.tags[4]) > -1)
             "
             >verified_user
           </md-icon>
           <md-icon
-            title="Not a member of this group"
+            title="You are not a member of this group"
             style="color: lightgray;"
             v-if="
               groups &&
                 !JSON.stringify(groups.channels).includes(channel.name) &&
                 channel.type !== 'O' &&
                 (!channel.purpose.tags ||
-                  (channel.purpose.tags &&
-                    !groups.tags.indexOf(channel.purpose.tags[0]) > -1 &&
-                    !groups.tags.indexOf(channel.purpose.tags[1]) > -1 &&
-                    !groups.tags.indexOf(channel.purpose.tags[2]) > -1 &&
-                    !groups.tags.indexOf(channel.purpose.tags[3]) > -1 &&
-                    !groups.tags.indexOf(channel.purpose.tags[4]) > -1))
+                  (tags.indexOf(channel.purpose.tags[0]) == -1 &&
+                    tags.indexOf(channel.purpose.tags[1]) == -1 &&
+                    tags.indexOf(channel.purpose.tags[2]) == -1 &&
+                    tags.indexOf(channel.purpose.tags[3]) == -1 &&
+                    tags.indexOf(channel.purpose.tags[4]) == -1))
             "
             >verified_user
           </md-icon>
@@ -436,6 +436,8 @@ import { BASEURL, CHATURL } from "/constants.js";
 import Particles from "./Particles";
 import Tags from "./Tags";
 import Slack from "node-slack";
+import db from "@/firebase/init";
+
 export default {
   name: "Navbar",
   components: { Particles, Tags },
@@ -462,7 +464,8 @@ export default {
     members: "",
     total: "",
     channel: "",
-    invalid: true
+    invalid: true,
+    tags: []
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -520,6 +523,28 @@ export default {
     //     BASEURL + "assets/total.json"
     //   )
     //   .then(response => (this.total = response.data));
+
+    // fetch data from Firestore
+    db.collection("members")
+      .doc(this.$cookies.get("username"))
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          this.tags = doc.data().tags;
+          // hell of a map reduce function to flatten JSON
+          this.tags = this.tags.reduce((accumulator, currentValue) => {
+            return [...accumulator, currentValue.text];
+          });
+        } else {
+          // doc.data() will be undefined in this case
+          console.log(
+            "No document for user " + this.$cookies.get("username") + "!"
+          );
+        }
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      });
   },
 
   ///////////////////////////////////////////////////////////////////////////////

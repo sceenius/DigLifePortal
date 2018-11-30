@@ -39,14 +39,6 @@
           <div
             style="margin: 20px 0 0 10px; width: 95%; overflow: auto; height: 55vh !important;"
           >
-            <p>
-              To build your Personal Tag list, please click on either
-              <b>Suggested Tags</b> or <b>Add Tag</b> (then hit enter to add,
-              click on a tag to edit, or X to delete).Tags are very important as
-              they describe your skillsets and expertise (don't add interests)
-              and are used to personalize services - please keep them
-              up-to-date!
-            </p>
             <Tags />
           </div>
         </md-tab>

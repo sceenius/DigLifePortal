@@ -5,7 +5,7 @@ import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import axios from "axios";
-import VueAxios from "vue-axios";
+import VueAxios from "vue-axios"; 
 
 Vue.config.productionTip = false;
 //Vue.config.BASE = "https://diglife.com/webhooks";

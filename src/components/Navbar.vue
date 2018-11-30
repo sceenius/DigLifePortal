@@ -343,8 +343,8 @@
             style="color: green;"
             v-if="
               groups &&
-                (JSON.stringify(groups.channels).includes(channel.name) ||
-                  channel.type == 'O')
+                channel.type !== 'O' &&
+                JSON.stringify(groups.channels).includes(channel.name)
             "
             >verified_user
           </md-icon>

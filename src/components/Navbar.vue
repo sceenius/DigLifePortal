@@ -138,10 +138,13 @@
 
     <md-dialog :md-active.sync="activeAccess" id="access">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
-      <md-dialog-title>{{ service }}</md-dialog-title>
+      <md-dialog-title>{{
+        service.replace(/[!#*@%/.><"'\\&]/, "")
+      }}</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
           <p>{{ channel.header }}</p>
+          <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
         </md-tab>
         <md-tab md-label="Team Members">
           <md-list
@@ -398,32 +401,16 @@
         Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
 
+      <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
-      <Particles />
-      <img
-        v-if="selected == 'Home'"
-        id="logo"
-        src="https://diglife.com/brand/logo_secondary_home.svg"
-      />
-      <img
-        v-if="selected == 'Projects'"
-        id="logo"
-        src="https://diglife.com/brand/logo_secondary_projects.svg"
-      />
-      <img
-        v-if="selected == 'Operations'"
-        id="logo"
-        src="https://diglife.com/brand/logo_secondary_operations.svg"
-      />
-      <img
-        v-if="selected == 'Friends'"
-        id="logo"
-        src="https://diglife.com/brand/logo_secondary_friends.svg"
-      />
+
+      <Particles v-if="!service" />
+      <Cards v-if="service == '#Explore Topics'" />
+
       <iframe
         name="theApp"
         id="theApp"
-        style="display: none; width:100%; height:95vh;"
+        style="width:100%; height:95vh;"
         frameborder="0"
       ></iframe>
     </md-content>
@@ -433,14 +420,16 @@
 
 <script>
 import { BASEURL, CHATURL } from "/constants.js";
-import Particles from "./Particles";
-import Tags from "./Tags";
+import Particles from "@/components/Particles";
+import Tags from "@/components/Tags";
+import Cards from "@/components/Cards";
+
 import Slack from "node-slack";
 import db from "@/firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags },
+  components: { Particles, Tags, Cards },
   data: () => ({
     form: {
       username: null
@@ -554,6 +543,14 @@ export default {
     avatarLink: function() {
       return BASEURL + "images/avatars/avatar_" + this.username + ".png";
     },
+    logoLink: function() {
+      return (
+        BASEURL +
+        "images/brand/logo_secondary_" +
+        this.selected.toLowerCase() +
+        ".svg"
+      );
+    },
     //https://lodash.com/
     // orderedUsers: function() {
     //   return _.orderBy(this.channel, "display_name");
@@ -632,10 +629,10 @@ export default {
       this.activeAccess = false;
       this.activeInfo = false;
       this.service = "";
-      var element = document.getElementById("particles-js");
-      element.style.display = "block";
-      element = document.getElementById("logo");
-      element.style.display = "block";
+      //var element = document.getElementById("particles-js");
+      //element.style.display = "block";
+      //element = document.getElementById("logo");
+      //element.style.display = "block";
     },
 
     openSettings: function() {
@@ -664,10 +661,10 @@ export default {
         link_names: 1
       });
       this.service = "";
-      var element = document.getElementById("particles-js");
-      element.style.display = "block";
-      element = document.getElementById("logo");
-      element.style.display = "block";
+      //var element = document.getElementById("particles-js");
+      //element.style.display = "block";
+      //element = document.getElementById("logo");
+      //element.style.display = "block";
       this.showSnackbar = true;
     },
 
@@ -731,12 +728,12 @@ export default {
       this.selected = menu;
       this.showNavigation = false;
       this.service = "";
-      var element = document.getElementById("theApp");
-      element.style.display = "none";
-      element = document.getElementById("particles-js");
-      element.style.display = "block";
-      element = document.getElementById("logo");
-      element.style.display = "block";
+      //var element = document.getElementById("theApp");
+      //element.style.display = "none";
+      //element = document.getElementById("particles-js");
+      //element.style.display = "block";
+      //element = document.getElementById("logo");
+      //element.style.display = "block";
     },
 
     sub: function(menu) {
@@ -815,14 +812,14 @@ export default {
         .then(response => (this.members = response.data));
 
       // hide and show elements on UI
-      var element = document.getElementById("logo");
-      element.style.display = "none";
+      //var element = document.getElementById("logo");
+      //element.style.display = "none";
 
-      element = document.getElementById("particles-js");
-      element.style.display = "none";
+      //element = document.getElementById("particles-js");
+      //element.style.display = "none";
 
-      element = document.getElementById("theApp");
-      element.style.display = "block";
+      //element = document.getElementById("theApp");
+      //element.style.display = "block";
 
       // open app link or request access dialog
       if (
@@ -941,7 +938,7 @@ export default {
   padding: 0px;
 }
 
-.md-content img {
+.md-content img #logo {
   position: absolute;
   top: 10%;
   left: 3%;

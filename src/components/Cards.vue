@@ -20,9 +20,9 @@
             />
           </md-card-media>
         </md-card-header>
-        <p style="margin: 0 0 0 15px;">
-          Identity Platform, Data Sharing, Distributed Ledger, Sovrin, Trust
-          Framework
+        <p style="margin: 0 5px 0 15px; color: gray; t ext-indent: -1.7em">
+          <md-icon>bookmark</md-icon>Identity Platform, Data Sharing,
+          Distributed Ledger, Sovrin, Trust Framework
         </p>
         <md-card-actions>
           <md-button>Leave</md-button>

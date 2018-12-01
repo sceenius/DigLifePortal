@@ -410,8 +410,9 @@
       <iframe
         name="theApp"
         id="theApp"
-        style="width:100%; height:95vh;"
+        style="display: none; width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"
         frameborder="0"
+        scrolling="yes"
       ></iframe>
     </md-content>
   </div>
@@ -450,6 +451,7 @@ export default {
     profile: false,
     groups: "",
     channels: "",
+    topics: "",
     members: "",
     total: "",
     channel: "",
@@ -506,43 +508,54 @@ export default {
           "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      .then(response => this.channels.sort(SortByName));
+      .then(response => this.channels.sort(SortByName))
+      // build new list for Interest Groups
+      .then(
+        response =>
+          (this.topics = this.channels.find(item => {
+            return item.display_name.charAt(0) === "#";
+          }))
+      );
     //  this.axios
     //   .get(
     //     BASEURL + "assets/total.json"
     //   )
     //   .then(response => (this.total = response.data));
 
-    // fetch data from Firestore
-    db.collection("members")
-      .doc(this.$cookies.get("username"))
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          this.tags = doc.data().tags;
-          // hell of a map reduce function to flatten JSON
-          this.tags = this.tags.reduce((accumulator, currentValue) => {
-            return [...accumulator, currentValue.text];
-          });
-        } else {
-          // doc.data() will be undefined in this case
-          console.log(
-            "No document for user " + this.$cookies.get("username") + "!"
-          );
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
+    // fetch data from Firestore IF username defined
+    if (this.$cookies.get("username")) {
+      db.collection("members")
+        .doc(this.$cookies.get("username"))
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            this.tags = doc.data().tags;
+            // hell of a map reduce function to flatten JSON
+            this.tags = this.tags.reduce((accumulator, currentValue) => {
+              return [...accumulator, currentValue.text];
+            });
+          } else {
+            // doc.data() will be undefined in this case
+            console.log(
+              "No document for user " + this.$cookies.get("username") + "!"
+            );
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
+    // compute v-bind:src for img
     avatarLink: function() {
       return BASEURL + "images/avatars/avatar_" + this.username + ".png";
     },
+    // compute v-bind:src for im54321`
     logoLink: function() {
       return (
         BASEURL +
@@ -581,7 +594,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   beforeDestroy: function() {
     //this.$cookies.set("showServices", this.showServices); not working
-    console.log(this.showServices);
+    //console.log(this.showServices);
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -670,7 +683,6 @@ export default {
 
     onSettingsConfirm: function() {
       this.activeSettings = false;
-      console.log(this.showServices);
       this.$cookies.set("showServices", this.showServices); // not working
     },
 
@@ -712,6 +724,26 @@ export default {
             this.username
         );
 
+        // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
+        db.collection("members")
+          .doc(this.username)
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              this.tags = doc.data().tags;
+              // hell of a map reduce function to flatten JSON
+              this.tags = this.tags.reduce((accumulator, currentValue) => {
+                return [...accumulator, currentValue.text];
+              });
+            } else {
+              // doc.data() will be undefined in this case
+              console.log("No document for user " + this.username + "!");
+            }
+          })
+          .catch(function(error) {
+            console.log("Error getting document:", error);
+          });
+
         console.log(JSON.stringify(this.groups.channels));
         this.showProfileReminder = true;
         // this forces Vue to recalc all computed props
@@ -728,8 +760,8 @@ export default {
       this.selected = menu;
       this.showNavigation = false;
       this.service = "";
-      //var element = document.getElementById("theApp");
-      //element.style.display = "none";
+      var element = document.getElementById("theApp");
+      element.style.display = "none";
       //element = document.getElementById("particles-js");
       //element.style.display = "block";
       //element = document.getElementById("logo");
@@ -818,8 +850,8 @@ export default {
       //element = document.getElementById("particles-js");
       //element.style.display = "none";
 
-      //element = document.getElementById("theApp");
-      //element.style.display = "block";
+      var element = document.getElementById("theApp");
+      element.style.display = "block";
 
       // open app link or request access dialog
       if (
@@ -840,6 +872,16 @@ export default {
 </script>
 
 <style>
+.md-con tent ifra me {
+  min-width: 100vh;
+  max-width: 100vh;
+  height: 90vh;
+  min-height: 100vh;
+  max-height: 100vh;
+  padding: 0px;
+  overflow: auto;
+  display: inline-block;
+}
 #welcome {
   color: #aaa;
   text-align: right;
@@ -849,7 +891,7 @@ export default {
 }
 #logo {
   position: absolute;
-  top: 50%;
+  top: 55%;
   left: 50%;
   width: 450px;
   height: 450px;
@@ -863,6 +905,10 @@ export default {
     height: 250px;
     margin-top: -125px; /* Half the height */
     margin-left: -125px; /* Half the width */
+  }
+  iframe {
+    min-height: 85vh !important;
+    max-height: 85vh !important;
   }
 }
 

@@ -29,10 +29,17 @@
             />
           </md-card-media>
         </md-card-header>
-        <p style="margin: 0 5px 0 15px; color: gray; t ext-indent: -1.7em">
-          <md-icon>bookmark</md-icon>Identity Platform, Data Sharing,
-          Distributed Ledger, Sovrin, Trust Framework
-        </p>
+        <md-card-area
+          style="height: 80px; margin: -15px 0 -15px 15px; overflow: auto;"
+        >
+          <p class="info">
+            <md-icon>local_offer</md-icon> Identity Platform, Data Sharing,
+            Distributed Ledger, Sovrin, Trust Framework
+          </p>
+          <p class="info">
+            <md-icon>question_answer</md-icon> 34 message posted
+          </p>
+        </md-card-area>
         <md-card-actions>
           <md-button>Ask</md-button>
           <md-button v-if="card > 2" style="background: #00b0a0; color: white;"
@@ -107,8 +114,8 @@ export default {
 .md-card {
   width: 340px;
   max-width: 340px;
-  height: 310px;
-  max-height: 310px;
+  height: 315px;
+  max-height: 315px;
   margin: 14px;
   display: inline-block;
   vertical-align: top;
@@ -150,5 +157,23 @@ export default {
 }
 .md-card:hover {
   opacity: 1;
+}
+
+.md-card-area {
+}
+.md-subhead {
+  color: #222;
+  font-size: 1em;
+}
+
+.info {
+  color: gray;
+  margin: 0 0 8px 0;
+  line-height: 1em;
+  font-size: 1em !important;
+}
+
+.info .md-icon {
+  font-size: 1.4em !important;
 }
 </style>

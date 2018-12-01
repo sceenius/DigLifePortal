@@ -237,7 +237,7 @@
         CONTEXTUAL ACTION BUTTONS
       ----------------------------------------------------------------------
     -->
-    <div v-if="service" id="actions">
+    <div v-if="service && service != '#Explore Topics'" id="actions">
       <md-button
         title="Learn more"
         @click="sub('infoLink');"
@@ -393,7 +393,7 @@
         PAGE CONTENT
       ----------------------------------------------------------------------
     -->
-    <md-content>
+    <md-content class="md-scrollbar">
       <p id="welcome" v-if="profile && profile.first_name && !service">
         Welcome back, <a @click="onReopen();">{{ profile.first_name }}</a>
       </p>
@@ -939,6 +939,7 @@ export default {
   min-height: 100vh;
   max-height: 100vh;
   padding: 0px;
+  overflow: auto;
 }
 
 .md-content img #logo {

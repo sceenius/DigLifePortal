@@ -9,7 +9,7 @@
         <md-card-header>
           <md-card-header-text>
             <div class="md-title">Research Topic</div>
-            <div class="md-subhead">Self-souverign Identity</div>
+            <div class="md-subhead">Self-sovereign Identity</div>
             <md-chip>Active</md-chip>
           </md-card-header-text>
 
@@ -20,33 +20,40 @@
             />
           </md-card-media>
         </md-card-header>
-
+        <p style="margin: 0 0 0 15px;">
+          Identity Platform, Data Sharing, Distributed Ledger, Sovrin, Trust
+          Framework
+        </p>
         <md-card-actions>
-          <md-button>Action</md-button>
-          <md-button>Action</md-button>
+          <md-button>Leave</md-button>
+          <md-button style="background: #00b0a0; color: white;">Join</md-button>
         </md-card-actions>
       </md-card-area>
       <div class="md-card-footer">
         <md-avatar>
           <img
+            title="Jim"
             src="https://ledger.diglife.coop/images/avatars/avatar_jimscarver.png"
             alt="Avatar"
           />
         </md-avatar>
         <md-avatar>
           <img
+            title="Christina"
             src="https://ledger.diglife.coop/images/avatars/avatar_christina.png"
             alt="Avatar"
           />
         </md-avatar>
         <md-avatar>
           <img
+            title="Joachim"
             src="https://ledger.diglife.coop/images/avatars/avatar_joachim.png"
             alt="Avatar"
           />
         </md-avatar>
         <md-avatar>
           <img
+            title="Graham"
             src="https://ledger.diglife.coop/images/avatars/avatar_graham.png"
             alt="Avatar"
           />
@@ -88,6 +95,7 @@ export default {
   margin: 14px;
   display: inline-block;
   vertical-align: top;
+  background-color: #eee !important;
 }
 .md-card .md-title {
   font-weight: normal !important;
@@ -104,7 +112,7 @@ export default {
   border: 1px #ccc solid;
 }
 .md-card .md-chip {
-  background-color: red;
+  background-color: #fc5f61;
   color: white;
   margin: 10px 0 0 0;
   padding: 0px 30px 0px 30px;

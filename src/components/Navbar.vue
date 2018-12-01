@@ -923,6 +923,9 @@ export default {
   color: #404040 !important;
 }
 
+.md-icon {
+  display: inline;
+}
 .page-container {
   min-height: 100vh;
   max-height: 100vh;

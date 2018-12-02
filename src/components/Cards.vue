@@ -2,16 +2,18 @@
   <div class="md-layout md-gutter">
     <md-card
       md-with-hover
-      v-for="(card, index) in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]"
+      v-for="(topic, index) in topics"
       :key="index"
-      v-bind:class="'card' + card"
+      v-bind:class="'card' + topic"
       class="md-layout-item"
     >
       <md-card-area md-inset>
-        <md-card-header>
+        <md-card-header style="margin-bottom: 10px ;">
           <md-card-header-text>
-            <div class="md-title">Research Group</div>
-            <div class="md-subhead">Self-sovereign Identity</div>
+            <div class="md-title">
+              {{ topic.display_name.replace("#", "") }}
+            </div>
+            <div class="md-subhead">Interest & Research Group</div>
             <md-chip>Active</md-chip>
           </md-card-header-text>
           <md-button
@@ -30,22 +32,35 @@
           </md-card-media>
         </md-card-header>
         <md-card-area
-          style="height: 80px; margin: -15px 0 -15px 15px; overflow: auto;"
+          style="height: 65px; margin: -15px 0 -15px 15px; overflow: auto;"
         >
           <p class="info">
-            <md-icon>local_offer</md-icon> Identity Platform, Data Sharing,
-            Distributed Ledger, Sovrin, Trust Framework
+            <md-icon>local_offer</md-icon>
+            {{
+              topic.purpose.tags
+                .toString()
+                .replace(/[!#*@%/.><"'\\&]/, "")
+                .replace(/[,]/g, ", ")
+            }}
           </p>
           <p class="info">
-            <md-icon>question_answer</md-icon> 34 message posted
+            <md-icon>question_answer</md-icon>
+            {{ topic.total_msg_count }} message<span
+              v-if="topic.total_msg_count > 1"
+              >s</span
+            >
+            posted in channel
           </p>
         </md-card-area>
         <md-card-actions>
-          <md-button>Ask</md-button>
-          <md-button v-if="card > 2" style="background: #00b0a0; color: white;"
-            >Join</md-button
-          >
-          <md-button v-if="card <= 2" style="background: #00b0a0; color: white;"
+          <md-button
+            style="background: #00b0a0; color: white;"
+            @click="
+              openGroup(
+                topic.purpose.link,
+                topic.display_name.replace('#', '')
+              );
+            "
             >Open</md-button
           >
         </md-card-actions>
@@ -87,25 +102,49 @@
 <script>
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
+//import topics from "@/components/navbar";
 
 export default {
   name: "Tags",
   components: {},
   data() {
     return {
-      tag: ""
+      tag: "",
+      channels: [],
+      topics: []
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  created: function() {},
+  created: function() {
+    // get all channels for lederbot user and sort them
+    // to get a list of research topics for the cards
+    this.axios
+      .get(
+        BASEURL +
+          "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+      )
+      .then(response => (this.channels = response.data))
+      // build new list for Interest Groups
+      .then(
+        response =>
+          (this.topics = this.channels.reduce(function(array, element, index) {
+            if (element.display_name.charAt(0) === "#") array.push(element);
+            return array;
+          }, []))
+      )
+      .then(response => console.log(this.topics));
+  },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
-    xxxxxxxxxx: function(index) {}
+    openGroup: function(link, service) {
+      this.service = service;
+      window.open(link, "_blank");
+    }
   }
 };
 </script>

@@ -237,7 +237,7 @@
         CONTEXTUAL ACTION BUTTONS
       ----------------------------------------------------------------------
     -->
-    <div v-if="service && service != '#Explore Topics'" id="actions">
+    <div v-if="service && service != 'Interest Groups'" id="actions">
       <md-button
         title="Learn more"
         @click="sub('infoLink');"
@@ -317,6 +317,7 @@
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
 
+        <!-- new condition: joining domain via domain sudo group -->
         <md-list-item
           v-for="(channel, index) in channels"
           :key="channel.id"
@@ -400,12 +401,10 @@
       <p id="welcome" v-else>
         Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
-
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
-
       <Particles v-if="!service" />
-      <Cards v-if="service == '#Explore Topics'" />
+      <Cards v-if="service == 'Interest Groups'" />
 
       <iframe
         name="theApp"
@@ -451,7 +450,6 @@ export default {
     profile: false,
     groups: "",
     channels: "",
-    topics: "",
     members: "",
     total: "",
     channel: "",
@@ -463,6 +461,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log(this.$store.state.count);
     this.axios
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
@@ -508,14 +507,20 @@ export default {
           "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      .then(response => this.channels.sort(SortByName))
-      // build new list for Interest Groups
       .then(
         response =>
-          (this.topics = this.channels.find(item => {
-            return item.display_name.charAt(0) === "#";
-          }))
-      );
+          (this.channels = this.channels.reduce(function(
+            array,
+            element,
+            index
+          ) {
+            if (element.display_name.charAt(0) !== "#") array.push(element);
+            return array;
+          },
+          []))
+      )
+      .then(response => this.channels.sort(SortByName));
+
     //  this.axios
     //   .get(
     //     BASEURL + "assets/total.json"

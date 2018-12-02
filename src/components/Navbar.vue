@@ -326,8 +326,9 @@
             groups &&
               ((!showServices && showDomain(index)) ||
                 (showServices &&
-                  (JSON.stringify(groups.channels).includes(channel.name) ||
-                    channel.type == 'O') &&
+                  JSON.stringify(groups.channels).includes(
+                    channel.team + '/' + channel.name
+                  ) &&
                   showDomain(index)))
           "
         >
@@ -348,7 +349,9 @@
             v-if="
               groups &&
                 channel.type !== 'O' &&
-                JSON.stringify(groups.channels).includes(channel.name)
+                JSON.stringify(groups.channels).includes(
+                  channel.team + '/' + channel.name
+                )
             "
             >verified_user
           </md-icon>
@@ -359,7 +362,9 @@
               groups &&
                 channel.purpose.tags &&
                 channel.type !== 'O' &&
-                !JSON.stringify(groups.channels).includes(channel.name) &&
+                !JSON.stringify(groups.channels).includes(
+                  channel.team + '/' + channel.name
+                ) &&
                 ((channel.purpose.tags &&
                   tags.indexOf(channel.purpose.tags[0]) > -1) ||
                   tags.indexOf(channel.purpose.tags[1]) > -1 ||
@@ -374,7 +379,9 @@
             style="color: lightgray;"
             v-if="
               groups &&
-                !JSON.stringify(groups.channels).includes(channel.name) &&
+                !JSON.stringify(groups.channels).includes(
+                  channel.team + '/' + channel.name
+                ) &&
                 channel.type !== 'O' &&
                 (!channel.purpose.tags ||
                   (tags.indexOf(channel.purpose.tags[0]) == -1 &&
@@ -485,7 +492,7 @@ export default {
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
+          "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
           this.$cookies.get("username")
       )
       .then(response => (this.groups = response.data));
@@ -615,6 +622,7 @@ export default {
     },
 
     showDomain: function(index) {
+      //check if current domain is listed in channel
       return this.channels[index].purpose.domain
         ? this.channels[index].purpose.domain.includes(this.selected)
         : false;
@@ -710,7 +718,7 @@ export default {
         this.axios
           .get(
             BASEURL +
-              "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
+              "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
               this.username
           )
           .then(response => (this.groups = response.data))

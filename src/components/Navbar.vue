@@ -461,7 +461,6 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    console.log(this.$store.state.count);
     this.axios
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))

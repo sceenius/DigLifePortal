@@ -453,7 +453,7 @@ export default {
     selected: "Home",
     service: "",
     username: "",
-    users: "",
+    users: [],
     profile: false,
     groups: "",
     channels: "",
@@ -468,6 +468,30 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    // https://www.smashingmagazine.com/2018/04/vuejs-firebase-firestore/
+    // https://firebase.google.com/docs/firestore/query-data/listen
+    // Listen to any new document coming from Firestore
+    db.collection("users") // .where("state", "==", "CA")
+      .onSnapshot(usersRef => {
+        usersRef.docChanges().forEach(user => {
+          if (user.type === "added") {
+            console.log("New user: ", user.doc.data());
+            user.id = user.doc.id;
+            this.users.push(user);
+            if (user.username === this.$cookies.get("username")) {
+              this.profile = user;
+              this.username = user.username;
+              this.activeUser =
+                typeof this.profile === "undefined" ? true : false;
+            }
+          } else if (user.type === "modified") {
+            console.log("Modified user: ", user.doc.data());
+          } else if (user.type === "removed") {
+            console.log("Removed user: ", user.doc.data());
+          }
+        });
+      });
+
     this.axios
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))

@@ -322,6 +322,7 @@
           v-if="
             groups &&
               ((!showServices && showDomain(index)) ||
+                service === 'Interest Groups' ||
                 (showServices &&
                   JSON.stringify(groups).includes(
                     channel.team + '/' + channel.name
@@ -497,8 +498,10 @@ export default {
             var data = channel.doc.data();
             //console.log("New channel: ", data);
             channel.id = channel.doc.id;
-            this.channels.push(data);
-            this.channels.sort(SortByName);
+            if (data.display_name.charAt(0) !== "#") {
+              this.channels.push(data);
+              this.channels.sort(SortByName);
+            }
           } else if (channel.type === "modified") {
             console.log("Modified channel: ", channel.doc.data());
           } else if (channel.type === "removed") {
@@ -507,6 +510,40 @@ export default {
         });
       });
 
+    if (this.$cookies.get("username")) {
+      db.collection("members")
+        .doc(this.$cookies.get("username"))
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (doc.data().groups === undefined) {
+              this.groups = [];
+            } else {
+              this.groups = doc.data().groups;
+              console.log("New groups: ", this.groups);
+            }
+          } else {
+            // doc.data() will be undefined in this case
+            console.log(
+              "No document for user " + this.$cookies.get("username") + "!"
+            );
+          }
+        })
+        .catch(function(error) {
+          console.log("Error getting document:", error);
+        });
+    }
+    //     response =>
+    //       (this.channels = this.channels.reduce(function(
+    //         array,
+    //         element,
+    //         index
+    //       ) {
+    //         if (element.display_name.charAt(0) !== "#") array.push(element);
+    //         return array;
+    //       },
+    //       []))
+    //   )
     // this.axios
     //   .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
     //   .then(response => (this.users = response.data))
@@ -528,28 +565,6 @@ export default {
 
     // get all channels and tags for current user
     // BUG: the channels need a domain prefix, since the can reappear
-
-    db.collection("members")
-      .doc(this.$cookies.get("username"))
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          if (doc.data().groups === undefined) {
-            this.groups = [];
-          } else {
-            this.groups = doc.data().groups;
-            console.log("New groups: ", this.groups);
-          }
-        } else {
-          // doc.data() will be undefined in this case
-          console.log(
-            "No document for user " + this.$cookies.get("username") + "!"
-          );
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
 
     // this.axios
     //   .get(

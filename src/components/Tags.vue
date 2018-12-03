@@ -208,6 +208,7 @@ export default {
       .then(response => (this.groups = response.data));
 
     //fetch ledgerbot (=all) channels and channel tags
+    // FEATURE --- AGGREGATE FROM FB
     this.axios
       .get(
         BASEURL +

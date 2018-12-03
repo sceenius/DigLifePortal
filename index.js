@@ -32,18 +32,20 @@ new Vue({
       .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
       .then(response => console.log(this.users))
-      .then(response =>
-        this.users.forEach(function(user) {
-          db.collection("users")
-            .doc(user.id)
-            .set({
-              first_name: user.first_name || "",
-              last_name: user.last_name || "",
-              username: user.username || "",
-              position: user.position || "",
-              role: user.role || ""
-            });
-        })
+      .then(
+        response => db.collection("users").update(this.users)
+
+        // this.users.forEach(function(user) {
+        //   db.collection("users")
+        //     .doc(user.id)
+        //     .update({
+        //       first_name: user.first_name || "",
+        //       last_name: user.last_name || "",
+        //       username: user.username || "",
+        //       position: user.position || "",
+        //       role: user.role || ""
+        //     });
+        // })
       );
 
     this.axios

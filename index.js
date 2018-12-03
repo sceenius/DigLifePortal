@@ -59,6 +59,7 @@ new Vue({
             .doc(channel.id)
             .set({
               type: channel.type || "",
+              name: channel.name || "",
               display_name: channel.display_name || "",
               header: channel.header || "",
               purpose: channel.purpose || "",

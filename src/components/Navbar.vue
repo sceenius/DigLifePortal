@@ -46,10 +46,7 @@
           <md-list
             style="margin: 20px 0 0 10px; width: 90%; overflow: auto; height: 55vh !important;"
           >
-            <md-list-item
-              v-for="(group, index) in groups.channels"
-              :key="index"
-            >
+            <md-list-item v-for="(group, index) in groups" :key="index">
               <span class="md-list-item-text">{{ group }}</span>
               <md-button
                 @click="directMessage(index);"
@@ -326,7 +323,7 @@
             groups &&
               ((!showServices && showDomain(index)) ||
                 (showServices &&
-                  JSON.stringify(groups.channels).includes(
+                  JSON.stringify(groups).includes(
                     channel.team + '/' + channel.name
                   ) &&
                   showDomain(index)))
@@ -349,7 +346,7 @@
             v-if="
               groups &&
                 channel.type !== 'O' &&
-                JSON.stringify(groups.channels).includes(
+                JSON.stringify(groups).includes(
                   channel.team + '/' + channel.name
                 )
             "
@@ -362,7 +359,7 @@
               groups &&
                 channel.purpose.tags &&
                 channel.type !== 'O' &&
-                !JSON.stringify(groups.channels).includes(
+                !JSON.stringify(groups).includes(
                   channel.team + '/' + channel.name
                 ) &&
                 ((channel.purpose.tags &&
@@ -379,7 +376,7 @@
             style="color: lightgray;"
             v-if="
               groups &&
-                !JSON.stringify(groups.channels).includes(
+                !JSON.stringify(groups).includes(
                   channel.team + '/' + channel.name
                 ) &&
                 channel.type !== 'O' &&
@@ -531,13 +528,36 @@ export default {
 
     // get all channels and tags for current user
     // BUG: the channels need a domain prefix, since the can reappear
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-          this.$cookies.get("username")
-      )
-      .then(response => (this.groups = response.data));
+
+    db.collection("members")
+      .doc(this.$cookies.get("username"))
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          if (doc.data().groups === undefined) {
+            this.groups = [];
+          } else {
+            this.groups = doc.data().groups;
+            console.log("New groups: ", this.groups);
+          }
+        } else {
+          // doc.data() will be undefined in this case
+          console.log(
+            "No document for user " + this.$cookies.get("username") + "!"
+          );
+        }
+      })
+      .catch(function(error) {
+        console.log("Error getting document:", error);
+      });
+
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+    //       this.$cookies.get("username")
+    //   )
+    //   .then(response => (this.groups = response.data));
 
     function SortByName(x, y) {
       return x.display_name === y.display_name
@@ -582,11 +602,15 @@ export default {
         .get()
         .then(doc => {
           if (doc.exists) {
-            this.tags = doc.data().tags;
-            // hell of a map reduce function to flatten JSON
-            this.tags = this.tags.reduce((accumulator, currentValue) => {
-              return [...accumulator, currentValue.text];
-            });
+            if (doc.data().tags === undefined) {
+              this.tags = [];
+            } else {
+              this.tags = doc.data().tags;
+              // hell of a map reduce function to flatten JSON
+              this.tags = this.tags.reduce((accumulator, currentValue) => {
+                return [...accumulator, currentValue.text];
+              });
+            }
           } else {
             // doc.data() will be undefined in this case
             console.log(
@@ -909,9 +933,7 @@ export default {
 
       // open app link or request access dialog
       if (
-        JSON.stringify(this.groups.channels).includes(
-          this.channels[index].name
-        ) ||
+        JSON.stringify(this.groups).includes(this.channels[index].name) ||
         this.channels[index].type === "O"
       ) {
         // Access has been granted

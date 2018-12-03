@@ -221,7 +221,7 @@ export default {
           }))
       );
 
-    // fetch data from Firestore
+    // fetch personal profile data from Firestore
     db.collection("members")
       .doc(this.$cookies.get("username"))
       .get()

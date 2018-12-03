@@ -227,9 +227,12 @@ export default {
       .get()
       .then(doc => {
         if (doc.exists) {
-          this.tags = doc.data().tags;
+          if (doc.data().tags === undefined) {
+            this.tags = [];
+          } else this.tags = doc.data().tags;
         } else {
           // doc.data() will be undefined in this case
+
           console.log(
             "No document for user " + this.$cookies.get("username") + "!"
           );
@@ -270,7 +273,7 @@ export default {
         // add tags to Firebase
         db.collection("members")
           .doc(this.$cookies.get("username"))
-          .set({
+          .update({
             tags: this.tags
           });
       } else {

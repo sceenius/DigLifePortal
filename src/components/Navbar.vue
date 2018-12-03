@@ -446,7 +446,7 @@ export default {
     showServices: false,
     showSnackbar: false,
     showProfileReminder: false,
-    activeUser: false,
+    activeUser: true,
     activeAccess: false,
     activeInfo: false,
     activeSettings: false,
@@ -454,9 +454,9 @@ export default {
     service: "",
     username: "",
     users: [],
+    channels: [],
     profile: false,
     groups: "",
-    channels: "",
     members: "",
     total: "",
     channel: "",
@@ -470,19 +470,20 @@ export default {
   created: function() {
     // https://www.smashingmagazine.com/2018/04/vuejs-firebase-firestore/
     // https://firebase.google.com/docs/firestore/query-data/listen
-    // Listen to any new document coming from Firestore
+    // Listen to any new document change coming from Firestore
     db.collection("users") // .where("state", "==", "CA")
       .onSnapshot(usersRef => {
         usersRef.docChanges().forEach(user => {
           if (user.type === "added") {
-            console.log("New user: ", user.doc.data());
+            var data = user.doc.data();
+            //console.log("New user: ", data);
             user.id = user.doc.id;
-            this.users.push(user);
-            if (user.username === this.$cookies.get("username")) {
-              this.profile = user;
-              this.username = user.username;
-              this.activeUser =
-                typeof this.profile === "undefined" ? true : false;
+            this.users.push(data);
+            if (data.username === this.$cookies.get("username")) {
+              this.profile = data;
+              this.username = this.$cookies.get("username");
+              this.activeUser = false;
+              console.log("This user: ", data);
             }
           } else if (user.type === "modified") {
             console.log("Modified user: ", user.doc.data());
@@ -492,24 +493,41 @@ export default {
         });
       });
 
-    this.axios
-      .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
-      .then(response => (this.users = response.data))
-      .then(
-        response =>
-          (this.profile = this.users.find(item => {
-            return item.username === this.$cookies.get("username");
-          }))
-      )
-      .then(
-        response =>
-          (this.username =
-            typeof this.profile === "undefined" ? "" : this.profile.username)
-      )
-      .then(
-        response =>
-          (this.activeUser = typeof this.profile === "undefined" ? true : false)
-      );
+    db.collection("channels") // .where("state", "==", "CA")
+      .onSnapshot(channelsRef => {
+        channelsRef.docChanges().forEach(channel => {
+          if (channel.type === "added") {
+            var data = channel.doc.data();
+            //console.log("New channel: ", data);
+            channel.id = channel.doc.id;
+            this.channels.push(data);
+            this.channels.sort(SortByName);
+          } else if (channel.type === "modified") {
+            console.log("Modified channel: ", channel.doc.data());
+          } else if (channel.type === "removed") {
+            console.log("Removed channel: ", channel.doc.data());
+          }
+        });
+      });
+
+    // this.axios
+    //   .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
+    //   .then(response => (this.users = response.data))
+    //   .then(
+    //     response =>
+    //       (this.profile = this.users.find(item => {
+    //         return item.username === this.$cookies.get("username");
+    //       }))
+    //   )
+    //   .then(
+    //     response =>
+    //       (this.username =
+    //         typeof this.profile === "undefined" ? "" : this.profile.username)
+    //   )
+    //   .then(
+    //     response =>
+    //       (this.activeUser = typeof this.profile === "undefined" ? true : false)
+    //   );
 
     // get all channels and tags for current user
     // BUG: the channels need a domain prefix, since the can reappear
@@ -531,25 +549,25 @@ export default {
 
     // get all channels for lederbot user and sort them
     // to build the menu structure for a given domain (team)
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
-      )
-      .then(response => (this.channels = response.data))
-      .then(
-        response =>
-          (this.channels = this.channels.reduce(function(
-            array,
-            element,
-            index
-          ) {
-            if (element.display_name.charAt(0) !== "#") array.push(element);
-            return array;
-          },
-          []))
-      )
-      .then(response => this.channels.sort(SortByName));
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+    //   )
+    //   .then(response => (this.channels = response.data))
+    //   .then(
+    //     response =>
+    //       (this.channels = this.channels.reduce(function(
+    //         array,
+    //         element,
+    //         index
+    //       ) {
+    //         if (element.display_name.charAt(0) !== "#") array.push(element);
+    //         return array;
+    //       },
+    //       []))
+    //   )
+    //   .then(response => this.channels.sort(SortByName));
 
     //  this.axios
     //   .get(

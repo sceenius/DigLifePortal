@@ -29,16 +29,19 @@ new Vue({
   }),
   created: function() {
     this.axios
-      .get(BASEURL + "webhooks/portal_users.php?file=base-diglife-coop.php")
+      .get(BASEURL + "webhooks/portal_users2.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
       .then(response => console.log(this.users))
       .then(
-        response => db.collection("users").update(this.users)
-
+        response =>
+          db
+            .collection("users")
+            .doc("diglife")
+            .set(this.users)
         // this.users.forEach(function(user) {
         //   db.collection("users")
         //     .doc(user.id)
-        //     .update({
+        //     .set({
         //       first_name: user.first_name || "",
         //       last_name: user.last_name || "",
         //       username: user.username || "",

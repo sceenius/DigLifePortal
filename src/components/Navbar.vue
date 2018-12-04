@@ -851,7 +851,7 @@ export default {
 
     nav: function(menu) {
       this.selected = menu;
-      this.showNavigation = false;
+      this.showNavigation = true;
       this.service = "";
       var element = document.getElementById("theApp");
       element.style.display = "none";

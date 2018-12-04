@@ -31,48 +31,51 @@ new Vue({
     this.axios
       .get(BASEURL + "webhooks/portal_users2.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
-      .then(response => console.log(this.users))
-      .then(
-        response =>
-          db
-            .collection("users")
-            .doc("diglife")
-            .set(this.users)
-        // this.users.forEach(function(user) {
-        //   db.collection("users")
-        //     .doc(user.id)
-        //     .set({
-        //       first_name: user.first_name || "",
-        //       last_name: user.last_name || "",
-        //       username: user.username || "",
-        //       position: user.position || "",
-        //       role: user.role || ""
-        //     });
-        // })
+      //.then(response => console.log(this.users))
+      .then(response =>
+        db
+          .database()
+          .ref("portal_users")
+          .set(this.users)
       );
 
     this.axios
       .get(
         BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+          "webhooks/portal_channels2.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      .then(response => console.log(this.channels))
+      //.then(response => console.log(this.channels))
       .then(response =>
-        this.channels.forEach(function(channel) {
-          db.collection("channels")
-            .doc(channel.id)
-            .set({
-              type: channel.type || "",
-              name: channel.name || "",
-              display_name: channel.display_name || "",
-              header: channel.header || "",
-              purpose: channel.purpose || "",
-              total_msg_count: channel.total_msg_count || "",
-              team: channel.team || ""
-            });
-        })
+        db
+          .database()
+          .ref("portal_channels")
+          .set(this.channels)
       );
+
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+    //   )
+    //   .then(response => (this.channels = response.data))
+    //   .then(response => console.log(this.channels))
+    //   .then(response =>
+    //     this.channels.forEach(function(channel) {
+    //       db.firestore()
+    //         .collection("channels")
+    //         .doc(channel.id)
+    //         .set({
+    //           type: channel.type || "",
+    //           name: channel.name || "",
+    //           display_name: channel.display_name || "",
+    //           header: channel.header || "",
+    //           purpose: channel.purpose || "",
+    //           total_msg_count: channel.total_msg_count || "",
+    //           team: channel.team || ""
+    //         });
+    //     })
+    //   );
 
     if (this.$cookies.get("username")) {
       this.axios
@@ -84,6 +87,7 @@ new Vue({
         .then(response => (this.groups = response.data))
         .then(response =>
           db
+            .firestore()
             .collection("members")
             .doc(this.$cookies.get("username"))
             .update({

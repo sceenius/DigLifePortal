@@ -313,7 +313,6 @@
         </md-list-item>
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
-
         <!-- new condition: joining domain via domain sudo group -->
         <md-list-item
           v-for="(channel, index) in channels"
@@ -409,6 +408,7 @@
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
+
       <Cards v-if="service == 'Interest Groups'" />
 
       <iframe
@@ -466,52 +466,68 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    let usersRef = db.database().ref("portal_users");
+    usersRef.on("child_added", user => {
+      //snapshot.forEach(user => {
+      this.users.push(user.val());
+      if (user.val().username === this.$cookies.get("username")) {
+        this.profile = user.val();
+        this.username = this.$cookies.get("username");
+        this.activeUser = false;
+        console.log("This user: ", user.val());
+      }
+      //});
+    });
+
+    let channelsRef = db.database().ref("portal_channels");
+    channelsRef.on("child_added", channel => {
+      if (channel.val().display_name.charAt(0) !== "#") {
+        var data = channel.val();
+        //Purpose is a JSON string that needs to be converted to an object
+        if (data.purpose !== "") {
+          data.purpose = JSON.parse(data.purpose);
+        }
+        this.channels.push(data);
+        this.channels.sort(SortByName);
+        //console.log("This channel: ", this.channels);
+      }
+    });
+
+    function SortByName(x, y) {
+      return x.display_name === y.display_name
+        ? 0
+        : x.display_name > y.display_name
+        ? 1
+        : -1;
+    }
+
     // https://www.smashingmagazine.com/2018/04/vuejs-firebase-firestore/
     // https://firebase.google.com/docs/firestore/query-data/listen
     // Listen to any new document change coming from Firestore
-    db.collection("users") // .where("state", "==", "CA")
-      .onSnapshot(usersRef => {
-        usersRef.docChanges().forEach(user => {
-          if (user.type === "added") {
-            var data = user.doc.data();
-            //console.log("New user: ", data);
-            user.id = user.doc.id;
-            this.users.push(data);
-            if (data.username === this.$cookies.get("username")) {
-              this.profile = data;
-              this.username = this.$cookies.get("username");
-              this.activeUser = false;
-              console.log("This user: ", data);
-            }
-          } else if (user.type === "modified") {
-            console.log("Modified user: ", user.doc.data());
-          } else if (user.type === "removed") {
-            console.log("Removed user: ", user.doc.data());
-          }
-        });
-      });
 
-    db.collection("channels") // .where("state", "==", "CA")
-      .onSnapshot(channelsRef => {
-        channelsRef.docChanges().forEach(channel => {
-          if (channel.type === "added") {
-            var data = channel.doc.data();
-            //console.log("New channel: ", data);
-            channel.id = channel.doc.id;
-            if (data.display_name.charAt(0) !== "#") {
-              this.channels.push(data);
-              this.channels.sort(SortByName);
-            }
-          } else if (channel.type === "modified") {
-            console.log("Modified channel: ", channel.doc.data());
-          } else if (channel.type === "removed") {
-            console.log("Removed channel: ", channel.doc.data());
-          }
-        });
-      });
+    // db.firestore()
+    //   .collection("channels") // .where("state", "==", "CA")
+    //   .onSnapshot(channelsRef => {
+    //     channelsRef.docChanges().forEach(channel => {
+    //       if (channel.type === "added") {
+    //         var data = channel.doc.data();
+    //         //console.log("New channel: ", data);
+    //         channel.id = channel.doc.id;
+    //         if (data.display_name.charAt(0) !== "#") {
+    //           this.channels.push(data);
+    //           this.channels.sort(SortByName);
+    //         }
+    //       } else if (channel.type === "modified") {
+    //         console.log("Modified channel: ", channel.doc.data());
+    //       } else if (channel.type === "removed") {
+    //         console.log("Removed channel: ", channel.doc.data());
+    //       }
+    //     });
+    //   });
 
     if (this.$cookies.get("username")) {
-      db.collection("members")
+      db.firestore()
+        .collection("members")
         .doc(this.$cookies.get("username"))
         .get()
         .then(doc => {
@@ -574,14 +590,6 @@ export default {
     //   )
     //   .then(response => (this.groups = response.data));
 
-    function SortByName(x, y) {
-      return x.display_name === y.display_name
-        ? 0
-        : x.display_name > y.display_name
-        ? 1
-        : -1;
-    }
-
     // get all channels for lederbot user and sort them
     // to build the menu structure for a given domain (team)
     // this.axios
@@ -612,7 +620,8 @@ export default {
 
     // fetch data from Firestore IF username defined
     if (this.$cookies.get("username")) {
-      db.collection("members")
+      db.firestore()
+        .collection("members")
         .doc(this.$cookies.get("username"))
         .get()
         .then(doc => {
@@ -818,7 +827,8 @@ export default {
         );
 
         // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
-        db.collection("members")
+        db.firestore()
+          .collection("members")
           .doc(this.username)
           .get()
           .then(doc => {

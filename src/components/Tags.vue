@@ -223,7 +223,8 @@ export default {
       );
 
     // fetch personal profile data from Firestore
-    db.collection("members")
+    db.firestore()
+      .collection("members")
       .doc(this.$cookies.get("username"))
       .get()
       .then(doc => {
@@ -272,7 +273,8 @@ export default {
         this.tags.push(this.autocompleteItems[index]);
 
         // add tags to Firebase
-        db.collection("members")
+        db.firestore()
+          .collection("members")
           .doc(this.$cookies.get("username"))
           .update({
             tags: this.tags
@@ -291,7 +293,8 @@ export default {
       obj.tag.text = words.join(" ");
       obj.addTag();
       // add tags to Firebase
-      db.collection("members")
+      db.firestore()
+        .collection("members")
         .doc(this.$cookies.get("username"))
         .update({
           tags: this.tags
@@ -303,7 +306,8 @@ export default {
     saveTag(arr) {
       this.tags = arr;
       // add tags to Firebase
-      db.collection("members")
+      db.firestore()
+        .collection("members")
         .doc(this.$cookies.get("username"))
         .set({
           tags: this.tags

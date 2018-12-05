@@ -202,17 +202,27 @@ export default {
     let groupsRef = db
       .database()
       .ref("portal_profiles/" + this.$cookies.get("username"));
-    groupsRef.once("value").then(group => {
-      this.grouptags = group.val().grouptags;
-      this.tags = group.val().tags;
-    });
+    groupsRef
+      .once("value")
+      .then(group => {
+        this.grouptags = group.val().grouptags;
+        this.tags = group.val().tags;
+      })
+      .catch(error => {
+        console.log("code:" + error.code + " message:" + error.message);
+      });
 
     // load ledgerbot channels and tags from group membership
-    let groupsRef = db.database().ref("portal_profiles/ledgerbot");
-    groupsRef.once("value").then(group => {
-      this.autocompleteItems = group.val().tags;
-      console.log("ALL" + this.autocompleteItems);
-    });
+    groupsRef = db.database().ref("portal_profiles/ledgerbot");
+    groupsRef
+      .once("value")
+      .then(group => {
+        this.autocompleteItems = group.val().tags;
+        console.log("ALL" + this.autocompleteItems);
+      })
+      .catch(error => {
+        console.log("code:" + error.code + " message:" + error.message);
+      });
 
     // load personal profile from users
     this.profile = this.users.find(item => {

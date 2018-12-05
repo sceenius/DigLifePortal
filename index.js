@@ -83,49 +83,5 @@ new Vue({
           .ref("portal_profiles/ledgerbot")
           .set(this.groups)
       );
-
-    // this.axios
-    //   .get(
-    //     BASEURL +
-    //       "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
-    //   )
-    //   .then(response => (this.channels = response.data))
-    //   .then(response => console.log(this.channels))
-    //   .then(response =>
-    //     this.channels.forEach(function(channel) {
-    //       db.firestore()
-    //         .collection("channels")
-    //         .doc(channel.id)
-    //         .set({
-    //           type: channel.type || "",
-    //           name: channel.name || "",
-    //           display_name: channel.display_name || "",
-    //           header: channel.header || "",
-    //           purpose: channel.purpose || "",
-    //           total_msg_count: channel.total_msg_count || "",
-    //           team: channel.team || ""
-    //         });
-    //     })
-    //   );
-
-    // if (this.$cookies.get("username")) {
-    //   this.axios
-    //     .get(
-    //       BASEURL +
-    //         "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-    //         this.$cookies.get("username")
-    //     )
-    //     .then(response => (this.groups = response.data))
-    //     .then(response =>
-    //       db
-    //         .firestore()
-    //         .collection("members")
-    //         .doc(this.$cookies.get("username"))
-    //         .update({
-    //           groups: this.groups.channels || "",
-    //           grouptags: this.groups.tags || ""
-    //         })
-    //     );
-    // }
   }
 });

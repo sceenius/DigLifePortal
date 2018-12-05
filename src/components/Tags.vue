@@ -21,7 +21,7 @@
       >
         <!-- v-if="props.tag.verified" -->
         <md-icon
-          v-if="tags && JSON.stringify(tags).includes(props.tag.text)"
+          v-if="grouptags && JSON.stringify(grouptags).includes(props.tag.text)"
           style="color: white; margin: -2px 3px 0 0; font-size: 20px !important;"
           >verified_user</md-icon
         >
@@ -38,7 +38,7 @@
         :key="tag.id"
         @click="addTag(index);"
       >
-        {{ tag.text }} {{ tag.frequency }}
+        {{ tag.text }}
       </md-chip>
     </div>
   </div>
@@ -60,6 +60,7 @@ export default {
       tag: "",
       grouptags: [],
       channels: [],
+      users: [],
       tags: [
         // { text: "Knowledge Management", verified: true },
         // { text: "Web Design", verified: true },
@@ -205,8 +206,12 @@ export default {
     groupsRef
       .once("value")
       .then(group => {
-        this.grouptags = group.val().grouptags;
-        this.tags = group.val().tags;
+        if (group.val().grouptags) {
+          this.grouptags = group.val().grouptags;
+        }
+        if (group.val().tags) {
+          this.tags = group.val().tags;
+        }
       })
       .catch(error => {
         console.log("code:" + error.code + " message:" + error.message);
@@ -217,17 +222,34 @@ export default {
     groupsRef
       .once("value")
       .then(group => {
-        this.autocompleteItems = group.val().tags;
+        this.autocompleteItems = group.val().grouptags;
+
         console.log("ALL" + this.autocompleteItems);
       })
+      .then(
+        group =>
+          (this.autocompleteItems = this.autocompleteItems.map(function(
+            element
+          ) {
+            return { text: element };
+          }))
+      )
       .catch(error => {
         console.log("code:" + error.code + " message:" + error.message);
       });
 
-    // load personal profile from users
-    this.profile = this.users.find(item => {
-      return item.username === this.$cookies.get("username");
+    let usersRef = db.database().ref("portal_users");
+    usersRef.on("child_added", user => {
+      this.users.push(user.val());
+      if (user.val().username === this.$cookies.get("username")) {
+        this.profile = user.val();
+      }
     });
+
+    // load personal profile from users
+    // this.profile = this.users.find(item => {
+    //   return item.username === this.$cookies.get("username");
+    // });
 
     // //fetch user channels and channel tags
     // this.axios
@@ -287,33 +309,35 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     addTag: function(index) {
+      // convert tag to title case
+      let words = this.autocompleteItems[index].text
+        .split(" ")
+        .filter(str => str !== "");
+      // capitalize
+      words = words.map(str => str[0].toUpperCase() + str.slice(1));
+      this.autocompleteItems[index].text = words.join(" ");
+
       // check for dupes in This.tags
       if (
         !JSON.stringify(this.tags).includes(
           '"' + this.autocompleteItems[index].text + '"'
         )
       ) {
-        // convert tag to title case
-        let words = this.autocompleteItems[index].text
-          .split(" ")
-          .filter(str => str !== "");
-        // capitalize
-        words = words.map(str => str[0].toUpperCase() + str.slice(1));
-        this.autocompleteItems[index].text = words.join(" ");
-
         this.tags.push(this.autocompleteItems[index]);
-
         // add tags to Firebase
+        console.log("New Tags:" + this.tags);
         db.database()
           .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
-          .update(this.tags);
+          .set(this.tags);
       } else {
         alert("This is a duplicate!");
       }
     },
+
     deleteTag(obj) {
       obj.deleteTag();
     },
+
     formatTag(obj) {
       let words = obj.tag.text.split(" ").filter(str => str !== "");
       // capitalize
@@ -323,7 +347,7 @@ export default {
       // add tags to Firebase
       db.database()
         .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
-        .update(this.tags);
+        .set(this.tags);
     },
     addDupe(obj) {
       alert("This is a duplicate!");

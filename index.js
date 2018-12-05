@@ -36,7 +36,7 @@ new Vue({
         db
           .database()
           .ref("portal_users")
-          .set(this.users)
+          .update(this.users)
       );
 
     this.axios
@@ -50,7 +50,7 @@ new Vue({
         db
           .database()
           .ref("portal_channels")
-          .set(this.channels)
+          .update(this.channels)
       );
 
     if (this.$cookies.get("username")) {
@@ -66,7 +66,7 @@ new Vue({
           db
             .database()
             .ref("portal_profiles/" + this.$cookies.get("username"))
-            .set(this.groups)
+            .update(this.groups)
         );
     }
 
@@ -81,7 +81,7 @@ new Vue({
         db
           .database()
           .ref("portal_profiles/ledgerbot")
-          .set(this.groups)
+          .update(this.groups)
       );
   }
 });

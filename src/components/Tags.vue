@@ -21,7 +21,7 @@
       >
         <!-- v-if="props.tag.verified" -->
         <md-icon
-          v-if="groups && JSON.stringify(groups.tags).includes(props.tag.text)"
+          v-if="tags && JSON.stringify(tags).includes(props.tag.text)"
           style="color: white; margin: -2px 3px 0 0; font-size: 20px !important;"
           >verified_user</md-icon
         >
@@ -198,29 +198,49 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    //fetch user channels and channel tags
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
-          this.$cookies.get("username")
-      )
-      .then(response => (this.groups = response.data));
+    // load personal channels and tags from group membership
+    let groupsRef = db
+      .database()
+      .ref("portal_groups/" + this.$cookies.get("username"));
+    groupsRef.once("value").then(group => {
+      this.tags = group.val().tags;
+    });
 
-    //fetch ledgerbot (=all) channels and channel tags
-    // FEATURE --- AGGREGATE FROM FB
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_groups.php?file=base-diglife-coop.php&username=ledgerbot"
-      )
-      .then(response => (this.channels = response.data))
-      .then(
-        response =>
-          (this.autocompleteItems = this.channels.tags.map(function(element) {
-            return { text: element };
-          }))
-      );
+    // load ledgerbot channels and tags from group membership
+    let groupsRef = db.database().ref("portal_groups/ledgerbot");
+    groupsRef.once("value").then(group => {
+      this.autocompleteItems = group.val().tags;
+      console.log("ALL" + this.autocompleteItems);
+    });
+
+    // load personal profile from users
+    this.profile = this.users.find(item => {
+      return item.username === this.$cookies.get("username");
+    });
+
+    // //fetch user channels and channel tags
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
+    //       this.$cookies.get("username")
+    //   )
+    //   .then(response => (this.groups = response.data));
+
+    // //fetch ledgerbot (=all) channels and channel tags
+    // // FEATURE --- AGGREGATE FROM FB
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_groups.php?file=base-diglife-coop.php&username=ledgerbot"
+    //   )
+    //   .then(response => (this.channels = response.data))
+    //   .then(
+    //     response =>
+    //       (this.autocompleteItems = this.channels.tags.map(function(element) {
+    //         return { text: element };
+    //       }))
+    //   );
 
     // fetch personal profile data from Firestore
     db.firestore()

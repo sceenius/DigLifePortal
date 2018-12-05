@@ -454,7 +454,7 @@ export default {
     users: [],
     channels: [],
     profile: false,
-    groups: "",
+    groups: [],
     members: "",
     total: "",
     channel: "",
@@ -484,9 +484,9 @@ export default {
       if (channel.val().display_name.charAt(0) !== "#") {
         var data = channel.val();
         //Purpose is a JSON string that needs to be converted to an object
-        if (data.purpose !== "") {
-          data.purpose = JSON.parse(data.purpose);
-        }
+        // if (data.purpose !== "") {
+        //   data.purpose = JSON.parse(data.purpose);
+        // }
         this.channels.push(data);
         this.channels.sort(SortByName);
         //console.log("This channel: ", this.channels);
@@ -524,31 +524,43 @@ export default {
     //       }
     //     });
     //   });
-
     if (this.$cookies.get("username")) {
-      db.firestore()
-        .collection("members")
-        .doc(this.$cookies.get("username"))
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            if (doc.data().groups === undefined) {
-              this.groups = [];
-            } else {
-              this.groups = doc.data().groups;
-              console.log("New groups: ", this.groups);
-            }
-          } else {
-            // doc.data() will be undefined in this case
-            console.log(
-              "No document for user " + this.$cookies.get("username") + "!"
-            );
-          }
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        });
+      let groupsRef = db
+        .database()
+        .ref("portal_groups/" + this.$cookies.get("username"));
+      groupsRef.on("child_added", group => {
+        var data = group.val();
+        if (group.key === "channels") {
+          this.groups = group.val();
+        }
+        //console.log("New Groups: "+group.key, this.groups);
+      });
     }
+
+    // if (this.$cookies.get("username")) {
+    //   db.firestore()
+    //     .collection("members")
+    //     .doc(this.$cookies.get("username"))
+    //     .get()
+    //     .then(doc => {
+    //       if (doc.exists) {
+    //         if (doc.data().groups === undefined) {
+    //           this.groups = [];
+    //         } else {
+    //           this.groups = doc.data().groups;
+    //           console.log("New groups: ", this.groups);
+    //         }
+    //       } else {
+    //         // doc.data() will be undefined in this case
+    //         console.log(
+    //           "No document for user " + this.$cookies.get("username") + "!"
+    //         );
+    //       }
+    //     })
+    //     .catch(function(error) {
+    //       console.log("Error getting document:", error);
+    //     });
+    // }
     //     response =>
     //       (this.channels = this.channels.reduce(function(
     //         array,
@@ -619,33 +631,33 @@ export default {
     //   .then(response => (this.total = response.data));
 
     // fetch data from Firestore IF username defined
-    if (this.$cookies.get("username")) {
-      db.firestore()
-        .collection("members")
-        .doc(this.$cookies.get("username"))
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            if (doc.data().tags === undefined) {
-              this.tags = [];
-            } else {
-              this.tags = doc.data().tags;
-              // hell of a map reduce function to flatten JSON
-              this.tags = this.tags.reduce((accumulator, currentValue) => {
-                return [...accumulator, currentValue.text];
-              });
-            }
-          } else {
-            // doc.data() will be undefined in this case
-            console.log(
-              "No document for user " + this.$cookies.get("username") + "!"
-            );
-          }
-        })
-        .catch(function(error) {
-          console.log("Error getting document:", error);
-        });
-    }
+    // if (this.$cookies.get("username")) {
+    //   db.firestore()
+    //     .collection("members")
+    //     .doc(this.$cookies.get("username"))
+    //     .get()
+    //     .then(doc => {
+    //       if (doc.exists) {
+    //         if (doc.data().tags === undefined) {
+    //           this.tags = [];
+    //         } else {
+    //           this.tags = doc.data().tags;
+    //           // hell of a map reduce function to flatten JSON
+    //           this.tags = this.tags.reduce((accumulator, currentValue) => {
+    //             return [...accumulator, currentValue.text];
+    //           });
+    //         }
+    //       } else {
+    //         // doc.data() will be undefined in this case
+    //         console.log(
+    //           "No document for user " + this.$cookies.get("username") + "!"
+    //         );
+    //       }
+    //     })
+    //     .catch(function(error) {
+    //       console.log("Error getting document:", error);
+    //     });
+    // }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -804,20 +816,34 @@ export default {
         // cookies are not stored on mobile devices, new prommpt for every session
         this.$cookies.set("username", this.username);
 
-        // update groups and profile for newly logged in user (no cookie set)
-        this.axios
-          .get(
-            BASEURL +
-              "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-              this.username
-          )
-          .then(response => (this.groups = response.data))
-          .then(
-            response =>
-              (this.profile = this.users.find(item => {
-                return item.username === this.username;
-              }))
-          );
+        // load personal channels and tags from group membership
+        let groupsRef = db.database().ref("portal_groups/" + this.username);
+        groupsRef.once("value").then(group => {
+          this.groups = group.val().channels;
+          //console.log("This channel:" + this.groups);
+          this.tags = group.val().tags;
+          //console.log("This tag:" + this.tags[1]);
+        });
+
+        // load personal profile from users
+        this.profile = this.users.find(item => {
+          return item.username === this.username;
+        });
+
+        // // update groups and profile for newly logged in user (no cookie set)
+        // this.axios
+        //   .get(
+        //     BASEURL +
+        //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+        //       this.username
+        //   )
+        //   .then(response => (this.groups = response.data))
+        //   .then(
+        //     response =>
+        //       (this.profile = this.users.find(item => {
+        //         return item.username === this.username;
+        //       }))
+        //   );
 
         // update theme for user
         this.axios.get(
@@ -826,28 +852,27 @@ export default {
             this.username
         );
 
-        // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
-        db.firestore()
-          .collection("members")
-          .doc(this.username)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              this.tags = doc.data().tags;
-              // hell of a map reduce function to flatten JSON
-              this.tags = this.tags.reduce((accumulator, currentValue) => {
-                return [...accumulator, currentValue.text];
-              });
-            } else {
-              // doc.data() will be undefined in this case
-              console.log("No document for user " + this.username + "!");
-            }
-          })
-          .catch(function(error) {
-            console.log("Error getting document:", error);
-          });
+        // // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
+        // db.firestore()
+        //   .collection("members")
+        //   .doc(this.username)
+        //   .get()
+        //   .then(doc => {
+        //     if (doc.exists) {
+        //       this.tags = doc.data().tags;
+        //       // hell of a map reduce function to flatten JSON
+        //       this.tags = this.tags.reduce((accumulator, currentValue) => {
+        //         return [...accumulator, currentValue.text];
+        //       });
+        //     } else {
+        //       // doc.data() will be undefined in this case
+        //       console.log("No document for user " + this.username + "!");
+        //     }
+        //   })
+        //   .catch(function(error) {
+        //     console.log("Error getting document:", error);
+        //   });
 
-        console.log(JSON.stringify(this.groups.channels));
         this.showProfileReminder = true;
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();

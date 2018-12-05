@@ -53,6 +53,37 @@ new Vue({
           .set(this.channels)
       );
 
+    if (this.$cookies.get("username")) {
+      this.axios
+        .get(
+          BASEURL +
+            "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+            this.$cookies.get("username")
+        )
+        .then(response => (this.groups = response.data))
+        //.then(response => console.log(this.channels))
+        .then(response =>
+          db
+            .database()
+            .ref("portal_groups/" + this.$cookies.get("username"))
+            .set(this.groups)
+        );
+    }
+
+    this.axios
+      .get(
+        BASEURL +
+          "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=ledgerbot"
+      )
+      .then(response => (this.groups = response.data))
+      //.then(response => console.log(this.channels))
+      .then(response =>
+        db
+          .database()
+          .ref("portal_groups/ledgerbot")
+          .set(this.groups)
+      );
+
     // this.axios
     //   .get(
     //     BASEURL +

@@ -399,10 +399,10 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <p id="welcome" v-if="profile && profile.first_name && !service">
+      <p id="welcome" v-if="profile && profile.first_name && service == ''">
         Welcome back, <a @click="onReopen();">{{ profile.first_name }}</a>
       </p>
-      <p id="welcome" v-else>
+      <p id="welcome" v-if="profile && service == ''">
         Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
@@ -428,7 +428,6 @@ import { BASEURL, CHATURL } from "/constants.js";
 import Particles from "@/components/Particles";
 import Tags from "@/components/Tags";
 import Cards from "@/components/Cards";
-
 import Slack from "node-slack";
 import db from "@/firebase/init";
 

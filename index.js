@@ -4,6 +4,7 @@ import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
+import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";
 import { BASEURL, CHATURL } from "/constants.js";

@@ -61,6 +61,7 @@ export default {
       grouptags: [],
       channels: [],
       users: [],
+      items: [],
       tags: [
         // { text: "Knowledge Management", verified: true },
         // { text: "Web Design", verified: true },
@@ -222,18 +223,18 @@ export default {
     groupsRef
       .once("value")
       .then(group => {
-        this.autocompleteItems = group.val().grouptags;
+        this.items = group.val().grouptags;
 
-        console.log("ALL" + this.autocompleteItems);
+        //console.log("ALL" + this.autocompleteItems);
       })
       .then(
         group =>
-          (this.autocompleteItems = this.autocompleteItems.map(function(
-            element
-          ) {
+          (this.autocompleteItems = this.items.map(function(element) {
             return { text: element };
           }))
       )
+      //.then(group => console.log("ALL: " + this.autocompleteItems))
+
       .catch(error => {
         console.log("code:" + error.code + " message:" + error.message);
       });
@@ -325,7 +326,7 @@ export default {
       ) {
         this.tags.push(this.autocompleteItems[index]);
         // add tags to Firebase
-        console.log("New Tags:" + this.tags);
+        //console.log("New Tags:" + this.tags);
         db.database()
           .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
           .set(this.tags);

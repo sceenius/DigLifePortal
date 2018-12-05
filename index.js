@@ -108,24 +108,24 @@ new Vue({
     //     })
     //   );
 
-    if (this.$cookies.get("username")) {
-      this.axios
-        .get(
-          BASEURL +
-            "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-            this.$cookies.get("username")
-        )
-        .then(response => (this.groups = response.data))
-        .then(response =>
-          db
-            .firestore()
-            .collection("members")
-            .doc(this.$cookies.get("username"))
-            .update({
-              groups: this.groups.channels || "",
-              grouptags: this.groups.tags || ""
-            })
-        );
-    }
+    // if (this.$cookies.get("username")) {
+    //   this.axios
+    //     .get(
+    //       BASEURL +
+    //         "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+    //         this.$cookies.get("username")
+    //     )
+    //     .then(response => (this.groups = response.data))
+    //     .then(response =>
+    //       db
+    //         .firestore()
+    //         .collection("members")
+    //         .doc(this.$cookies.get("username"))
+    //         .update({
+    //           groups: this.groups.channels || "",
+    //           grouptags: this.groups.tags || ""
+    //         })
+    //     );
+    // }
   }
 });

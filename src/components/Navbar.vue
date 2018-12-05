@@ -527,7 +527,7 @@ export default {
     if (this.$cookies.get("username")) {
       let groupsRef = db
         .database()
-        .ref("portal_groups/" + this.$cookies.get("username"));
+        .ref("portal_profiles/" + this.$cookies.get("username"));
       groupsRef.on("child_added", group => {
         var data = group.val();
         if (group.key === "channels") {
@@ -597,7 +597,7 @@ export default {
     // this.axios
     //   .get(
     //     BASEURL +
-    //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+    //       "webhooks/portal_profiles2.php?file=base-diglife-coop.php&username=" +
     //       this.$cookies.get("username")
     //   )
     //   .then(response => (this.groups = response.data));
@@ -817,7 +817,7 @@ export default {
         this.$cookies.set("username", this.username);
 
         // load personal channels and tags from group membership
-        let groupsRef = db.database().ref("portal_groups/" + this.username);
+        let groupsRef = db.database().ref("portal_profiles/" + this.username);
         groupsRef.once("value").then(group => {
           this.groups = group.val().channels;
           //console.log("This channel:" + this.groups);
@@ -834,7 +834,7 @@ export default {
         // this.axios
         //   .get(
         //     BASEURL +
-        //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+        //       "webhooks/portal_profiles2.php?file=base-diglife-coop.php&username=" +
         //       this.username
         //   )
         //   .then(response => (this.groups = response.data))

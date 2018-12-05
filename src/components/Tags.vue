@@ -58,8 +58,8 @@ export default {
   data() {
     return {
       tag: "",
-      groups: "",
-      channels: "",
+      grouptags: [],
+      channels: [],
       tags: [
         // { text: "Knowledge Management", verified: true },
         // { text: "Web Design", verified: true },
@@ -201,13 +201,14 @@ export default {
     // load personal channels and tags from group membership
     let groupsRef = db
       .database()
-      .ref("portal_groups/" + this.$cookies.get("username"));
+      .ref("portal_profiles/" + this.$cookies.get("username"));
     groupsRef.once("value").then(group => {
+      this.grouptags = group.val().grouptags;
       this.tags = group.val().tags;
     });
 
     // load ledgerbot channels and tags from group membership
-    let groupsRef = db.database().ref("portal_groups/ledgerbot");
+    let groupsRef = db.database().ref("portal_profiles/ledgerbot");
     groupsRef.once("value").then(group => {
       this.autocompleteItems = group.val().tags;
       console.log("ALL" + this.autocompleteItems);
@@ -222,7 +223,7 @@ export default {
     // this.axios
     //   .get(
     //     BASEURL +
-    //       "webhooks/portal_groups.php?file=base-diglife-coop.php&username=" +
+    //       "webhooks/portal_profiles.php?file=base-diglife-coop.php&username=" +
     //       this.$cookies.get("username")
     //   )
     //   .then(response => (this.groups = response.data));
@@ -232,7 +233,7 @@ export default {
     // this.axios
     //   .get(
     //     BASEURL +
-    //       "webhooks/portal_groups.php?file=base-diglife-coop.php&username=ledgerbot"
+    //       "webhooks/portal_profiles.php?file=base-diglife-coop.php&username=ledgerbot"
     //   )
     //   .then(response => (this.channels = response.data))
     //   .then(
@@ -243,26 +244,26 @@ export default {
     //   );
 
     // fetch personal profile data from Firestore
-    db.firestore()
-      .collection("members")
-      .doc(this.$cookies.get("username"))
-      .get()
-      .then(doc => {
-        if (doc.exists) {
-          if (doc.data().tags === undefined) {
-            this.tags = [];
-          } else this.tags = doc.data().tags;
-        } else {
-          // doc.data() will be undefined in this case
+    // db.firestore()
+    //   .collection("members")
+    //   .doc(this.$cookies.get("username"))
+    //   .get()
+    //   .then(doc => {
+    //     if (doc.exists) {
+    //       if (doc.data().tags === undefined) {
+    //         this.tags = [];
+    //       } else this.tags = doc.data().tags;
+    //     } else {
+    //       // doc.data() will be undefined in this case
 
-          console.log(
-            "No document for user " + this.$cookies.get("username") + "!"
-          );
-        }
-      })
-      .catch(function(error) {
-        console.log("Error getting document:", error);
-      });
+    //       console.log(
+    //         "No document for user " + this.$cookies.get("username") + "!"
+    //       );
+    //     }
+    //   })
+    //   .catch(function(error) {
+    //     console.log("Error getting document:", error);
+    //   });
   },
   computed: {
     filteredItems() {
@@ -293,12 +294,9 @@ export default {
         this.tags.push(this.autocompleteItems[index]);
 
         // add tags to Firebase
-        db.firestore()
-          .collection("members")
-          .doc(this.$cookies.get("username"))
-          .update({
-            tags: this.tags
-          });
+        db.database()
+          .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+          .update(this.tags);
       } else {
         alert("This is a duplicate!");
       }
@@ -313,12 +311,9 @@ export default {
       obj.tag.text = words.join(" ");
       obj.addTag();
       // add tags to Firebase
-      db.firestore()
-        .collection("members")
-        .doc(this.$cookies.get("username"))
-        .update({
-          tags: this.tags
-        });
+      db.database()
+        .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+        .update(this.tags);
     },
     addDupe(obj) {
       alert("This is a duplicate!");
@@ -326,12 +321,9 @@ export default {
     saveTag(arr) {
       this.tags = arr;
       // add tags to Firebase
-      db.firestore()
-        .collection("members")
-        .doc(this.$cookies.get("username"))
-        .set({
-          tags: this.tags
-        });
+      db.database()
+        .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+        .update(this.tags);
     }
   }
 };

@@ -65,7 +65,7 @@ new Vue({
         .then(response =>
           db
             .database()
-            .ref("portal_groups/" + this.$cookies.get("username"))
+            .ref("portal_profiles/" + this.$cookies.get("username"))
             .set(this.groups)
         );
     }
@@ -80,7 +80,7 @@ new Vue({
       .then(response =>
         db
           .database()
-          .ref("portal_groups/ledgerbot")
+          .ref("portal_profiles/ledgerbot")
           .set(this.groups)
       );
 

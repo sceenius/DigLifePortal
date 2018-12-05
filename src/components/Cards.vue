@@ -118,24 +118,42 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+
+        let channelsRef = db.database().ref("portal_channels");
+    channelsRef.on("child_added", channel => {
+      if (channel.val().display_name.charAt(0) === "#") {
+        this.topics.push(channel.val());
+        this.topics.sort(SortByName);
+      }
+    });
+
+    function SortByName(x, y) {
+      return x.display_name === y.display_name
+        ? 0
+        : x.display_name > y.display_name
+        ? 1
+        : -1;
+    }
+
+
     // get all channels for lederbot user and sort them
     // to get a list of research topics for the cards
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
-      )
-      .then(response => (this.channels = response.data))
-      // build new list for Interest Groups
-      .then(
-        response =>
-          (this.topics = this.channels.reduce(function(array, element, index) {
-            if (element.display_name.charAt(0) === "#") array.push(element);
-            return array;
-          }, []))
-      )
-      .then(response => console.log(this.topics));
-  },
+  //   this.axios
+  //     .get(
+  //       BASEURL +
+  //         "webhooks/portal_channels.php?file=base-diglife-coop.php&username=ledgerbot"
+  //     )
+  //     .then(response => (this.channels = response.data))
+  //     // build new list for Interest Groups
+  //     .then(
+  //       response =>
+  //         (this.topics = this.channels.reduce(function(array, element, index) {
+  //           if (element.display_name.charAt(0) === "#") array.push(element);
+  //           return array;
+  //         }, []))
+  //     )
+  //     .then(response => console.log(this.topics));
+  // },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html

@@ -1,8 +1,6 @@
 <template>
   <div>
-    <p style="margin-top:-20px">
-      Your skillsets and expertise (not interests):
-    </p>
+    <p style="margin-top:-20px">Your skillsets & expertise (not interests):</p>
     <vue-tags-input
       v-model="tag"
       :tags="tags"
@@ -29,7 +27,7 @@
     </vue-tags-input>
 
     <div>
-      <p>Skillsets and expertise needed in work teams:</p>
+      <p>Skillsets and expertise needed in work teams & interest groups:</p>
       <md-chip
         style="margin: 3px;"
         v-bind:style="{ opacity: tag.frequency / 10 + 0.1 }"

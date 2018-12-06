@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter">
+  <div class="md-layout md-gutter" v-if="service == ''">
     <md-card
       md-with-hover
       v-for="(topic, index) in topics"
@@ -32,9 +32,9 @@
           </md-card-media>
         </md-card-header>
         <md-card-area
-          style="height: 65px; margin: -15px 0 -15px 15px; overflow: auto;"
+          style="height: 75px; margin: -15px 0 -15px 15px; overflow: auto;"
         >
-          <p class="info">
+          <p class="info" v-if="topic.purpose.tags">
             <md-icon>local_offer</md-icon>
             {{
               topic.purpose.tags
@@ -66,33 +66,15 @@
         </md-card-actions>
       </md-card-area>
       <div class="md-card-footer">
-        <md-avatar>
+        <md-avatar style="border: 2px solid yellow;">
           <img
-            title="Jim"
-            src="https://ledger.diglife.coop/images/avatars/avatar_jimscarver.png"
+            title="Owner"
+            v-bind:src="avatarLink(topic.creator)"
             alt="Avatar"
           />
         </md-avatar>
-        <md-avatar>
-          <img
-            title="Christina"
-            src="https://ledger.diglife.coop/images/avatars/avatar_christina.png"
-            alt="Avatar"
-          />
-        </md-avatar>
-        <md-avatar>
-          <img
-            title="Joachim"
-            src="https://ledger.diglife.coop/images/avatars/avatar_joachim.png"
-            alt="Avatar"
-          />
-        </md-avatar>
-        <md-avatar>
-          <img
-            title="Graham"
-            src="https://ledger.diglife.coop/images/avatars/avatar_graham.png"
-            alt="Avatar"
-          />
+        <md-avatar v-for="(member, index) in topic.members" :key="index">
+          <img title="Member" v-bind:src="avatarLink(member)" alt="Avatar" />
         </md-avatar>
       </div>
     </md-card>
@@ -109,6 +91,7 @@ export default {
   components: {},
   data() {
     return {
+      service: "",
       tag: "",
       channels: [],
       topics: []
@@ -134,11 +117,19 @@ export default {
     }
   },
   ///////////////////////////////////////////////////////////////////////////////
+  //  COMPUTED - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
+  computed: {},
+  ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    // compute v-bind:src for img
+    avatarLink: function(username) {
+      return BASEURL + "images/avatars/avatar_" + username + ".png";
+    },
+
     openGroup: function(link, service) {
-      this.service = service;
       window.open(link, "_blank");
     }
   }
@@ -149,8 +140,8 @@ export default {
 .md-card {
   width: 340px;
   max-width: 340px;
-  height: 315px;
-  max-height: 315px;
+  height: 320px;
+  max-height: 320px;
   margin: 14px;
   display: inline-block;
   vertical-align: top;

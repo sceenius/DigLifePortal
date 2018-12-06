@@ -32,6 +32,11 @@
         DIALOG BOXES  - https://vuematerial.io/components/dialog
       ----------------------------------------------------------------------
     -->
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - SETTINGS DIALOG
+      ----------------------------------------------------------------------
+    -->
     <md-dialog :md-active.sync="activeSettings">
       <md-dialog-title>My Settings</md-dialog-title>
       <md-tabs md-dynamic-height>
@@ -61,6 +66,11 @@
       </md-tabs>
     </md-dialog>
 
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - LOGIN DIALOG
+      ----------------------------------------------------------------------
+    -->
     <md-dialog
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
@@ -95,6 +105,11 @@
       </div>
     </md-dialog>
 
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - INFO  DIALOG
+      ----------------------------------------------------------------------
+    -->
     <md-dialog :md-active.sync="activeInfo" id="info">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title>{{ service }}</md-dialog-title>
@@ -133,10 +148,15 @@
       </md-dialog-actions>
     </md-dialog>
 
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - SUDO DIALOG
+      ----------------------------------------------------------------------
+    -->
     <md-dialog :md-active.sync="activeAccess" id="access">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title>{{
-        service.replace(/[!#*@%/.><"'\\&]/, "")
+        service.replace(/[!#*@%/."'\\&]/, "")
       }}</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
@@ -194,7 +214,7 @@
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title"
         >{{ service ? "" : "DigLife" }} {{ service ? "" : selected }}
-        {{ service.replace(/[!#*@%/.><"'\\&]/, "") }}</span
+        {{ service.replace(/[!#*@%/."'\\&]/, "") }}</span
       >
 
       <div class="md-toolbar-section-end">
@@ -331,7 +351,7 @@
         >
           <md-icon>{{ channel.purpose.icon }}</md-icon>
           <span class="md-list-item-text">{{
-            channel.display_name.replace(/[!#*@%/.><"'\\&]/, "")
+            channel.display_name.replace(/[!#*@%/."'\\&]/, "")
           }}</span>
           <!--
             check the channel membership of the current user OR public channel
@@ -405,7 +425,6 @@
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
-
       <Cards v-if="service == 'Interest Groups'" />
 
       <iframe
@@ -669,15 +688,6 @@ export default {
         // cookies are not stored on mobile devices, new prommpt for every session
         this.$cookies.set("username", this.username);
 
-        // load personal channels and tags from group membership
-        let groupsRef = db.database().ref("portal_profiles/" + this.username);
-        groupsRef.once("value").then(group => {
-          this.groups = group.val().channels;
-          //console.log("This channel:" + this.groups);
-          this.tags = group.val().tags;
-          //console.log("This tag:" + this.tags[1]);
-        });
-
         // load personal profile from users
         this.profile = this.users.find(item => {
           return item.username === this.username;
@@ -704,6 +714,34 @@ export default {
             "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
             this.username
         );
+
+        this.axios
+          .get(
+            BASEURL +
+              "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+              this.username
+          )
+          .then(response => (this.groups = response.data))
+          //.then(response => console.log(this.channels))
+          .then(response =>
+            db
+              .database()
+              .ref("portal_profiles/" + this.username)
+              .update(this.groups)
+          )
+          .then(
+            // load personal channels and tags from group membership
+            db
+              .database()
+              .ref("portal_profiles/" + this.username)
+              .once("value")
+              .then(group => {
+                this.groups = group.val().channels;
+                //console.log("This channel:" + this.groups);
+                this.tags = group.val().tags;
+                //console.log("This tag:" + this.tags[1]);
+              })
+          );
 
         // // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
         // db.firestore()

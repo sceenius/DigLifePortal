@@ -74,7 +74,7 @@
         <md-field id="username">
           <label>Username</label>
           <md-input
-            v-model="username"
+            v-model.lazy="username"
             @keyup.prevent.esc="onConfirm();"
             @keyup.enter="onConfirm();"
             required
@@ -399,9 +399,6 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <p id="welcome" v-if="profile && profile.first_name && service == ''">
-        Welcome back, <a @click="onReopen();">{{ profile.first_name }}</a>
-      </p>
       <p id="welcome" v-if="profile && service == ''">
         Welcome, <a @click="onReopen();">{{ username }}</a>
       </p>
@@ -520,7 +517,9 @@ export default {
   computed: {
     // compute v-bind:src for img
     avatarLink: function() {
-      return BASEURL + "images/avatars/avatar_" + this.username + ".png";
+      return (
+        BASEURL + "images/avatars/avatar_" + this.profile.username + ".png"
+      );
     },
     // compute v-bind:src for im54321`
     logoLink: function() {
@@ -585,7 +584,7 @@ export default {
     },
 
     directMessage: function(member_id) {
-      // create new direct message channel, if not exists
+      // create new direct message channel, if none exists
       this.axios
         .get(
           BASEURL +

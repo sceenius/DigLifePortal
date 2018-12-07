@@ -2,9 +2,9 @@
   <div class="md-layout md-gutter" v-if="service == ''">
     <md-card
       md-with-hover
+      v-if="(showServices && isMember(topic)) || !showServices"
       v-for="(topic, index) in topics"
       :key="index"
-      v-bind:class="'card' + topic"
       class="md-layout-item"
     >
       <md-card-header>
@@ -90,7 +90,11 @@
             </md-avatar
           -->
           <md-avatar v-for="(member, index) in topic.members" :key="index">
-            <img title="Member" v-bind:src="avatarLink(member)" alt="Avatar" />
+            <img
+              v-bind:title="member"
+              v-bind:src="avatarLink(member)"
+              alt="Avatar"
+            />
           </md-avatar>
         </div>
       </div>
@@ -110,7 +114,9 @@ export default {
     return {
       service: "",
       tag: "",
+      showServices: false,
       result: "",
+      status: "",
       topics: [],
       groups: [],
       tags: []
@@ -120,6 +126,21 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    let prefsRef = db
+      .database()
+      .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+    prefsRef.on("child_added", pref => {
+      if (pref.key === "showServices") {
+        this.showServices = pref.val();
+      }
+    });
+
+    prefsRef.on("child_changed", pref => {
+      if (pref.key === "showServices") {
+        this.showServices = pref.val();
+      }
+    });
+
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
       let data = channel.val();
@@ -128,6 +149,14 @@ export default {
         this.topics.sort(SortByName);
       }
     });
+
+    function SortByName(x, y) {
+      return x.display_name === y.display_name
+        ? 0
+        : x.display_name > y.display_name
+        ? 1
+        : -1;
+    }
 
     if (this.$cookies.get("username")) {
       let groupsRef = db
@@ -146,13 +175,14 @@ export default {
       });
     }
 
-    function SortByName(x, y) {
-      return x.display_name === y.display_name
-        ? 0
-        : x.display_name > y.display_name
-        ? 1
-        : -1;
-    }
+    // Cookies are strings, so need to convert to boolean!
+    // need to find a place to save cookie (e.g. My Settings)
+    // this.showServices = this.$cookies.get("showServices");
+    // if (this.showServices === "true") {
+    //   this.showServices = true;
+    // } else {
+    //   this.showServices = false;
+    // }
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
@@ -172,9 +202,10 @@ export default {
     isSuggested: function(topic) {
       if (topic.purpose.tags) {
         //alert(this.tags);
-        return this.tags.filter(
+        let result = this.tags.filter(
           value => -1 !== topic.purpose.tags.indexOf(value)
         ).length;
+        return result;
       } else {
         return false;
       }
@@ -247,6 +278,7 @@ export default {
   display: inline-block;
   vertical-align: top;
   background-color: #eee !important;
+  cursor: default !important;
 }
 
 .md-card-header {

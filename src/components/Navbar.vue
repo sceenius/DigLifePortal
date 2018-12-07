@@ -304,6 +304,7 @@
           class="md-toolbar-section-end"
           title="show only my services"
           v-model="showServices"
+          @change="switchService();"
         ></md-switch>
         <span class="md-title" style="color: white;">{{ selected }}</span>
       </md-toolbar>
@@ -525,9 +526,28 @@ export default {
         if (group.key === "channels") {
           this.groups = group.val();
         }
-        //console.log("New Groups: "+group.key, this.groups);
+      });
+
+      let prefsRef = db
+        .database()
+        .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+      prefsRef.on("child_added", pref => {
+        if (pref.key === "showServices") {
+          this.showServices = pref.val();
+        }
       });
     }
+
+    // update cookies
+    this.$cookies.config("365d");
+    // Cookies are strings, so need to convert to boolean!
+    // they are saved by the @change event
+    // this.showServices = this.$cookies.get("showServices");
+    // if (this.showServices === "true") {
+    //   this.showServices = true;
+    // } else {
+    //   this.showServices = false;
+    // }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -561,18 +581,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  MOUNTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  mounted: function() {
-    this.$cookies.config("365d");
-    // Cookies are strings, so need to convert to boolean!
-    // need to find a place to save cookie (e.g. My Settings)
-    this.showServices = this.$cookies.get("showServices");
-    if (this.showServices === "true") {
-      this.showServices = true;
-    } else {
-      this.showServices = false;
-    }
-    //this.$forceUpdate();
-  },
+  mounted: function() {},
 
   ///////////////////////////////////////////////////////////////////////////////
   //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html
@@ -586,6 +595,12 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    switchService: function() {
+      //this.$cookies.set("showServices", this.showServices);
+      db.database()
+        .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs")
+        .update({ showServices: this.showServices });
+    },
     avatarLink2: function(index) {
       return (
         BASEURL +
@@ -665,11 +680,6 @@ export default {
       //element = document.getElementById("logo");
       //element.style.display = "block";
       this.showSnackbar = true;
-    },
-
-    onSettingsConfirm: function() {
-      this.activeSettings = false;
-      this.$cookies.set("showServices", this.showServices); // not working
     },
 
     onConfirm: function() {

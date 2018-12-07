@@ -11,12 +11,12 @@
         <md-card-header-text>
           <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
           <div class="md-subhead">Interest & Research Group</div>
-          <md-chip
-            style="background-color: green"
-            v-if="isMember(topic) && !isSuggested(topic)"
+          <md-chip style="background-color: green" v-if="isMember(topic)"
             >Joined</md-chip
           >
-          <md-chip style="background-color: orange" v-if="isSuggested(topic)"
+          <md-chip
+            style="background-color: orange"
+            v-if="isSuggested(topic) && !isMember(topic)"
             >Suggested</md-chip
           >
           <md-chip
@@ -80,13 +80,15 @@
       </md-card-actions>
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
-          <md-avatar style="border: 2px solid yellow;">
-            <img
-              title="Owner"
-              v-bind:src="avatarLink(topic.creator)"
-              alt="Avatar"
-            />
-          </md-avatar>
+          <!--
+            md-avatar style="border: 2px solid yellow;">
+              <img
+                title="Creator"
+                v-bind:src="avatarLink(topic.creator)"
+                alt="Avatar"
+              />
+            </md-avatar
+          -->
           <md-avatar v-for="(member, index) in topic.members" :key="index">
             <img title="Member" v-bind:src="avatarLink(member)" alt="Avatar" />
           </md-avatar>
@@ -107,9 +109,8 @@ export default {
   data() {
     return {
       service: "",
-      status: "",
       tag: "",
-      channels: [],
+      result: "",
       topics: [],
       groups: [],
       tags: []
@@ -121,8 +122,9 @@ export default {
   created: function() {
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
-      if (channel.val().display_name.charAt(0) === "#") {
-        this.topics.push(channel.val());
+      let data = channel.val();
+      if (data.display_name.charAt(0) === "#") {
+        this.topics.push(data);
         this.topics.sort(SortByName);
       }
     });
@@ -182,8 +184,54 @@ export default {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
     },
 
-    openGroup: function(link, service) {
-      window.open(link, "_blank");
+    // execute card action
+    cardAction: function(action, topic) {
+      switch (action) {
+        case "join":
+          // join channel
+          this.axios
+            .get(
+              BASEURL +
+                "webhooks/portal_join_channel.php?file=base-diglife-coop.php&username=" +
+                this.$cookies.get("username") +
+                "&channel_id=" +
+                topic.channel_id
+            )
+            .then(response => (this.result = response.data))
+            .then(response => this.groups.push(topic.team + "/" + topic.name))
+            .then(response =>
+              topic.members.push(this.$cookies.get("username"))
+            );
+          break;
+        case "open":
+          window.open(topic.purpose.link, topic.name);
+          break;
+        case "leave":
+          // leave channel
+          this.axios
+            .get(
+              BASEURL +
+                "webhooks/portal_leave_channel.php?file=base-diglife-coop.php&username=" +
+                this.$cookies.get("username") +
+                "&channel_id=" +
+                topic.channel_id
+            )
+            .then(response => (this.result = response.data))
+            .then(response =>
+              this.groups.splice(
+                this.groups.indexOf(topic.team + "/" + topic.name),
+                1
+              )
+            )
+            .then(response =>
+              topic.members.splice(
+                topic.members.indexOf(this.$cookies.get("username")),
+                1
+              )
+            );
+          break;
+        default:
+      }
     }
   }
 };

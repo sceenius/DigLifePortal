@@ -335,6 +335,7 @@
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
         <!-- new condition: joining domain via domain sudo group -->
+
         <md-list-item
           v-for="(channel, index) in channels"
           :key="channel.id"
@@ -342,7 +343,7 @@
           v-if="
             groups &&
               ((!showServices && showDomain(index)) ||
-                service === 'Interest Groups' ||
+                (service === 'Interest Groups' && showDomain(index)) ||
                 (showServices &&
                   JSON.stringify(groups).includes(
                     channel.team + '/' + channel.name

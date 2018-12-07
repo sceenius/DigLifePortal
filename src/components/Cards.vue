@@ -7,7 +7,7 @@
       v-bind:class="'card' + topic"
       class="md-layout-item"
     >
-      <md-card-header style="margin: -10px 0 0 0;">
+      <md-card-header>
         <md-card-header-text>
           <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
           <div class="md-subhead">Interest & Research Group</div>
@@ -146,12 +146,13 @@ export default {
 .md-card-header {
   height: 134px;
   max-height: 134px;
+  margin: -5px 0 0 -5px;
 }
 
 .md-card-mid {
   height: 85px;
   max-height: 85px;
-  margin: 15px;
+  margin: 10px;
   overflow: auto;
 }
 
@@ -182,6 +183,11 @@ export default {
 
 .md-card-avatars::-webkit-scrollbar {
   width: 5px;
+  display: none;
+}
+
+.md-card-avatars:hover::-webkit-scrollbar {
+  display: block;
 }
 
 /* Track */

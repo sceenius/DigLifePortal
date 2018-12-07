@@ -7,75 +7,70 @@
       v-bind:class="'card' + topic"
       class="md-layout-item"
     >
-      <md-card-area md-inset>
-        <md-card-header style="margin-bottom: 10px ;">
-          <md-card-header-text>
-            <div class="md-title">
-              {{ topic.display_name.replace("#", "") }}
-            </div>
-            <div class="md-subhead">Interest & Research Group</div>
-            <md-chip>Active</md-chip>
-          </md-card-header-text>
-          <md-button
-            class="md-icon-button"
-            @click="showCardNavigation = true;"
-            style="position: absolute; top:5px; right: 5px; z-index: 99;"
-          >
-            <md-icon>menu</md-icon>
-          </md-button>
-
-          <md-card-media md-medium>
-            <img
-              src="https://ledger.diglife.coop/images/cards/card_chemistry.svg"
-              alt="People"
-            />
-          </md-card-media>
-        </md-card-header>
-        <md-card-area
-          style="height: 75px; margin: -15px 0 -15px 15px; overflow: auto;"
+      <md-card-header style="margin: -10px 0 0 0;">
+        <md-card-header-text>
+          <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
+          <div class="md-subhead">Interest & Research Group</div>
+          <md-chip>Active</md-chip>
+        </md-card-header-text>
+        <md-button
+          class="md-icon-button"
+          @click="showCardNavigation = true;"
+          style="position: absolute; top:10px; right: 0px; z-index: 99;"
         >
-          <p class="info" v-if="topic.purpose.tags">
-            <md-icon>local_offer</md-icon>
-            {{
-              topic.purpose.tags
-                .toString()
-                .replace(/[!#*@%/.><"'\\&]/, "")
-                .replace(/[,]/g, ", ")
-            }}
-          </p>
-          <p class="info">
-            <md-icon>question_answer</md-icon>
-            {{ topic.total_msg_count }} message<span
-              v-if="topic.total_msg_count > 1"
-              >s</span
-            >
-            posted in channel
-          </p>
-        </md-card-area>
-        <md-card-actions>
-          <md-button
-            style="background: #00b0a0; color: white;"
-            @click="
-              openGroup(
-                topic.purpose.link,
-                topic.display_name.replace('#', '')
-              );
-            "
-            >Open</md-button
-          >
-        </md-card-actions>
-      </md-card-area>
-      <div class="md-card-footer">
-        <md-avatar style="border: 2px solid yellow;">
-          <img
-            title="Owner"
-            v-bind:src="avatarLink(topic.creator)"
-            alt="Avatar"
+          <md-icon>menu</md-icon>
+        </md-button>
+
+        <md-card-media md-medium>
+          <i
+            mg
+            src="https://ledger.diglife.coop/images/cards/card_chemistry.svg"
+            alt="People"
           />
-        </md-avatar>
-        <md-avatar v-for="(member, index) in topic.members" :key="index">
-          <img title="Member" v-bind:src="avatarLink(member)" alt="Avatar" />
-        </md-avatar>
+        </md-card-media>
+      </md-card-header>
+
+      <div class="md-card-mid">
+        <p class="info" v-if="topic.purpose.tags">
+          <md-icon>local_offer</md-icon>
+          {{
+            topic.purpose.tags
+              .toString()
+              .replace(/[!#*@%/.><"'\\&]/, "")
+              .replace(/[,]/g, ", ")
+          }}
+        </p>
+        <p class="info">
+          <md-icon>question_answer</md-icon>
+          {{ topic.total_msg_count }} message<span
+            v-if="topic.total_msg_count > 1"
+            >s</span
+          >
+          posted in channel
+        </p>
+      </div>
+      <md-card-actions>
+        <md-button
+          style="background: #00b0a0; color: white;"
+          @click="
+            openGroup(topic.purpose.link, topic.display_name.replace('#', ''));
+          "
+          >Open</md-button
+        >
+      </md-card-actions>
+      <div class="md-card-footer">
+        <div class="md-card-avatars md-scrollbar">
+          <md-avatar style="border: 2px solid yellow;">
+            <img
+              title="Owner"
+              v-bind:src="avatarLink(topic.creator)"
+              alt="Avatar"
+            />
+          </md-avatar>
+          <md-avatar v-for="(member, index) in topic.members" :key="index">
+            <img title="Member" v-bind:src="avatarLink(member)" alt="Avatar" />
+          </md-avatar>
+        </div>
       </div>
     </md-card>
   </div>
@@ -138,25 +133,72 @@ export default {
 
 <style>
 .md-card {
-  width: 340px;
-  max-width: 340px;
-  height: 320px;
-  max-height: 320px;
-  margin: 14px;
+  width: 260px;
+  max-width: 260px;
+  height: 340px;
+  max-height: 340px;
+  margin: 20px 0 0 20px;
   display: inline-block;
   vertical-align: top;
   background-color: #eee !important;
-  opacity: 0.3;
 }
+
+.md-card-header {
+  height: 134px;
+  max-height: 134px;
+}
+
+.md-card-mid {
+  height: 85px;
+  max-height: 85px;
+  margin: 15px;
+  overflow: auto;
+}
+
 .md-card .md-title {
-  font-weight: normal !important;
+  font-weight: bold;
   font-size: 1.8em !important;
   line-height: 1em;
   margin-bottom: 5px;
   width: 200px !important;
 }
 .md-card-footer {
-  margin-left: 10px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  max-height: 60px;
+  background-color: #ddd;
+  overflow: hide;
+}
+
+.md-card-avatars {
+  max-height: 60px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.md-card-avatars::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.md-card-avatars::-webkit-scrollbar-track {
+  border-radius: 5px;
+}
+
+/* Handle */
+.md-card-avatars::-webkit-scrollbar-thumb {
+  background: #bbb;
+  border-radius: 5px;
+}
+
+.md-card-actions {
+  position: absolute;
+  bottom: 60px;
+  right: 0px;
 }
 .md-card .md-avatar {
   margin: 10px 0px 10px 4px;
@@ -177,16 +219,11 @@ export default {
   top: 10px;
   width: 80%;
 }
-.card1,
-.card2 {
-  opacity: 1 !important;
-}
+
 .md-card:hover {
   opacity: 1;
 }
 
-.md-card-area {
-}
 .md-subhead {
   color: #222;
   font-size: 1em;

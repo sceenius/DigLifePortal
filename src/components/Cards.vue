@@ -11,12 +11,24 @@
         <md-card-header-text>
           <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
           <div class="md-subhead">Interest & Research Group</div>
-          <md-chip>Active</md-chip>
+          <md-chip
+            style="background-color: green"
+            v-if="isMember(topic) && !isSuggested(topic)"
+            >Joined</md-chip
+          >
+          <md-chip style="background-color: orange" v-if="isSuggested(topic)"
+            >Suggested</md-chip
+          >
+          <md-chip
+            style="background-color: #ccc"
+            v-if="!isMember(topic) && !isSuggested(topic)"
+            >Not Joined</md-chip
+          >
         </md-card-header-text>
         <md-button
           class="md-icon-button"
           @click="showCardNavigation = true;"
-          style="position: absolute; top:10px; right: 0px; z-index: 99;"
+          style="position: absolute; top:5px; right: 5px; z-index: 99;"
         >
           <md-icon>menu</md-icon>
         </md-button>
@@ -50,12 +62,20 @@
         </p>
       </div>
       <md-card-actions>
+        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
+          >Leave</md-button
+        >
         <md-button
+          v-if="isMember(topic)"
           style="background: #00b0a0; color: white;"
-          @click="
-            openGroup(topic.purpose.link, topic.display_name.replace('#', ''));
-          "
+          @click="cardAction('open', topic);"
           >Open</md-button
+        >
+        <md-button
+          v-if="!isMember(topic)"
+          style="background: #00b0a0; color: white;"
+          @click="cardAction('join', topic);"
+          >Join</md-button
         >
       </md-card-actions>
       <div class="md-card-footer">
@@ -87,9 +107,12 @@ export default {
   data() {
     return {
       service: "",
+      status: "",
       tag: "",
       channels: [],
-      topics: []
+      topics: [],
+      groups: [],
+      tags: []
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -103,6 +126,24 @@ export default {
         this.topics.sort(SortByName);
       }
     });
+
+    if (this.$cookies.get("username")) {
+      let groupsRef = db
+        .database()
+        .ref("portal_profiles/" + this.$cookies.get("username"));
+      groupsRef.on("child_added", group => {
+        var data = group.val();
+        if (group.key === "channels") {
+          this.groups = data;
+        } else if (group.key === "tags") {
+          this.tags = data.reduce((accumulator, currentValue) => {
+            return [...accumulator, currentValue.text];
+          });
+        }
+        //console.log("New Groups: "+group.key, this.groups);
+      });
+    }
+
     function SortByName(x, y) {
       return x.display_name === y.display_name
         ? 0
@@ -119,6 +160,23 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    // is member
+    isMember: function(topic) {
+      return JSON.stringify(this.groups).includes(
+        topic.team + "/" + topic.name
+      );
+    },
+    // is suggested
+    isSuggested: function(topic) {
+      if (topic.purpose.tags) {
+        //alert(this.tags);
+        return this.tags.filter(
+          value => -1 !== topic.purpose.tags.indexOf(value)
+        ).length;
+      } else {
+        return false;
+      }
+    },
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
@@ -146,13 +204,13 @@ export default {
 .md-card-header {
   height: 134px;
   max-height: 134px;
-  margin: -5px 0 0 -5px;
+  margin: -5px 0 15px -15px;
 }
 
 .md-card-mid {
   height: 85px;
   max-height: 85px;
-  margin: 10px;
+  margin: 0px;
   overflow: auto;
 }
 

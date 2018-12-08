@@ -93,18 +93,28 @@
           @click="showCardNavigation = true;"
           style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
         >
-          <md-icon style="font-size: 0.8em; color: white;"">menu</md-icon>
+          <md-icon style="font-size: 1.8em !important; color: white;"
+            >menu</md-icon
+          >
         </md-button>
 
-        <div class="md-subhead" style="margin: 1px 0 0 35px; opacity: 1;">Interest & Research Group</div>
+        <div class="md-subhead" style="margin: 1px 0 0 35px; opacity: 1;">
+          Interest & Research Group
+        </div>
         <img
-          style="width: 25px; position: absolute; top: 2px; right: 0px; "
-          src="https://diglife.com/brand/logo_secondary.svg"
+          style="width: 20px; position: absolute; top: 5px; right: 2px; "
+          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
         />
-              </div>
+      </div>
       <div class="md-card-header">
-        <md-card-header-text st yle="margin-top: -5px;">
-          <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
+        <md-card-header-text>
+          <div class="md-title">
+            <md-icon
+              style="line-height: 0.9; font-size: 1em !important; color: #404040;"
+              >{{ topic.purpose.icon }}</md-icon
+            >
+            {{ topic.display_name.replace("#", "") }}
+          </div>
         </md-card-header-text>
 
         <md-chip style="background-color: green" v-if="isMember(topic)"
@@ -120,7 +130,6 @@
           v-if="!isMember(topic) && !isSuggested(topic)"
           >Not Joined</md-chip
         >
-
       </div>
       <!--
         md-card-media md-medium>
@@ -399,37 +408,39 @@ export default {
 }
 
 .md-card-header {
-  position: absolute; 
-  height: 90px;
+  position: absolute;
+  height: 86px;
   width: 100%;
   background-color: #e2e2e2;
-  top: 30px; left: 0px;
+  top: 30px;
+  left: 0px;
   padding: 10px;
 }
 
 .md-card .md-chip {
   position: absolute;
-  top: 35px; right: 5px;
+  top: 35px;
+  right: 5px;
   background-color: #fc5f61;
   color: white;
   margin: 10px 0 0 0;
   padding: 0px 20px 0px 20px;
   font-size: 0.9em;
-  font-wei ght: bold;
 }
 .md-card-mid {
-  position: absolute; 
+  position: absolute;
   width: 100%;
-  top: 120px; left: 0px;
+  top: 120px;
+  left: 0px;
   padding: 10px;
 }
 
 .md-card .md-title {
   font-weight: bold;
   font-size: 1.8em !important;
-  line-height: 1em;
-  margin-bottom: 5px;
-  width: 200px !important;
+  color: #404040;
+  line-height: 0.9em;
+  width: 100% !important;
 }
 
 .md-card-footer {
@@ -479,7 +490,6 @@ export default {
   margin: 10px 0px 10px 4px;
   border: 1px #ccc solid;
 }
-
 
 .md-card-media img {
   position: absolute;

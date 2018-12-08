@@ -675,7 +675,7 @@ export default {
           this.channel.purpose.link +
           ")",
         channel: this.channel.name,
-        username: "Access Bot",
+        username: "ledgerbot",
         icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
         unfurl_links: true,
         link_names: 1

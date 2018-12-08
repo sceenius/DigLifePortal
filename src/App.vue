@@ -7,7 +7,8 @@ import Navbar from "@/components/Navbar";
 export default {
   name: "Home",
   components: { Navbar },
-  data: () => ({
-  })
+  data: () => ({})
 };
 </script>
+
+<style></style>

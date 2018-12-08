@@ -51,10 +51,12 @@
         </md-field>
 
         <vue-tags-input
+          style="margin-top: 50px;"
+          required
           v-model="tag"
-          :tags="tags"
+          :formtags="formtags"
           :allow-edit-tags="true"
-          :autocomplete-items="filteredItems"
+          :autocomplete-items="autocompleteItems"
         >
         </vue-tags-input>
 
@@ -73,6 +75,11 @@
       </div>
     </md-dialog>
 
+    <!--
+      ----------------------------------------------------------------------
+        CARDS
+      ----------------------------------------------------------------------
+    -->
     <md-card
       md-with-hover
       v-if="(showServices && isMember(topic)) || !showServices"
@@ -80,11 +87,26 @@
       :key="index"
       class="md-layout-item"
     >
-      <md-card-header>
-        <md-card-header-text style="margin-top: -5px;">
+      <div class="md-card-banner">
+        <md-button
+          class="md-icon-button"
+          @click="showCardNavigation = true;"
+          style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
+        >
+          <md-icon style="font-size: 0.8em; color: white;"">menu</md-icon>
+        </md-button>
+
+        <div class="md-subhead" style="margin: 1px 0 0 35px; opacity: 1;">Interest & Research Group</div>
+        <img
+          style="width: 25px; position: absolute; top: 2px; right: 0px; "
+          src="https://diglife.com/brand/logo_secondary.svg"
+        />
+              </div>
+      <div class="md-card-header">
+        <md-card-header-text st yle="margin-top: -5px;">
           <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
-          <div class="md-subhead">Interest & Research Group</div>
         </md-card-header-text>
+
         <md-chip style="background-color: green" v-if="isMember(topic)"
           >Joined</md-chip
         >
@@ -98,14 +120,8 @@
           v-if="!isMember(topic) && !isSuggested(topic)"
           >Not Joined</md-chip
         >
-        <md-button
-          class="md-icon-button"
-          @click="showCardNavigation = true;"
-          style="position: absolute; top:5px; right: 5px; z-index: 99;"
-        >
-          <md-icon>menu</md-icon>
-        </md-button>
-      </md-card-header>
+
+      </div>
       <!--
         md-card-media md-medium>
           <img
@@ -195,7 +211,16 @@ export default {
       topics: [],
       groups: [],
       tags: [],
-      filteredItems: ["this", "that", "those"],
+      autocompleteItems: [
+        { text: "Accessibility", frequency: 5 },
+        { text: "Accounting", frequency: 2 },
+        { text: "Administration", frequency: 4 },
+        { text: "Artificial Intelligence", frequency: 5 },
+        { text: "Authentication", frequency: 7 },
+        { text: "Automation", frequency: 4 },
+        { text: "Biometrics", frequency: 10 },
+        { text: "Bitcoin", frequency: 10 }
+      ],
       display_name: "",
       name: "",
       header: "",
@@ -349,10 +374,11 @@ export default {
 
 <style>
 .md-card {
-  width: 260px;
-  max-width: 260px;
-  height: 340px;
-  max-height: 340px;
+  width: 240px;
+  min-width: 240px;
+  max-width: 240px;
+  height: 320px;
+  max-height: 320px;
   margin: 20px 0 0 20px;
   display: inline-block;
   vertical-align: top;
@@ -360,17 +386,42 @@ export default {
   cursor: default !important;
 }
 
-.md-card-header {
-  height: 134px;
-  max-height: 134px;
-  margin: -5px 0 15px -15px;
+.md-card-banner {
+  position: absolute;
+  left: 0;
+  top: 0;
+  padding: 5px;
+  width: 100%;
+  color: white;
+  max-height: 30px;
+  background-color: #00b0a0;
+  overflow: hide;
 }
 
+.md-card-header {
+  position: absolute; 
+  height: 90px;
+  width: 100%;
+  background-color: #e2e2e2;
+  top: 30px; left: 0px;
+  padding: 10px;
+}
+
+.md-card .md-chip {
+  position: absolute;
+  top: 35px; right: 5px;
+  background-color: #fc5f61;
+  color: white;
+  margin: 10px 0 0 0;
+  padding: 0px 20px 0px 20px;
+  font-size: 0.9em;
+  font-wei ght: bold;
+}
 .md-card-mid {
-  height: 85px;
-  max-height: 85px;
-  margin: 0px;
-  overflow: auto;
+  position: absolute; 
+  width: 100%;
+  top: 120px; left: 0px;
+  padding: 10px;
 }
 
 .md-card .md-title {
@@ -381,19 +432,13 @@ export default {
   width: 200px !important;
 }
 
-.md-card .md-subhead {
-  color: #444;
-  font-size: 1em;
-  font-weight: bold;
-}
-
 .md-card-footer {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   max-height: 60px;
-  background-color: #ddd;
+  background-color: #e2e2e2;
   overflow: hide;
 }
 
@@ -434,16 +479,7 @@ export default {
   margin: 10px 0px 10px 4px;
   border: 1px #ccc solid;
 }
-.md-card .md-chip {
-  position: absolute;
-  top: 90px;
-  background-color: #fc5f61;
-  color: white;
-  margin: 10px 0 0 0;
-  padding: 0px 30px 0px 30px;
-  font-size: 0.9em;
-  font-weight: bold;
-}
+
 
 .md-card-media img {
   position: absolute;
@@ -466,5 +502,16 @@ export default {
 
 .md-card .info .md-icon {
   font-size: 1.4em !important;
+}
+
+li.tag {
+  height: 34px !important;
+  padding: 0 10px !important;
+  background-color: #00b0a0 !important;
+  border-radius: 40px !important;
+  font-size: 15px !important;
+  line-height: 34px !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
 }
 </style>

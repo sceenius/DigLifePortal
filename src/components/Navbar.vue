@@ -343,12 +343,7 @@
           v-if="
             groups &&
               ((!showServices && showDomain(index)) ||
-                (service === 'Interest Groups' && showDomain(index)) ||
-                (showServices &&
-                  JSON.stringify(groups).includes(
-                    channel.team + '/' + channel.name
-                  ) &&
-                  showDomain(index)))
+                (showServices && showGroup(index) && showDomain(index)))
           "
         >
           <md-icon>{{ channel.purpose.icon }}</md-icon>
@@ -616,6 +611,12 @@ export default {
       return this.channels[index].purpose.domain
         ? this.channels[index].purpose.domain.includes(this.selected)
         : false;
+    },
+    showGroup: function(index) {
+      //check if current group is listed in channel
+      return JSON.stringify(this.groups).includes(
+        this.channels[index].team + "/" + this.channels[index].name
+      );
     },
 
     directMessage: function(member_id) {

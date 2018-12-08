@@ -131,34 +131,13 @@
           >Not Joined</md-chip
         >
       </div>
-      <!--
-        md-card-media md-medium>
-          <img
-            src="https://ledger.diglife.coop/images/cards/card_chemistry.svg"
-            alt="People"
-          />
-        </md-card-media
-      -->
 
       <div class="md-card-mid">
-        <p class="info" v-if="topic.purpose.tags">
-          <md-icon>local_offer</md-icon>
-          {{
-            topic.purpose.tags
-              .toString()
-              .replace(/[!#*@%/.><"'\\&]/, "")
-              .replace(/[,]/g, ", ")
-          }}
-        </p>
         <p class="info">
-          <md-icon>question_answer</md-icon>
-          {{ topic.total_msg_count }} message<span
-            v-if="topic.total_msg_count > 1"
-            >s</span
-          >
-          posted in channel
+          {{ topic.header.replace(/^(.{280}[^\s]*).*/, "$1...") }}
         </p>
       </div>
+
       <md-card-actions>
         <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
           >Leave</md-button
@@ -176,17 +155,9 @@
           >Join</md-button
         >
       </md-card-actions>
+
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
-          <!--
-            md-avatar style="border: 2px solid yellow;">
-              <img
-                title="Creator"
-                v-bind:src="avatarLink(topic.creator)"
-                alt="Avatar"
-              />
-            </md-avatar
-          -->
           <md-avatar v-for="(member, index) in topic.members" :key="index">
             <img
               v-bind:title="member"
@@ -383,11 +354,11 @@ export default {
 
 <style>
 .md-card {
-  width: 240px;
-  min-width: 240px;
-  max-width: 240px;
-  height: 320px;
-  max-height: 320px;
+  width: 250px;
+  min-width: 250px;
+  max-width: 250px;
+  height: 350px;
+  max-height: 350px;
   margin: 20px 0 0 20px;
   display: inline-block;
   vertical-align: top;
@@ -504,10 +475,11 @@ export default {
 }
 
 .md-card .info {
-  color: gray;
-  margin: 0 0 8px 0;
-  line-height: 1em;
+  color: #404040;
+  margin: -5px 0 0 0;
+  line-height: 1.2em;
   font-size: 0.9em;
+  text-align: justify;
 }
 
 .md-card .info .md-icon {

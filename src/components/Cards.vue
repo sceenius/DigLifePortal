@@ -1,5 +1,78 @@
 <template>
   <div class="md-layout md-gutter" v-if="service == ''">
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - LOGIN DIALOG
+      ----------------------------------------------------------------------
+    -->
+    <md-button
+      @click="activeTopic = true;"
+      class="md-fab md-primary"
+      style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
+    >
+      <md-icon>add</md-icon>
+    </md-button>
+    <md-dialog
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+      :md-active.sync="activeTopic"
+      style="width: 400px; height: 600px"
+    >
+      <md-dialog-title
+        ><md-icon style="color: black;">group_work</md-icon> Create Interest
+        Group</md-dialog-title
+      >
+      <div style="padding: 0 25px ;">
+        <md-field>
+          <label>Title</label>
+          <md-input v-model="display_name" required></md-input>
+          <span class="md-helper-text"
+            >Enter the name of this Interest Group</span
+          >
+          <span class="md-error"></span>
+        </md-field>
+
+        <md-field>
+          <label>URL</label>
+          <md-input v-model="name" required></md-input>
+          <span class="md-helper-text"
+            >Enter your URL of this Interest Group</span
+          >
+          <span class="md-error"></span>
+        </md-field>
+
+        <md-field>
+          <label>Description</label>
+          <md-textarea v-model="header"></md-textarea>
+          <span class="md-helper-text"
+            >Enter a short description for this Interest Group</span
+          >
+          <span class="md-error"></span>
+        </md-field>
+
+        <vue-tags-input
+          v-model="tag"
+          :tags="tags"
+          :allow-edit-tags="true"
+          :autocomplete-items="filteredItems"
+        >
+        </vue-tags-input>
+
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button class="md-success md-raised" @click="activeTopic = false;"
+            >Cancel</md-button
+          >
+          <md-button
+            class="md-success md-raised"
+            @click="onConfirm();"
+            style="background: #00b0a0; color: white;"
+            ><md-icon style="color: white;">group_work</md-icon>
+            Create</md-button
+          >
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
     <md-card
       md-with-hover
       v-if="(showServices && isMember(topic)) || !showServices"
@@ -8,23 +81,23 @@
       class="md-layout-item"
     >
       <md-card-header>
-        <md-card-header-text>
+        <md-card-header-text style="margin-top: -5px;">
           <div class="md-title">{{ topic.display_name.replace("#", "") }}</div>
           <div class="md-subhead">Interest & Research Group</div>
-          <md-chip style="background-color: green" v-if="isMember(topic)"
-            >Joined</md-chip
-          >
-          <md-chip
-            style="background-color: orange"
-            v-if="isSuggested(topic) && !isMember(topic)"
-            >Suggested</md-chip
-          >
-          <md-chip
-            style="background-color: #ccc"
-            v-if="!isMember(topic) && !isSuggested(topic)"
-            >Not Joined</md-chip
-          >
         </md-card-header-text>
+        <md-chip style="background-color: green" v-if="isMember(topic)"
+          >Joined</md-chip
+        >
+        <md-chip
+          style="background-color: orange"
+          v-if="isSuggested(topic) && !isMember(topic)"
+          >Suggested</md-chip
+        >
+        <md-chip
+          style="background-color: #ccc"
+          v-if="!isMember(topic) && !isSuggested(topic)"
+          >Not Joined</md-chip
+        >
         <md-button
           class="md-icon-button"
           @click="showCardNavigation = true;"
@@ -32,15 +105,15 @@
         >
           <md-icon>menu</md-icon>
         </md-button>
-
-        <md-card-media md-medium>
-          <i
-            mg
+      </md-card-header>
+      <!--
+        md-card-media md-medium>
+          <img
             src="https://ledger.diglife.coop/images/cards/card_chemistry.svg"
             alt="People"
           />
-        </md-card-media>
-      </md-card-header>
+        </md-card-media
+      -->
 
       <div class="md-card-mid">
         <p class="info" v-if="topic.purpose.tags">
@@ -103,23 +176,30 @@
 </template>
 
 <script>
+import VueTagsInput from "@johmun/vue-tags-input";
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
 //import topics from "@/components/navbar";
 
 export default {
   name: "Tags",
-  components: {},
+  components: { VueTagsInput },
   data() {
     return {
       service: "",
       tag: "",
       showServices: false,
+      activeTopic: false,
       result: "",
       status: "",
       topics: [],
       groups: [],
-      tags: []
+      tags: [],
+      filteredItems: ["this", "that", "those"],
+      display_name: "",
+      name: "",
+      header: "",
+      formtags: ""
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -202,10 +282,9 @@ export default {
     isSuggested: function(topic) {
       if (topic.purpose.tags) {
         //alert(this.tags);
-        let result = this.tags.filter(
+        return this.tags.filter(
           value => -1 !== topic.purpose.tags.indexOf(value)
         ).length;
-        return result;
       } else {
         return false;
       }
@@ -301,6 +380,13 @@ export default {
   margin-bottom: 5px;
   width: 200px !important;
 }
+
+.md-card .md-subhead {
+  color: #444;
+  font-size: 1em;
+  font-weight: bold;
+}
+
 .md-card-footer {
   position: absolute;
   left: 0;
@@ -349,38 +435,36 @@ export default {
   border: 1px #ccc solid;
 }
 .md-card .md-chip {
+  position: absolute;
+  top: 90px;
   background-color: #fc5f61;
   color: white;
   margin: 10px 0 0 0;
   padding: 0px 30px 0px 30px;
-  font-size: 1em;
+  font-size: 0.9em;
   font-weight: bold;
 }
 
 .md-card-media img {
-  position: absolute !important;
-  right: 30px;
+  position: absolute;
+  left: 0px;
   top: 10px;
-  width: 80%;
+  width: 40%;
+  overflow: hidden;
 }
 
 .md-card:hover {
   opacity: 1;
 }
 
-.md-subhead {
-  color: #222;
-  font-size: 1em;
-}
-
-.info {
+.md-card .info {
   color: gray;
   margin: 0 0 8px 0;
   line-height: 1em;
-  font-size: 1em !important;
+  font-size: 0.9em;
 }
 
-.info .md-icon {
+.md-card .info .md-icon {
   font-size: 1.4em !important;
 }
 </style>

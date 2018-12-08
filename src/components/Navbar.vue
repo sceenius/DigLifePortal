@@ -350,13 +350,7 @@
           <span class="md-list-item-text">{{
             channel.display_name.replace(/[!#*@%/."'\\&]/, "")
           }}</span>
-          <!--
-            check the channel membership of the current user OR public channel
-          -->
-          <!-- need to fix a case if there is a partial string match -->
-          <!--
-            groups is a promise that comes in later, hence part of the condition
-          -->
+
           <md-icon
             title="You are a verified member of this group"
             style="color: green;"
@@ -387,6 +381,11 @@
                   tags.indexOf(channel.purpose.tags[4]) > -1)
             "
             >verified_user
+            <!--
+              tags.filter(
+                value => -1 !== channel.purpose.tags.indexOf(value)
+              ).length > 0
+            -->
           </md-icon>
           <md-icon
             title="You are not a member of this group"
@@ -405,6 +404,11 @@
                     tags.indexOf(channel.purpose.tags[4]) == -1))
             "
             >verified_user
+            <!--
+              tags.filter(
+                value => -1 !== channel.purpose.tags.indexOf(value)
+              ).length === 0
+            -->
           </md-icon>
         </md-list-item>
       </md-list>

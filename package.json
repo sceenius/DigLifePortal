@@ -11,6 +11,7 @@
     "vue": "2.5.17",
     "vue-axios": "2.1.4",
     "vue-cookies": "1.5.7",
+    "vue-markdown": "2.2.4",
     "vue-material": "1.0.0-beta-10.2"
   },
   "description": "This is in sync with GitHub."

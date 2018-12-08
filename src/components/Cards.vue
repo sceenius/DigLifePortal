@@ -134,7 +134,9 @@
 
       <div class="md-card-mid">
         <p class="info">
-          {{ topic.header.replace(/^(.{280}[^\s]*).*/, "$1...") }}
+          <vue-markdown>{{
+            topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
+          }}</vue-markdown>
         </p>
       </div>
 
@@ -173,13 +175,14 @@
 
 <script>
 import VueTagsInput from "@johmun/vue-tags-input";
+import VueMarkdown from "vue-markdown";
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
 //import topics from "@/components/navbar";
 
 export default {
   name: "Tags",
-  components: { VueTagsInput },
+  components: { VueTagsInput, VueMarkdown },
   data() {
     return {
       service: "",
@@ -479,7 +482,6 @@ export default {
   margin: -5px 0 0 0;
   line-height: 1.2em;
   font-size: 0.9em;
-  text-align: justify;
 }
 
 .md-card .info .md-icon {

@@ -18,12 +18,14 @@
       ----------------------------------------------------------------------
     -->
     <md-button
+      v-if="!activeTopic"
       @click="activeTopic = true;"
       class="md-fab md-primary"
       style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
     >
       <md-icon>add</md-icon>
     </md-button>
+
     <md-dialog
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
@@ -45,14 +47,25 @@
         </md-field>
 
         <md-field>
-          <label>URL</label>
+          <label>Slug</label>
           <md-input v-model="name" required></md-input>
           <span class="md-helper-text"
-            >Enter your URL of this Interest Group</span
+            >Unique name as it appears in the URL</span
           >
           <span class="md-error"></span>
         </md-field>
 
+        <md-field>
+          <label>Icon</label>
+          <md-input v-model="name" required></md-input>
+          <span class="md-helper-text"
+            >Pick an icon
+            <a href="https://material.io/tools/icons/?style=baseline"
+              >from this list</a
+            ></span
+          >
+          <span class="md-error"></span>
+        </md-field>
         <md-field>
           <label>Description</label>
           <md-textarea v-model="header"></md-textarea>
@@ -100,15 +113,29 @@
       class="md-layout-item"
     >
       <div class="md-card-banner">
-        <md-button
-          class="md-icon-button"
-          @click="showCardNavigation = true;"
-          style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
-        >
-          <md-icon style="font-size: 1.8em !important; color: white;"
-            >menu</md-icon
+        <md-menu>
+          <md-button
+            style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
+            class="md-icon-button"
+            md-menu-trigger
           >
-        </md-button>
+            <md-icon style="font-size: 1.8em !important; color: white;"
+              >menu</md-icon
+            >
+          </md-button>
+
+          <md-menu-content>
+            <md-menu-item @click="editCard(topic);">
+              <md-icon>edit</md-icon>
+              <span>Edit</span>
+            </md-menu-item>
+
+            <md-menu-item @click="deleteCard(topic);">
+              <md-icon>archive</md-icon>
+              <span>Archive</span>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
 
         <div class="md-subhead" style="margin: 1px 0 0 35px; opacity: 1;">
           Interest & Research Group
@@ -125,7 +152,8 @@
             <md-icon
               style="line-height: 0.9; font-size: 1em !important; color: #404040;"
               >{{ topic.purpose.icon }}</md-icon
-            >{{ topic.display_name.replace("#", "") }}
+            >
+            {{ topic.display_name.replace("#", "") }}
           </div>
         </md-card-header-text>
 
@@ -192,6 +220,7 @@
 import VueTagsInput from "@johmun/vue-tags-input";
 import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
+//import Slugify from "slugify";
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
 //import topics from "@/components/navbar";
@@ -204,6 +233,7 @@ export default {
       service: "",
       tag: "",
       showServices: false,
+      showCardNavigation: false,
       activeTopic: false,
       showAskBar: false,
       result: "",
@@ -317,9 +347,18 @@ export default {
         return false;
       }
     },
+
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
+    },
+
+    // confirm new group
+    onConfirm: function() {
+      // axios portal_create_channel
+      // GET = %23title, name, icon, header, tags
+      // create_webhook
+      // https://ledger.diglife.coop/webhooks/portal_create_channel.php?file=base-diglife-coop.php&username=joachim&domain=6zrghf5wyfr5fquq8dgfexteeh&icon=car&name=this-group-name&display_name=THis%20is%20my%20channel&tags=[%22a%22,%22b%22,%22c%22,%22d%22,%22e%22]&header=THis%20is%20my%20header
     },
 
     // execute card action
@@ -537,5 +576,26 @@ li.tag {
   line-height: 34px !important;
   vertical-align: middle !important;
   white-space: nowrap !important;
+}
+
+.md-list-item-content {
+  min-height: 20px;
+  padding: 5px;
+}
+
+.md-menu-item span {
+  font-size: 0.9em !important;
+  position: absolute;
+  left: 40px;
+}
+
+.md-menu-item .md-icon {
+  font-size: 1.4em !important;
+}
+
+.md-menu-item {
+}
+.md-menu-content {
+  margin-top: 11px;
 }
 </style>

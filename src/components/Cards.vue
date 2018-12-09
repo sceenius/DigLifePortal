@@ -30,10 +30,9 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeTopic"
-      style="width: 400px; height: 600px"
     >
       <md-dialog-title
-        ><md-icon style="color: black;">group_work</md-icon> Create Interest
+        ><md-icon style="color: black;">group_work</md-icon> Edit Interest
         Group</md-dialog-title
       >
       <div style="padding: 0 25px ;">
@@ -449,6 +448,11 @@ export default {
 </script>
 
 <style>
+.md-dialog {
+  width: 400px;
+  height: 680px;
+  overflow: auto;
+}
 .md-card {
   width: 250px;
   min-width: 250px;
@@ -609,5 +613,9 @@ li.tag {
 
 .md-card-menu {
   margin-top: 11px;
+}
+
+.md-field {
+  margin-bottom: 35px;
 }
 </style>

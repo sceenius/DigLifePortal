@@ -57,7 +57,7 @@
 
         <md-field>
           <label>Icon</label>
-          <md-input v-model="name" required></md-input>
+          <md-input v-model="icon" required></md-input>
           <span class="md-helper-text"
             >Pick an icon
             <a href="https://material.io/tools/icons/?style=baseline"
@@ -65,10 +65,11 @@
             ></span
           >
           <span class="md-error"></span>
+          <md-icon>{{ icon }}</md-icon>
         </md-field>
         <md-field>
           <label>Description</label>
-          <md-textarea v-model="header"></md-textarea>
+          <md-textarea style="font-size: 0.9em;" v-model="header"></md-textarea>
           <span class="md-helper-text"
             >Enter a short description for this Interest Group</span
           >
@@ -79,7 +80,7 @@
           style="margin-top: 50px;"
           required
           v-model="tag"
-          :formtags="formtags"
+          :tags="formtags"
           :allow-edit-tags="true"
           :autocomplete-items="autocompleteItems"
         >
@@ -124,7 +125,7 @@
             >
           </md-button>
 
-          <md-menu-content>
+          <md-menu-content class="md-card-menu">
             <md-menu-item @click="editCard(topic);">
               <md-icon>edit</md-icon>
               <span>Edit</span>
@@ -254,7 +255,8 @@ export default {
       display_name: "",
       name: "",
       header: "",
-      formtags: "",
+      icon: "",
+      formtags: [],
       username: ""
     };
   },
@@ -353,8 +355,20 @@ export default {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
     },
 
+    // edit card
+    editCard: function(topic) {
+      //alert(topic.purpose.tags);
+      this.display_name = topic.display_name;
+      this.name = topic.name;
+      this.icon = topic.purpose.icon;
+      this.header = topic.header;
+      this.formtags = topic.purpose.tags;
+      this.activeTopic = true;
+    },
+
     // confirm new group
     onConfirm: function() {
+      alert("Coming soon!");
       // axios portal_create_channel
       // GET = %23title, name, icon, header, tags
       // create_webhook
@@ -578,24 +592,22 @@ li.tag {
   white-space: nowrap !important;
 }
 
-.md-list-item-content {
-  min-height: 20px;
+.md-card-menu .md-list-item-content {
+  min-height: 20px !important;
   padding: 5px;
 }
 
-.md-menu-item span {
+.md-card-menu .md-menu-item span {
   font-size: 0.9em !important;
   position: absolute;
   left: 40px;
 }
 
-.md-menu-item .md-icon {
+.md-card-menu .md-menu-item .md-icon {
   font-size: 1.4em !important;
 }
 
-.md-menu-item {
-}
-.md-menu-content {
+.md-card-menu {
   margin-top: 11px;
 }
 </style>

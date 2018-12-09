@@ -2,6 +2,18 @@
   <div class="md-layout md-gutter" v-if="service == ''">
     <!--
       ----------------------------------------------------------------------
+        SNACKBARS  - https://vuematerial.io/components/snackbar
+      ----------------------------------------------------------------------
+    -->
+    <md-snackbar :md-duration="4000" :md-active.sync="showAskBar" md-persistent>
+      <span>Thank you! Your question has been submitted.</span>
+      <md-button class="md-primary" @click="showSnackbar = false;"
+        >Close</md-button
+      >
+    </md-snackbar>
+
+    <!--
+      ----------------------------------------------------------------------
         DIALOG BOXES - LOGIN DIALOG
       ----------------------------------------------------------------------
     -->
@@ -106,14 +118,14 @@
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
         />
       </div>
+
       <div class="md-card-header">
         <md-card-header-text>
           <div class="md-title">
             <md-icon
               style="line-height: 0.9; font-size: 1em !important; color: #404040;"
               >{{ topic.purpose.icon }}</md-icon
-            >
-            {{ topic.display_name.replace("#", "") }}
+            >{{ topic.display_name.replace("#", "") }}
           </div>
         </md-card-header-text>
 
@@ -150,6 +162,9 @@
           @click="cardAction('open', topic);"
           >Open</md-button
         >
+        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
+          >Ask</md-button
+        >
         <md-button
           v-if="!isMember(topic)"
           style="background: #00b0a0; color: white;"
@@ -176,6 +191,7 @@
 <script>
 import VueTagsInput from "@johmun/vue-tags-input";
 import VueMarkdown from "vue-markdown";
+import Slack from "node-slack";
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
 //import topics from "@/components/navbar";
@@ -189,6 +205,7 @@ export default {
       tag: "",
       showServices: false,
       activeTopic: false,
+      showAskBar: false,
       result: "",
       status: "",
       topics: [],
@@ -207,13 +224,16 @@ export default {
       display_name: "",
       name: "",
       header: "",
-      formtags: ""
+      formtags: "",
+      username: ""
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    this.username = this.$cookies.get("username");
+
     let prefsRef = db
       .database()
       .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
@@ -324,6 +344,26 @@ export default {
         case "open":
           window.open(topic.purpose.link, topic.name);
           break;
+        case "ask":
+          let question = prompt("Please ask your question", "Ask the Expert");
+
+          var slack = new Slack(CHATURL + "hooks/" + topic.purpose.hook);
+          var err = slack.send({
+            text:
+              "##### :question: Question from @" +
+              this.username +
+              "\n" +
+              question +
+              "\n_Tip: you can respond via a direct message or invite the user into this channel._",
+            channel: topic.name,
+            username: "ledgerbot",
+            icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
+            unfurl_links: true,
+            link_names: 1
+          });
+          this.showAskBar = true;
+
+          break;
         case "leave":
           // leave channel
           this.axios
@@ -404,7 +444,7 @@ export default {
 .md-card-mid {
   position: absolute;
   width: 100%;
-  top: 120px;
+  top: 110px;
   left: 0px;
   padding: 10px;
 }

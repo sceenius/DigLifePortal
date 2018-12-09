@@ -429,6 +429,7 @@
       <Cards v-if="service == 'Interest Groups'" />
 
       <iframe
+        v-if="service !== 'Interest Groups'"
         name="theApp"
         id="theApp"
         style="display: none; width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"

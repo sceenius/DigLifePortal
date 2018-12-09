@@ -79,6 +79,7 @@
           style="margin-top: 50px;"
           required
           v-model="tag"
+          @tags-changed="newTags => (formtags = newTags)"
           :tags="formtags"
           :allow-edit-tags="true"
           :autocomplete-items="autocompleteItems"
@@ -94,7 +95,7 @@
             @click="onConfirm();"
             style="background: #00b0a0; color: white;"
             ><md-icon style="color: white;">group_work</md-icon>
-            Create</md-button
+            Update</md-button
           >
         </md-dialog-actions>
       </div>
@@ -251,6 +252,7 @@ export default {
         { text: "Biometrics", frequency: 10 },
         { text: "Bitcoin", frequency: 10 }
       ],
+      channel_id: "",
       display_name: "",
       name: "",
       header: "",
@@ -288,6 +290,9 @@ export default {
         this.topics.sort(SortByName);
       }
     });
+
+    // after card edits
+    //channelsRef.on("child_changed", channel => {
 
     function SortByName(x, y) {
       return x.display_name === y.display_name
@@ -357,17 +362,69 @@ export default {
     // edit card
     editCard: function(topic) {
       //alert(topic.purpose.tags);
+      this.channel_id = topic.channel_id;
       this.display_name = topic.display_name;
       this.name = topic.name;
       this.icon = topic.purpose.icon;
       this.header = topic.header;
-      this.formtags = topic.purpose.tags;
+      this.formtags = topic.purpose.tags.map(function(element) {
+        return { text: element };
+      });
       this.activeTopic = true;
     },
 
     // confirm new group
     onConfirm: function() {
-      alert("Coming soon!");
+      alert(
+        "channel_id=" +
+          this.channel_id +
+          "&display_name=" +
+          encodeURI(this.display_name) +
+          "&name=" +
+          this.name +
+          "&header=" +
+          encodeURI(this.header) +
+          "&icon=" +
+          this.icon +
+          "&tags=" +
+          JSON.stringify(this.formtags)
+      );
+
+      this.axios
+        .get(
+          BASEURL +
+            "webhooks/portal_update_channel.php?file=base-diglife-coop.php" +
+            "&channel_id=" +
+            this.channel_id +
+            "&display_name=" +
+            encodeURI(this.display_name.replace("#", "%23")) +
+            "&name=" +
+            this.name +
+            "&header=" +
+            encodeURI(this.header) +
+            "&icon=" +
+            this.icon +
+            "&tags=" +
+            JSON.stringify(this.formtags)
+        )
+        .then(response => (this.channel = response.data))
+        .then(response =>
+          this.channel.status_code !== "200"
+            ? console.log("Mattermost Error: " + this.channel.message)
+            : ""
+        )
+        .catch(error => {
+          console.log("Axios Error: " + error.response.data);
+        });
+
+      //.then(response => console.log(this.users))
+      //.then(response =>
+      //  db
+      //    .database()
+      //    .ref("portal_channels/"+topic.id)
+      //    .update(this.channel)
+      //);
+      //alert("Coming soon!");
       // axios portal_create_channel
       // GET = %23title, name, icon, header, tags
       // create_webhook

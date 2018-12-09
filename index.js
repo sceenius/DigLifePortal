@@ -26,6 +26,7 @@ new Vue({
   data: () => ({
     users: [],
     channels: [],
+    channel: "", // for API response
     groups: ""
   }),
   created: function() {

@@ -284,15 +284,31 @@ export default {
 
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
-      let data = channel.val();
-      if (data.display_name.charAt(0) === "#") {
-        this.topics.push(data);
+      if (channel.val().display_name.charAt(0) === "#") {
+        this.topics.push(channel.val());
         this.topics.sort(SortByName);
       }
     });
+    channelsRef.on("child_changed", channel => {
+      let data = channel.val();
+      this.topics.forEach(function(element, index, arr) {
+        if (element.channel_id === data.channel_id) {
+          arr[index].name = data.name;
+          arr[index].display_name = data.display_name;
+          arr[index].header = data.header;
+          arr[index].purpose.icon = data.purpose.icon;
+          arr[index].purpose.tags = [];
+          data.purpose.tags.forEach(function(element, index2, arr2) {
+            arr[index].purpose.tags.push({ text: element.text });
+          });
+          // console.log(data.purpose.tags); // needs thinking, assinging sub-array
+        }
+      });
 
-    // after card edits
-    //channelsRef.on("child_changed", channel => {
+      //this.topics[i].display_name = channel.val().display_name;
+    });
+
+    //this.$forceUpdate();
 
     function SortByName(x, y) {
       return x.display_name === y.display_name
@@ -367,29 +383,15 @@ export default {
       this.name = topic.name;
       this.icon = topic.purpose.icon;
       this.header = topic.header;
-      this.formtags = topic.purpose.tags.map(function(element) {
-        return { text: element };
-      });
+      this.formtags = topic.purpose.tags;
+      // this.formtags = topic.purpose.tags.map(function(element) {
+      //   return { text: element };
+      //});
       this.activeTopic = true;
     },
 
     // confirm new group
     onConfirm: function() {
-      alert(
-        "channel_id=" +
-          this.channel_id +
-          "&display_name=" +
-          encodeURI(this.display_name) +
-          "&name=" +
-          this.name +
-          "&header=" +
-          encodeURI(this.header) +
-          "&icon=" +
-          this.icon +
-          "&tags=" +
-          JSON.stringify(this.formtags)
-      );
-
       this.axios
         .get(
           BASEURL +
@@ -397,7 +399,7 @@ export default {
             "&channel_id=" +
             this.channel_id +
             "&display_name=" +
-            encodeURI(this.display_name.replace("#", "%23")) +
+            this.display_name.replace("#", "%23") +
             "&name=" +
             this.name +
             "&header=" +
@@ -408,27 +410,32 @@ export default {
             JSON.stringify(this.formtags)
         )
         .then(response => (this.channel = response.data))
+        //.then(response => console.log(this.channel))
         .then(response =>
-          this.channel.status_code !== "200"
-            ? console.log("Mattermost Error: " + this.channel.message)
+          this.channel.status_code
+            ? console.log(
+                "Mattermost Error " +
+                  this.channel.status_code +
+                  ": " +
+                  this.channel.message
+              )
             : ""
         )
+        .then(response =>
+          db
+            .database()
+            .ref("portal_channels/" + this.channel.id)
+            .update({
+              name: this.channel.name,
+              display_name: this.channel.display_name,
+              header: this.channel.header,
+              purpose: JSON.parse(this.channel.purpose)
+            })
+        )
         .catch(error => {
-          console.log("Axios Error: " + error.response.data);
+          console.log("Axios Error:" + error.response);
         });
-
-      //.then(response => console.log(this.users))
-      //.then(response =>
-      //  db
-      //    .database()
-      //    .ref("portal_channels/"+topic.id)
-      //    .update(this.channel)
-      //);
-      //alert("Coming soon!");
-      // axios portal_create_channel
-      // GET = %23title, name, icon, header, tags
-      // create_webhook
-      // https://ledger.diglife.coop/webhooks/portal_create_channel.php?file=base-diglife-coop.php&username=joachim&domain=6zrghf5wyfr5fquq8dgfexteeh&icon=car&name=this-group-name&display_name=THis%20is%20my%20channel&tags=[%22a%22,%22b%22,%22c%22,%22d%22,%22e%22]&header=THis%20is%20my%20header
+      this.activeTopic = false;
     },
 
     // execute card action

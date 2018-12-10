@@ -40,7 +40,7 @@
         Group</md-dialog-title
       >
       <div style="padding: 0 25px ;">
-        <md-field>
+        <md-field id="display_name">
           <label>Title</label>
           <md-input
             v-on:keyup="slug"
@@ -50,16 +50,16 @@
           <span class="md-helper-text"
             >Enter the name of this Interest Group</span
           >
-          <span class="md-error"></span>
+          <span class="md-error">This field cannot be blank</span>
         </md-field>
 
-        <md-field>
+        <md-field id="name">
           <label>Slug</label>
           <md-input v-model="name" required></md-input>
           <span class="md-helper-text"
             >Unique name as it appears in the URL</span
           >
-          <span class="md-error"></span>
+          <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-field>
@@ -67,7 +67,9 @@
           <md-input v-model="icon" required></md-input>
           <span class="md-helper-text"
             >Pick an icon
-            <a href="https://material.io/tools/icons/?style=baseline"
+            <a
+              href="https://material.io/tools/icons/?style=baseline"
+              target="icons"
               >from this list</a
             ></span
           >
@@ -77,7 +79,11 @@
 
         <md-field>
           <label>Description</label>
-          <md-textarea style="font-size: 0.9em;" v-model="header"></md-textarea>
+          <md-textarea
+            style="font-size: 0.9em;"
+            v-model="header"
+            required
+          ></md-textarea>
           <span class="md-helper-text"
             >Enter a short description for this Interest Group</span
           >
@@ -154,9 +160,7 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead" style="margin: 1px 0 0 35px; opacity: 1;">
-          Interest & Research Group
-        </div>
+        <div class="md-subhead">Interest & Research Group</div>
         <img
           style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
@@ -366,7 +370,11 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  computed: {},
+  computed: {
+    invalidate: function() {
+      return this.invalid === true ? "md-invalid" : "";
+    }
+  },
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
@@ -435,66 +443,75 @@ export default {
 
     // submit card edits
     onConfirm: function() {
-      if (this.mode === "Edit") {
-        this.script = "portal_update_channel.php";
-      } else if (this.mode === "Create") {
-        this.script = "portal_create_channel.php";
-      }
-
-      this.axios
-        .get(
-          BASEURL +
-            "webhooks/" +
-            this.script +
-            "?file=base-diglife-coop.php" +
-            "&channel_id=" +
-            this.channel_id +
-            "&team_id=" +
-            this.team_id +
-            "&display_name=" +
-            this.display_name.replace("#", "%23") +
-            "&name=" +
-            this.name +
-            "&header=" +
-            encodeURI(this.header) +
-            "&icon=" +
-            this.icon +
-            "&tags=" +
-            JSON.stringify(this.formtags)
-        )
-        .then(response => (this.channel = response.data))
-        //.then(response => console.log(this.channel))
-        .then(response => {
-          if (this.channel.status_code) {
+      // error validation
+      if (this.display_name === "") {
+        document.getElementById("display_name").classList.add("md-invalid");
+      } else if (this.name === "") {
+        document.getElementById("name").classList.add("md-invalid");
+      } else {
+        if (this.mode === "Edit") {
+          this.script = "portal_update_channel.php";
+        } else if (this.mode === "Create") {
+          this.script = "portal_create_channel.php";
+        }
+        if (this.display_name[0] !== "#") {
+          this.display_name = "#" + this.display_name;
+        }
+        this.axios
+          .get(
+            BASEURL +
+              "webhooks/" +
+              this.script +
+              "?file=base-diglife-coop.php" +
+              "&channel_id=" +
+              this.channel_id +
+              "&team_id=" +
+              this.team_id +
+              "&display_name=" +
+              this.display_name.replace("#", "%23") +
+              "&name=" +
+              this.name +
+              "&header=" +
+              encodeURI(this.header) +
+              "&icon=" +
+              this.icon +
+              "&tags=" +
+              JSON.stringify(this.formtags)
+          )
+          .then(response => (this.channel = response.data))
+          //.then(response => console.log(this.channel))
+          .then(response => {
+            if (this.channel.status_code) {
+              this.showSnackBar = true;
+              this.snack =
+                "Mattermost Error (" +
+                this.channel.status_code +
+                "): " +
+                this.channel.message;
+            }
+          })
+          .then(response =>
+            db
+              .database()
+              .ref("portal_channels/" + this.channel.id)
+              .update({
+                name: this.channel.name,
+                display_name: this.channel.display_name,
+                header: this.channel.header,
+                purpose: JSON.parse(this.channel.purpose)
+              })
+          )
+          .then(response => {
             this.showSnackBar = true;
-            this.snack =
-              "Mattermost Error (" +
-              this.channel.status_code +
-              "): " +
-              this.channel.message;
-          }
-        })
-        .then(response =>
-          db
-            .database()
-            .ref("portal_channels/" + this.channel.id)
-            .update({
-              name: this.channel.name,
-              display_name: this.channel.display_name,
-              header: this.channel.header,
-              purpose: JSON.parse(this.channel.purpose)
-            })
-        )
-        .then(response => {
-          this.showSnackBar = true;
-          this.snack = "This card has been successfully updated.";
-        })
-        .catch(error => {
-          this.showSnackBar = true;
-          this.snack = "Network Error, please try again later.";
-        });
+            this.snack = "This card has been successfully updated.";
+          })
+          .catch(error => {
+            this.showSnackBar = true;
+            this.snack = "Network Error, please try again later.";
+          });
 
-      this.activeTopic = false;
+        this.activeTopic = false;
+      }
     },
 
     // execute card action
@@ -636,6 +653,15 @@ export default {
   color: #404040;
   line-height: 0.9em;
   width: 100% !important;
+}
+
+.md-card .md-subhead {
+  position: absolute;
+  top: 6px;
+  left: 35px;
+  margin: 0;
+  padding: 0;
+  opacity: 1;
 }
 
 .md-card-footer {

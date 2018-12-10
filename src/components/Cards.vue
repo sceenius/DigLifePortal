@@ -5,10 +5,14 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar :md-duration="4000" :md-active.sync="showAskBar" md-persistent>
-      <span>Thank you! Your question has been submitted.</span>
+    <md-snackbar
+      :md-duration="4000"
+      :md-active.sync="showSnackBar"
+      md-persistent
+    >
+      <span>{{ snack }}</span>
       <md-button class="md-primary" @click="showSnackbar = false;"
-        >Close</md-button
+        >Dismiss</md-button
       >
     </md-snackbar>
 
@@ -19,7 +23,7 @@
     -->
     <md-button
       v-if="!activeTopic"
-      @click="activeTopic = true;"
+      @click="createCard();"
       class="md-fab md-primary"
       style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
     >
@@ -32,13 +36,17 @@
       :md-active.sync="activeTopic"
     >
       <md-dialog-title
-        ><md-icon style="color: black;">group_work</md-icon> Edit Interest
+        ><md-icon style="color: black;">group_work</md-icon> {{ mode }} Interest
         Group</md-dialog-title
       >
       <div style="padding: 0 25px ;">
         <md-field>
           <label>Title</label>
-          <md-input v-model="display_name" required></md-input>
+          <md-input
+            v-on:keyup="slug"
+            v-model="display_name"
+            required
+          ></md-input>
           <span class="md-helper-text"
             >Enter the name of this Interest Group</span
           >
@@ -66,6 +74,7 @@
           <span class="md-error"></span>
           <md-icon>{{ icon }}</md-icon>
         </md-field>
+
         <md-field>
           <label>Description</label>
           <md-textarea style="font-size: 0.9em;" v-model="header"></md-textarea>
@@ -91,11 +100,18 @@
             >Cancel</md-button
           >
           <md-button
+            v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirm();"
             style="background: #00b0a0; color: white;"
-            ><md-icon style="color: white;">group_work</md-icon>
-            Update</md-button
+            >Update</md-button
+          >
+          <md-button
+            v-if="mode == 'Create'"
+            class="md-success md-raised"
+            @click="onConfirm();"
+            style="background: #00b0a0; color: white;"
+            >Create</md-button
           >
         </md-dialog-actions>
       </div>
@@ -221,7 +237,7 @@
 import VueTagsInput from "@johmun/vue-tags-input";
 import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
-//import Slugify from "slugify";
+import Slugify from "slugify";
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
 //import topics from "@/components/navbar";
@@ -233,10 +249,13 @@ export default {
     return {
       service: "",
       tag: "",
+      mode: "", // Edit or Create mode for dialog
+      script: "", // Edit or Create script for execution
       showServices: false,
       showCardNavigation: false,
       activeTopic: false,
-      showAskBar: false,
+      showSnackBar: false,
+      snack: "",
       result: "",
       status: "",
       topics: [],
@@ -254,7 +273,7 @@ export default {
       ],
       channel_id: "",
       display_name: "",
-      name: "",
+      name: "", //Slugify(this.display_name),
       header: "",
       icon: "",
       formtags: [],
@@ -370,34 +389,68 @@ export default {
       }
     },
 
+    slug: function() {
+      //if (this.mode === "Create") {
+      this.name = Slugify(this.display_name, { lower: true });
+      //}
+    },
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
     },
 
-    // edit card
-    editCard: function(topic) {
-      //alert(topic.purpose.tags);
-      this.channel_id = topic.channel_id;
-      this.display_name = topic.display_name;
-      this.name = topic.name;
-      this.icon = topic.purpose.icon;
-      this.header = topic.header;
-      this.formtags = topic.purpose.tags;
+    // create card
+    createCard: function(topic) {
+      // all interest groups created in the diglife domain
+      this.team_id = this.topics[0].team_id;
+      this.channel_id = "";
+      this.display_name = "";
+      this.name = "";
+      this.icon = "";
+      this.header = "";
+      this.formtags = [];
+      this.mode = "Create";
       // this.formtags = topic.purpose.tags.map(function(element) {
       //   return { text: element };
       //});
       this.activeTopic = true;
     },
 
-    // confirm new group
+    // edit card
+    editCard: function(topic) {
+      //alert(topic.purpose.tags);
+      this.team_id = topic.team_id;
+      this.channel_id = topic.channel_id;
+      this.display_name = topic.display_name;
+      this.name = topic.name;
+      this.icon = topic.purpose.icon;
+      this.header = topic.header;
+      this.formtags = topic.purpose.tags;
+      this.mode = "Edit";
+      // this.formtags = topic.purpose.tags.map(function(element) {
+      //   return { text: element };
+      //});
+      this.activeTopic = true;
+    },
+
+    // submit card edits
     onConfirm: function() {
+      if (this.mode === "Edit") {
+        this.script = "portal_update_channel.php";
+      } else if (this.mode === "Create") {
+        this.script = "portal_create_channel.php";
+      }
+
       this.axios
         .get(
           BASEURL +
-            "webhooks/portal_update_channel.php?file=base-diglife-coop.php" +
+            "webhooks/" +
+            this.script +
+            "?file=base-diglife-coop.php" +
             "&channel_id=" +
             this.channel_id +
+            "&team_id=" +
+            this.team_id +
             "&display_name=" +
             this.display_name.replace("#", "%23") +
             "&name=" +
@@ -411,16 +464,16 @@ export default {
         )
         .then(response => (this.channel = response.data))
         //.then(response => console.log(this.channel))
-        .then(response =>
-          this.channel.status_code
-            ? console.log(
-                "Mattermost Error " +
-                  this.channel.status_code +
-                  ": " +
-                  this.channel.message
-              )
-            : ""
-        )
+        .then(response => {
+          if (this.channel.status_code) {
+            this.showSnackBar = true;
+            this.snack =
+              "Mattermost Error (" +
+              this.channel.status_code +
+              "): " +
+              this.channel.message;
+          }
+        })
         .then(response =>
           db
             .database()
@@ -432,9 +485,15 @@ export default {
               purpose: JSON.parse(this.channel.purpose)
             })
         )
+        .then(response => {
+          this.showSnackBar = true;
+          this.snack = "This card has been successfully updated.";
+        })
         .catch(error => {
-          console.log("Axios Error:" + error.response);
+          this.showSnackBar = true;
+          this.snack = "Network Error, please try again later.";
         });
+
       this.activeTopic = false;
     },
 
@@ -477,7 +536,8 @@ export default {
             unfurl_links: true,
             link_names: 1
           });
-          this.showAskBar = true;
+          this.snack = "Thank You. Your question has been submitted.";
+          this.showSnackBar = true;
 
           break;
         case "leave":

@@ -8,6 +8,7 @@
     "kinto-http": "4.6.1",
     "node-slack": "0.0.7",
     "particles.js": "2.0.0",
+    "slugify": "1.3.4",
     "vue": "2.5.17",
     "vue-axios": "2.1.4",
     "vue-cookies": "1.5.7",

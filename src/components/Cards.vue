@@ -109,14 +109,14 @@
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #00b0a0; color: white;"
+            style="background: #C9162B; color: white;"
             >Update</md-button
           >
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #00b0a0; color: white;"
+            style="background: #C9162B; color: white;"
             >Create</md-button
           >
         </md-dialog-actions>
@@ -160,10 +160,14 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">Interest & Research Group</div>
+        <div class="md-subhead"></div>
         <img
           style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
+        />
+        <img
+          style="width: 200px; position: absolute; top: -25px; left: 25px; z-index: 99; "
+          src="https://ledger.diglife.coop/images/brand/card_ribbon.png"
         />
       </div>
 
@@ -207,7 +211,7 @@
         >
         <md-button
           v-if="isMember(topic)"
-          style="background: #00b0a0; color: white;"
+          style="background: #C9162B; color: white;"
           @click="cardAction('open', topic);"
           >Open</md-button
         >
@@ -216,7 +220,7 @@
         >
         <md-button
           v-if="!isMember(topic)"
-          style="background: #00b0a0; color: white;"
+          style="background: #C9162B; color: white;"
           @click="cardAction('join', topic);"
           >Join</md-button
         >
@@ -617,7 +621,7 @@ export default {
   width: 100%;
   color: white;
   max-height: 30px;
-  background-color: #00b0a0;
+  background-color: #c9162b; /* DigLife:C9162B Xmas:C9162B*/
   overflow: hide;
 }
 
@@ -740,7 +744,7 @@ export default {
 li.tag {
   height: 34px !important;
   padding: 0 10px !important;
-  background-color: #00b0a0 !important;
+  background-color: #c9162b !important;
   border-radius: 40px !important;
   font-size: 15px !important;
   line-height: 34px !important;

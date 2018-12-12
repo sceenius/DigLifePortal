@@ -75,6 +75,7 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
+      style="width: 400px;"
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
@@ -97,7 +98,7 @@
           <md-button
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #00b0a0; color: white;"
+            style="background: #C9162B; color: white;"
             ><md-icon style="color: white;">exit_to_app</md-icon>
             Enter</md-button
           >
@@ -194,7 +195,7 @@
         <md-button
           class="md-success md-raised"
           @click="requestAccess();"
-          style="background: #00b0a0; color: white;"
+          style="background: #C9162B; color: white;"
           ><md-icon style="color: white;">lock_open</md-icon> Request
           Access</md-button
         >
@@ -252,7 +253,7 @@
           <md-button
             class="md-success md-raised"
             @click="onConfirmMenu();"
-            style="background: #00b0a0; color: white;"
+            style="background: #C9162B; color: white;"
             >Add</md-button
           >
         </md-dialog-actions>
@@ -332,7 +333,7 @@
         @click="sub(menu.link);"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>menu.icon</md-icon>
+        <md-icon>{{ menu.icon }}</md-icon>
       </md-button>
 
       <md-button
@@ -773,6 +774,7 @@ export default {
 
           this.snack = "Menu entry successfully added.";
           this.showSnackBar = true;
+          window.open(this.menulink, "theApp");
         }
       });
     },
@@ -1057,7 +1059,7 @@ export default {
   font-weight: bold !important;
 }
 .md-toolbar {
-  background-color: #00b0a0 !important;
+  background-color: #c9162b !important;
 }
 
 .md-tabs-container {

@@ -41,6 +41,7 @@ new Vue({
           .update(this.users)
       );
 
+    // note that archived channels are not removed from Firebase and need to be purged from time to time
     this.axios
       .get(
         BASEURL +

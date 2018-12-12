@@ -242,8 +242,10 @@ import VueTagsInput from "@johmun/vue-tags-input";
 import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
 import Slugify from "slugify";
+import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
+
 //import topics from "@/components/navbar";
 
 export default {
@@ -306,27 +308,52 @@ export default {
     });
 
     let channelsRef = db.database().ref("portal_channels");
+    // porta_extensions contains any channel info not stored in Mattermost
+    let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
-      if (channel.val().display_name.charAt(0) === "#") {
-        this.topics.push(channel.val());
-        this.topics.sort(SortByName);
+      var data = channel.val();
+      if (data.display_name.charAt(0) === "#") {
+        extensionsRef.child(data.channel_id).once("value", extension => {
+          if (extension.exists()) {
+            data = _.merge(data, extension.val());
+          }
+          this.topics.push(data);
+          this.topics.sort(SortByName);
+        });
       }
     });
+
     channelsRef.on("child_changed", channel => {
       let data = channel.val();
       this.topics.forEach(function(element, index, arr) {
         if (element.channel_id === data.channel_id) {
-          arr[index].name = data.name;
-          arr[index].display_name = data.display_name;
-          arr[index].header = data.header;
-          arr[index].purpose.icon = data.purpose.icon;
-          arr[index].purpose.tags = [];
-          data.purpose.tags.forEach(function(element, index2, arr2) {
-            arr[index].purpose.tags.push({ text: element.text });
-          });
-          // console.log(data.purpose.tags); // needs thinking, assinging sub-array
+          // lodash function to merge objects recursively
+          arr[index] = _.merge(arr[index], data);
         }
       });
+
+      // let channelsRef = db.database().ref("portal_extensions");
+      // channelsRef.on("child_added", channel => {
+      //   if (channel.val().display_name.charAt(0) === "#") {
+      //     this.topics.push(channel.val());
+      //     this.topics.sort(SortByName);
+      //   }
+      // });
+
+      // let data = channel.val();
+      // this.topics.forEach(function(element, index, arr) {
+      //   if (element.channel_id === data.channel_id) {
+      //     arr[index].name = data.name;
+      //     arr[index].display_name = data.display_name;
+      //     arr[index].header = data.header;
+      //     arr[index].purpose.icon = data.purpose.icon;
+      //     arr[index].purpose.tags = [];
+      //     data.purpose.tags.forEach(function(element, index2, arr2) {
+      //       arr[index].purpose.tags.push({ text: element.text });
+      //     });
+      //     // console.log(data.purpose.tags); // needs thinking, assinging sub-array
+      //   }
+      // });
 
       //this.topics[i].display_name = channel.val().display_name;
     });

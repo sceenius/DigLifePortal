@@ -75,6 +75,7 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
+      style="width: 400px"
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
@@ -289,6 +290,14 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>blur_circular</md-icon>
+      </md-button>
+      <md-button
+        v-if="service == '.Governance + Self-org'"
+        title="Google Drive"
+        @click="sub('driveLink');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>folder_shared</md-icon>
       </md-button>
     </div>
 
@@ -857,6 +866,12 @@ export default {
               this.username +
               "&username=" +
               this.username,
+            "theApp"
+          );
+          break;
+        case "driveLink":
+          window.open(
+            "https://drive.google.com/embeddedfolderview?id=0Bz4dFOWUcWRqb0dHVTdNT3VZZXc#grid",
             "theApp"
           );
           break;

@@ -7,12 +7,12 @@
     -->
     <md-snackbar
       :md-duration="4000"
-      :md-active.sync="showSnackbar"
+      :md-active.sync="showSnackBar"
       md-persistent
     >
-      <span>Thank you! Your request has been submitted.</span>
-      <md-button class="md-primary" @click="showSnackbar = false;"
-        >Close</md-button
+      <span>{{ snack }}</span>
+      <md-button class="md-primary" @click="showSnackBar = false;"
+        >Dismiss</md-button
       >
     </md-snackbar>
 
@@ -310,23 +310,14 @@
     <!--
       ----------------------------------------------------------------------
         CONTEXTUAL ACTION BUTTONS
+          <md-icon>info_outline</md-icon>
+          <md-icon>chat_bubble_outline</md-icon>
+          <md-icon>apps</md-icon>
+          <md-icon>blur_circular</md-icon>
+          <md-icon>folder_shared</md-icon>
       ----------------------------------------------------------------------
     -->
     <div v-if="service && service != 'Interest Groups'" id="actions">
-      <md-button
-        title="Learn more"
-        @click="sub('infoLink');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>info_outline</md-icon>
-      </md-button>
-      <md-button
-        title="Open support group"
-        @click="sub('chatLink');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>chat_bubble_outline</md-icon>
-      </md-button>
       <md-button
         title="Open app in new window"
         @click="sub('appLink');"
@@ -335,26 +326,13 @@
         <md-icon>fullscreen</md-icon>
       </md-button>
       <md-button
-        title="Social Ledger Social Objects"
-        @click="sub('dashboardLink');"
+        v-for="(menu, index) in channel.menu"
+        :key="index"
+        v-bind:title="menu.title"
+        @click="sub(menu.link);"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>apps</md-icon>
-      </md-button>
-      <md-button
-        title="Social Ledger Holonic Chart"
-        @click="sub('mapLink');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>blur_circular</md-icon>
-      </md-button>
-      <md-button
-        v-if="service == '.Governance + Self-org'"
-        title="Google Drive"
-        @click="sub('driveLink');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>folder_shared</md-icon>
+        <md-icon>menu.icon</md-icon>
       </md-button>
 
       <md-button
@@ -534,7 +512,7 @@ export default {
     showNavigation: false,
     showSidepanel: false,
     showServices: false,
-    showSnackbar: false,
+    showSnackBar: false,
     showProfileReminder: false,
     activeUser: true,
     activeAccess: false,
@@ -544,6 +522,7 @@ export default {
     selected: "Home",
     service: "",
     username: "",
+    snack: "",
     users: [],
     channels: [],
     profile: false,
@@ -769,7 +748,8 @@ export default {
       //element.style.display = "block";
       //element = document.getElementById("logo");
       //element.style.display = "block";
-      this.showSnackbar = true;
+      this.snack = "Thank you! Your request has been submitted.";
+      this.showSnackBar = true;
     },
 
     onConfirmMenu: function() {
@@ -790,6 +770,9 @@ export default {
           db.database()
             .ref("portal_extensions/" + this.channel.channel_id + "/menu")
             .set(arr[index].menu);
+
+          this.snack = "Menu entry successfully added.";
+          this.showSnackBar = true;
         }
       });
     },
@@ -972,6 +955,7 @@ export default {
           );
           break;
         default:
+          window.open(menu, "theApp");
       }
     },
 

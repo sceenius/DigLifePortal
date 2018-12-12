@@ -75,7 +75,6 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
-      style="width: 400px"
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
@@ -204,6 +203,64 @@
 
     <!--
       ----------------------------------------------------------------------
+        DIALOG BOXES - MENU DIALOG
+      ----------------------------------------------------------------------
+    -->
+    <md-dialog
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+      :md-active.sync="activeMenu"
+    >
+      <md-dialog-title
+        ><md-icon style="color: black;">add</md-icon>Add Menu
+        Entry</md-dialog-title
+      >
+      <div style="padding: 0 25px ;">
+        <md-field id="menutitle">
+          <label>Title</label>
+          <md-input v-model="menutitle" required></md-input>
+          <span class="md-helper-text">Enter the title of this Menu Entry</span>
+          <span class="md-error">This field cannot be blank</span>
+        </md-field>
+
+        <md-field>
+          <label>Icon</label>
+          <md-input v-model="menuicon" required></md-input>
+          <span class="md-helper-text"
+            >Pick an icon
+            <a
+              href="https://material.io/tools/icons/?style=baseline"
+              target="icons"
+              >from this list</a
+            ></span
+          >
+          <span class="md-error"></span>
+          <md-icon>{{ menuicon }}</md-icon>
+        </md-field>
+
+        <md-field id="menulink">
+          <label>URL</label>
+          <md-input v-model="menulink" required></md-input>
+          <span class="md-helper-text">Enter the link of this Menu Entry</span>
+          <span class="md-error">This field cannot be blank</span>
+        </md-field>
+
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button class="md-success md-raised" @click="activeMenu = false;"
+            >Cancel</md-button
+          >
+          <md-button
+            class="md-success md-raised"
+            @click="onConfirmMenu();"
+            style="background: #00b0a0; color: white;"
+            >Add</md-button
+          >
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
+    <!--
+      ----------------------------------------------------------------------
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
@@ -298,6 +355,14 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>folder_shared</md-icon>
+      </md-button>
+
+      <md-button
+        title="Add Menu Entry"
+        @click="activeMenu = true;"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>add</md-icon>
       </md-button>
     </div>
 
@@ -456,6 +521,7 @@ import Particles from "@/components/Particles";
 import Tags from "@/components/Tags";
 import Cards from "@/components/Cards";
 import Slack from "node-slack";
+import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "@/firebase/init";
 
 export default {
@@ -474,6 +540,7 @@ export default {
     activeAccess: false,
     activeInfo: false,
     activeSettings: false,
+    activeMenu: false,
     selected: "Home",
     service: "",
     username: "",
@@ -485,7 +552,11 @@ export default {
     total: "",
     channel: "",
     invalid: true,
-    tags: []
+    tags: [],
+    menus: [],
+    menutitle: "",
+    menulink: "",
+    menuicon: ""
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -506,15 +577,18 @@ export default {
     });
 
     let channelsRef = db.database().ref("portal_channels");
+    // porta_extensions contains any channel info not stored in Mattermost
+    let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
-      if (channel.val().display_name.charAt(0) !== "#") {
-        var data = channel.val();
-        //Purpose is a JSON string that needs to be converted to an object
-        // if (data.purpose !== "") {
-        //   data.purpose = JSON.parse(data.purpose);
-        // }
-        this.channels.push(data);
-        this.channels.sort(SortByName);
+      var data = channel.val();
+      if (data.display_name.charAt(0) !== "#") {
+        extensionsRef.child(data.channel_id).once("value", extension => {
+          if (extension.exists()) {
+            data = _.merge(data, extension.val());
+          }
+          this.channels.push(data);
+          this.channels.sort(SortByName);
+        });
         //console.log("This channel: ", this.channels);
       }
     });
@@ -696,6 +770,28 @@ export default {
       //element = document.getElementById("logo");
       //element.style.display = "block";
       this.showSnackbar = true;
+    },
+
+    onConfirmMenu: function() {
+      this.activeMenu = false;
+      //console.log(this.channel.channel_id);
+      this.channels.forEach((channel, index, arr) => {
+        if (channel.channel_id === this.channel.channel_id) {
+          if (arr[index].menu === undefined) {
+            arr[index].menu = [];
+          }
+          // push new menu entry to channels
+          arr[index].menu.push({
+            title: this.menutitle,
+            link: this.menulink,
+            icon: this.menuicon
+          });
+          // write entire menu to Firebase
+          db.database()
+            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
+            .set(arr[index].menu);
+        }
+      });
     },
 
     onConfirm: function() {

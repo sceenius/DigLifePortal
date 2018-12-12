@@ -245,7 +245,6 @@ import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
-
 //import topics from "@/components/navbar";
 
 export default {
@@ -322,7 +321,6 @@ export default {
         });
       }
     });
-
     channelsRef.on("child_changed", channel => {
       let data = channel.val();
       this.topics.forEach(function(element, index, arr) {
@@ -331,29 +329,6 @@ export default {
           arr[index] = _.merge(arr[index], data);
         }
       });
-
-      // let channelsRef = db.database().ref("portal_extensions");
-      // channelsRef.on("child_added", channel => {
-      //   if (channel.val().display_name.charAt(0) === "#") {
-      //     this.topics.push(channel.val());
-      //     this.topics.sort(SortByName);
-      //   }
-      // });
-
-      // let data = channel.val();
-      // this.topics.forEach(function(element, index, arr) {
-      //   if (element.channel_id === data.channel_id) {
-      //     arr[index].name = data.name;
-      //     arr[index].display_name = data.display_name;
-      //     arr[index].header = data.header;
-      //     arr[index].purpose.icon = data.purpose.icon;
-      //     arr[index].purpose.tags = [];
-      //     data.purpose.tags.forEach(function(element, index2, arr2) {
-      //       arr[index].purpose.tags.push({ text: element.text });
-      //     });
-      //     // console.log(data.purpose.tags); // needs thinking, assinging sub-array
-      //   }
-      // });
 
       //this.topics[i].display_name = channel.val().display_name;
     });

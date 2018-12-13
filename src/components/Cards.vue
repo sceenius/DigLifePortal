@@ -320,8 +320,9 @@ export default {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
+          console.log(data);
           this.topics.push(data);
-          this.topics.sort(SortByName);
+          //this.topics.sort(SortByName);  WARNING: SORT FAILS
         });
       }
     });

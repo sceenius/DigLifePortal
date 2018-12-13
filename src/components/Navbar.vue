@@ -480,12 +480,11 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
       <Cards v-if="service == 'Interest Groups'" />
-
       <iframe
-        v-if="service !== 'Interest Groups'"
+        v-if="service && service !== 'Interest Groups'"
         name="theApp"
         id="theApp"
-        style="display: none; width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"
+        style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"
         frameborder="0"
         scrolling="yes"
       ></iframe>
@@ -886,8 +885,8 @@ export default {
       this.selected = menu;
       this.showNavigation = true;
       this.service = "";
-      var element = document.getElementById("theApp");
-      element.style.display = "none";
+      // var element = document.getElementById("theApp");
+      // element.style.display = "none";
       //element = document.getElementById("particles-js");
       //element.style.display = "block";
       //element = document.getElementById("logo");
@@ -962,10 +961,11 @@ export default {
     },
 
     openService: function(index) {
-      document.getElementById("drawer").classList.remove("md-active");
-      this.showNavigation = false;
       this.service = this.channels[index].display_name;
       this.channel = this.channels[index];
+      //this.$forceUpdate();
+      document.getElementById("drawer").classList.remove("md-active");
+      this.showNavigation = false;
 
       // get all users (members) for channel and show in members tab
       this.axios
@@ -974,29 +974,31 @@ export default {
             "webhooks/portal_members.php?file=base-diglife-coop.php&channel_id=" +
             this.channel.id
         )
-        .then(response => (this.members = response.data));
+        .then(response => (this.members = response.data))
 
-      // hide and show elements on UI
-      //var element = document.getElementById("logo");
-      //element.style.display = "none";
+        // hide and show elements on UI
+        //var element = document.getElementById("logo");
+        //element.style.display = "none";
 
-      //element = document.getElementById("particles-js");
-      //element.style.display = "none";
+        //element = document.getElementById("particles-js");
+        //element.style.display = "none";
 
-      var element = document.getElementById("theApp");
-      element.style.display = "block";
+        // var element = document.getElementById("theApp");
+        // element.style.display = "block";
 
-      // open app link or request access dialog
-      if (
-        JSON.stringify(this.groups).includes(this.channels[index].name) ||
-        this.channels[index].type === "O"
-      ) {
-        // Access has been granted
-        window.open(this.channels[index].purpose.link, "theApp");
-      } else {
-        // Open dialog to request access
-        this.activeAccess = true;
-      }
+        // open app link or request access dialog
+        .then(response => {
+          if (
+            JSON.stringify(this.groups).includes(this.channels[index].name) ||
+            this.channels[index].type === "O"
+          ) {
+            // Access has been granted
+            window.open(this.channels[index].purpose.link, "theApp");
+          } else {
+            // Open dialog to request access
+            this.activeAccess = true;
+          }
+        });
     }
   }
 };

@@ -381,7 +381,7 @@ export default {
 li.tag {
   height: 34px !important;
   padding: 0 10px !important;
-  background-color: #00b0a0 !important;
+  background-color: #c9162b !important;
   border-radius: 40px !important;
   font-size: 15px !important;
   line-height: 34px !important;

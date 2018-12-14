@@ -213,8 +213,8 @@
       :md-active.sync="activeMenu"
     >
       <md-dialog-title
-        ><md-icon style="color: black;">add</md-icon>Add Menu
-        Entry</md-dialog-title
+        ><md-icon style="color: black;">{{ mode.toLowerCase() }}</md-icon
+        >{{ mode }} Menu Entry</md-dialog-title
       >
       <div style="padding: 0 25px ;">
         <md-field id="menutitle">
@@ -251,10 +251,26 @@
             >Cancel</md-button
           >
           <md-button
+            v-if="mode == 'Add'"
             class="md-success md-raised"
-            @click="onConfirmMenu();"
+            @click="onConfirmAddMenu();"
             style="background: #C9162B; color: white;"
-            >Add</md-button
+            >Save</md-button
+          >
+          <md-button
+            v-if="mode == 'Edit'"
+            class="md-success md-raised"
+            @click="onConfirmDeleteMenu(menuindex);"
+            sty
+            le="background: #C9162B; color: white;"
+            >Remove</md-button
+          >
+          <md-button
+            v-if="mode == 'Edit'"
+            class="md-success md-raised"
+            @click="onConfirmEditMenu(menuindex);"
+            style="background: #C9162B; color: white;"
+            >Save</md-button
           >
         </md-dialog-actions>
       </div>
@@ -331,6 +347,7 @@
         :key="index"
         v-bind:title="menu.title"
         @click="sub(menu.link);"
+        @contextmenu.prevent="editMenu(menu, index);"
         class="md-fab md-mini md-plain"
       >
         <md-icon>{{ menu.icon }}</md-icon>
@@ -338,7 +355,7 @@
 
       <md-button
         title="Add Menu Entry"
-        @click="activeMenu = true;"
+        @click="addMenu();"
         class="md-fab md-mini md-plain"
       >
         <md-icon>add</md-icon>
@@ -533,9 +550,11 @@ export default {
     invalid: true,
     tags: [],
     menus: [],
+    mode: "",
     menutitle: "",
     menulink: "",
-    menuicon: ""
+    menuicon: "",
+    menuindex: ""
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -752,7 +771,24 @@ export default {
       this.showSnackBar = true;
     },
 
-    onConfirmMenu: function() {
+    editMenu: function(menu, index) {
+      this.menutitle = menu.title;
+      this.menulink = menu.link;
+      this.menuicon = menu.icon;
+      this.menuindex = index;
+      this.mode = "Edit";
+      this.activeMenu = true;
+    },
+
+    addMenu: function() {
+      this.menutitle = "";
+      this.menulink = "";
+      this.menuicon = "";
+      this.mode = "Add";
+      this.activeMenu = true;
+    },
+
+    onConfirmAddMenu: function() {
       this.activeMenu = false;
       //console.log(this.channel.channel_id);
       this.channels.forEach((channel, index, arr) => {
@@ -778,6 +814,43 @@ export default {
       });
     },
 
+    onConfirmDeleteMenu: function(menuindex) {
+      this.activeMenu = false;
+      this.channels.forEach((channel, index, arr) => {
+        if (channel.channel_id === this.channel.channel_id) {
+          arr[index].menu.splice(menuindex, 1);
+          // write entire menu to Firebase
+          db.database()
+            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
+            .set(arr[index].menu);
+        }
+      });
+      this.snack = "Menu entry successfully removed.";
+      this.showSnackBar = true;
+    },
+
+    onConfirmEditMenu: function(menuindex) {
+      this.activeMenu = false;
+      //console.log(this.channel.channel_id);
+      this.channels.forEach((channel, index, arr) => {
+        if (channel.channel_id === this.channel.channel_id) {
+          // push new menu entry to channels
+          arr[index].menu[menuindex] = {
+            title: this.menutitle,
+            link: this.menulink,
+            icon: this.menuicon
+          };
+          // write entire menu to Firebase
+          db.database()
+            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
+            .update(arr[index].menu);
+
+          this.snack = "Menu entry successfully updated.";
+          this.showSnackBar = true;
+          window.open(this.menulink, "theApp");
+        }
+      });
+    },
     onConfirm: function() {
       if (
         !this.username ||
@@ -992,10 +1065,8 @@ export default {
             JSON.stringify(this.groups).includes(this.channels[index].name) ||
             this.channels[index].type === "O"
           ) {
-            // Access has been granted
             window.open(this.channels[index].purpose.link, "theApp");
           } else {
-            // Open dialog to request access
             this.activeAccess = true;
           }
         });

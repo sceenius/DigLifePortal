@@ -108,7 +108,7 @@
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
-            @click="onConfirm();"
+            @click="onConfirm(formindex);"
             style="background: #C9162B; color: white;"
             >Update</md-button
           >
@@ -148,7 +148,7 @@
           </md-button>
 
           <md-menu-content class="md-card-menu">
-            <md-menu-item @click="editCard(topic);">
+            <md-menu-item @click="editCard(topic, index);">
               <md-icon>edit</md-icon>
               <span>Edit</span>
             </md-menu-item>
@@ -286,6 +286,7 @@ export default {
       header: "",
       icon: "",
       formtags: [],
+      formindex: "",
       username: ""
     };
   },
@@ -432,7 +433,7 @@ export default {
     },
 
     // edit card
-    editCard: function(topic) {
+    editCard: function(topic, index) {
       //alert(topic.purpose.tags);
       this.team_id = topic.team_id;
       this.channel_id = topic.channel_id;
@@ -441,6 +442,7 @@ export default {
       this.icon = topic.purpose.icon;
       this.header = topic.header;
       this.formtags = topic.purpose.tags;
+      this.formindex = index;
       this.mode = "Edit";
       // this.formtags = topic.purpose.tags.map(function(element) {
       //   return { text: element };
@@ -449,12 +451,14 @@ export default {
     },
 
     // submit card edits
-    onConfirm: function() {
+    onConfirm: function(formindex) {
       // error validation
       if (this.display_name === "") {
         document.getElementById("display_name").classList.add("md-invalid");
       } else if (this.name === "") {
         document.getElementById("name").classList.add("md-invalid");
+
+        // no errors
       } else {
         if (this.mode === "Edit") {
           this.script = "portal_update_channel.php";
@@ -485,8 +489,15 @@ export default {
               "&tags=" +
               JSON.stringify(this.formtags)
           )
-          .then(response => (this.channel = response.data))
-          //.then(response => console.log(this.channel))
+          // does not update all fields
+          .then(
+            response =>
+              (this.topics[formindex] = _.merge(
+                this.topics[formindex],
+                response.data
+              ))
+          )
+          .then(response => console.log(formindex))
           .then(response => {
             if (this.channel.status_code) {
               this.showSnackBar = true;

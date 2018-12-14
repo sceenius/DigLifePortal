@@ -18,7 +18,7 @@
 
     <!--
       ----------------------------------------------------------------------
-        DIALOG BOXES - LOGIN DIALOG
+        DIALOG BOXES - EDIT CARD
       ----------------------------------------------------------------------
     -->
     <md-button
@@ -39,6 +39,8 @@
         ><md-icon style="color: black;">group_work</md-icon> {{ mode }} Interest
         Group</md-dialog-title
       >
+
+      <!-- https://vuematerial.io/components/form name="dialog.cardForm" -->
       <div style="padding: 0 25px ;">
         <md-field id="display_name">
           <label>Title</label>
@@ -229,11 +231,8 @@
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
           <md-avatar v-for="(member, index) in topic.members" :key="index">
-            <img
-              v-bind:title="member"
-              v-bind:src="avatarLink(member)"
-              alt="Avatar"
-            />
+            <img v-bind:src="avatarLink(member)" alt="Avatar" />
+            <md-tooltip md-direction="top">{{ member }}</md-tooltip>
           </md-avatar>
         </div>
       </div>

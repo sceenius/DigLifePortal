@@ -48,7 +48,7 @@ new Vue({
           "webhooks/portal_channels2.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      //.then(response => console.log(this.channels))
+      .then(response => console.log(this.channels))
       .then(response =>
         db
           .database()

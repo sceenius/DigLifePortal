@@ -22,7 +22,7 @@
       ----------------------------------------------------------------------
     -->
     <md-button
-      v-if="!activeTopic"
+      v-if="!activeDialogTopic"
       @click="createCard();"
       class="md-fab md-primary"
       style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
@@ -33,7 +33,7 @@
     <md-dialog
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
-      :md-active.sync="activeTopic"
+      :md-active.sync="activeDialogTopic"
     >
       <md-dialog-title
         ><md-icon style="color: black;">group_work</md-icon> {{ mode }} Interest
@@ -104,7 +104,9 @@
         </vue-tags-input>
 
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button class="md-success md-raised" @click="activeTopic = false;"
+          <md-button
+            class="md-success md-raised"
+            @click="activeDialogTopic = false;"
             >Cancel</md-button
           >
           <md-button
@@ -248,7 +250,6 @@ import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL } from "/constants.js";
 import db from "@/firebase/init";
-//import topics from "@/components/navbar";
 
 export default {
   name: "Tags",
@@ -261,7 +262,7 @@ export default {
       script: "", // Edit or Create script for execution
       showServices: false,
       showCardNavigation: false,
-      activeTopic: false,
+      activeDialogTopic: false,
       showSnackBar: false,
       snack: "",
       result: "",
@@ -295,6 +296,23 @@ export default {
   created: function() {
     this.username = this.$cookies.get("username");
 
+    // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
+    if (this.username) {
+      let groupsRef = db.database().ref("portal_profiles/" + this.username);
+      groupsRef.on("child_added", group => {
+        var data = group.val();
+        if (group.key === "channels") {
+          this.groups = data;
+        } else if (group.key === "tags") {
+          // convert tags to flat array
+          this.tags = data.reduce((accumulator, currentValue) => {
+            return [...accumulator, currentValue.text];
+          });
+        }
+      });
+    }
+
+    // LOAD USER PREFERENCES ///////////////////////////////////////////////////
     let prefsRef = db
       .database()
       .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
@@ -303,26 +321,27 @@ export default {
         this.showServices = pref.val();
       }
     });
-
     prefsRef.on("child_changed", pref => {
       if (pref.key === "showServices") {
         this.showServices = pref.val();
       }
     });
 
+    // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
     let channelsRef = db.database().ref("portal_channels");
     // porta_extensions contains any channel info not stored in Mattermost
     let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
+      // only load topic channels into the card component
       if (data.display_name.charAt(0) === "#") {
         extensionsRef.child(data.channel_id).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
-          console.log(data);
+          //console.log(data);
           this.topics.push(data);
-          //this.topics.sort(SortByName);  WARNING: SORT FAILS
+          //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
         });
       }
     });
@@ -334,53 +353,17 @@ export default {
           arr[index] = _.merge(arr[index], data);
         }
       });
-
-      //this.topics[i].display_name = channel.val().display_name;
     });
 
     //this.$forceUpdate();
-
-    function SortByName(x, y) {
-      return x.display_name === y.display_name
-        ? 0
-        : x.display_name > y.display_name
-        ? 1
-        : -1;
-    }
-
-    if (this.$cookies.get("username")) {
-      let groupsRef = db
-        .database()
-        .ref("portal_profiles/" + this.$cookies.get("username"));
-      groupsRef.on("child_added", group => {
-        var data = group.val();
-        if (group.key === "channels") {
-          this.groups = data;
-        } else if (group.key === "tags") {
-          this.tags = data.reduce((accumulator, currentValue) => {
-            return [...accumulator, currentValue.text];
-          });
-        }
-        //console.log("New Groups: "+group.key, this.groups);
-      });
-    }
-
-    // Cookies are strings, so need to convert to boolean!
-    // need to find a place to save cookie (e.g. My Settings)
-    // this.showServices = this.$cookies.get("showServices");
-    // if (this.showServices === "true") {
-    //   this.showServices = true;
-    // } else {
-    //   this.showServices = false;
-    // }
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
-    invalidate: function() {
-      return this.invalid === true ? "md-invalid" : "";
-    }
+    // invalidate: function() {
+    //   return this.invalid === true ? "md-invalid" : "";
+    // }
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
@@ -404,17 +387,16 @@ export default {
       }
     },
 
+    // create slug for URL
     slug: function() {
-      //if (this.mode === "Create") {
       this.name = Slugify(this.display_name, { lower: true });
-      //}
     },
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
     },
 
-    // create card
+    // create new card
     createCard: function(topic) {
       // all interest groups created in the diglife domain
       this.team_id = this.topics[0].team_id;
@@ -425,13 +407,10 @@ export default {
       this.header = "";
       this.formtags = [];
       this.mode = "Create";
-      // this.formtags = topic.purpose.tags.map(function(element) {
-      //   return { text: element };
-      //});
-      this.activeTopic = true;
+      this.activeDialogTopic = true;
     },
 
-    // edit card
+    // edit existing card (needs index of topic)
     editCard: function(topic, index) {
       //alert(topic.purpose.tags);
       this.team_id = topic.team_id;
@@ -440,13 +419,18 @@ export default {
       this.name = topic.name;
       this.icon = topic.purpose.icon;
       this.header = topic.header;
-      this.formtags = topic.purpose.tags;
+      //this.formtags = topic.purpose.tags;
+      // the tag control needs text key-value pairs
+      if (topic.purpose.tags && topic.purpose.tags[0].text === undefined) {
+        this.formtags = topic.purpose.tags.map(function(element) {
+          return { text: element };
+        });
+      } else {
+        this.formtags = topic.purpose.tags;
+      }
       this.formindex = index;
       this.mode = "Edit";
-      // this.formtags = topic.purpose.tags.map(function(element) {
-      //   return { text: element };
-      //});
-      this.activeTopic = true;
+      this.activeDialogTopic = true;
     },
 
     // submit card edits
@@ -459,14 +443,27 @@ export default {
 
         // no errors
       } else {
+        // we have two scripts for updating and creating channels
         if (this.mode === "Edit") {
           this.script = "portal_update_channel.php";
         } else if (this.mode === "Create") {
           this.script = "portal_create_channel.php";
         }
+
+        // prepare some values before writing them back to MM
+        // topic channels starting with "#"
         if (this.display_name[0] !== "#") {
           this.display_name = "#" + this.display_name;
         }
+        this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
+        this.formtags = this.formtags.reduce(function(
+          accumulator,
+          currentValue
+        ) {
+          return [...accumulator, currentValue.text];
+        });
+
+        //console.log(this.formtags);
         this.axios
           .get(
             BASEURL +
@@ -491,12 +488,10 @@ export default {
           // does not update all fields
           .then(
             response =>
-              (this.topics[formindex] = _.merge(
-                this.topics[formindex],
-                response.data
-              ))
+              (this.channel = _.merge(this.topics[formindex], response.data))
           )
-          .then(response => console.log(formindex))
+          //.then(response => console.log(this.channel))
+          //.then(response => console.log(response.data))
           .then(response => {
             if (this.channel.status_code) {
               this.showSnackBar = true;
@@ -525,9 +520,10 @@ export default {
           .catch(error => {
             this.showSnackBar = true;
             this.snack = "Network Error, please try again later.";
+            console.log(error);
           });
 
-        this.activeTopic = false;
+        this.activeDialogTopic = false;
       }
     },
 
@@ -784,5 +780,14 @@ li.tag {
 
 .md-field {
   margin-bottom: 35px;
+}
+
+.md-tooltip:before {
+  content: " ";
+  left: 34%; top: 32px;
+  position: absolute;
+  border-color: #676767 transparent transparent transparent;
+  border-style: solid;
+  border-width: 11px;
 }
 </style>

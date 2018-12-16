@@ -1,0 +1,33 @@
+.vue-tags-input {
+  max-width: 100% !important;
+}
+
+.new-tag-input {
+  font-weight: bold !important;
+}
+.icon-close,
+.icon-undo {
+  background-color: #6dcec5;
+  border-radius: 50%;
+  padding: 2px 2px 2px 3px;
+  margin-left: 3px;
+}
+
+li.tag {
+  height: 34px !important;
+  padding: 0 10px !important;
+  background-color: #c9162b !important;
+  border-radius: 40px !important;
+  font-size: 15px !important;
+  line-height: 34px !important;
+  vertical-align: middle !important;
+  white-space: nowrap !important;
+}
+
+.md-chip {
+  cursor: pointer;
+}
+
+.shading1 {
+  opacity: 0.5;
+}

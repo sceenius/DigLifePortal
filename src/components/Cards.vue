@@ -93,8 +93,9 @@
         </md-field>
 
         <vue-tags-input
+          :validation="validation"
           style="margin-top: 50px;"
-          required
+          required="true"
           v-model="tag"
           @tags-changed="newTags => (formtags = newTags)"
           :tags="formtags"
@@ -287,7 +288,27 @@ export default {
       icon: "",
       formtags: [],
       formindex: "",
-      username: ""
+      username: "",
+      validation: [
+        {
+          type: "min-length",
+          rule: /^.{3,}$/,
+          disableAdd: true
+        },
+        {
+          type: "no-numbers",
+          rule: /^([^0-9]*)$/
+        },
+        {
+          type: "avoid-item",
+          rule: /^(?!Cannot).*$/,
+          disableAdd: true
+        },
+        {
+          type: "no-braces",
+          rule: text => text.indexOf("{") !== -1 || text.indexOf("}") !== -1
+        }
+      ]
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -433,6 +454,49 @@ export default {
       this.activeDialogTopic = true;
     },
 
+    // edit existing card (needs index of topic)
+    deleteCard: function(topic, index) {
+      console.log(
+        "webhooks/" +
+          "portal_delete_channel.php" +
+          "?file=base-diglife-coop.php" +
+          "&channel_id=" +
+          topic.channel_id
+      );
+
+      this.axios
+        .get(
+          BASEURL +
+            "webhooks/" +
+            "portal_delete_channel.php" +
+            "?file=base-diglife-coop.php" +
+            "&channel_id=" +
+            topic.channel_id
+        )
+        .then(delete this.topics[index])
+        .then(
+          db
+            .database()
+            .ref("portal_channels/" + topic.channel_id)
+            .remove()
+        )
+        .then(
+          db
+            .database()
+            .ref("portal_extensions/" + topic.channel_id)
+            .remove()
+        )
+        .then(response => {
+          this.showSnackBar = true;
+          this.snack = "This card has been successfully removed.";
+        })
+        .catch(error => {
+          this.showSnackBar = true;
+          this.snack = "Network Error, please try again later.";
+          console.log(error);
+        });
+    },
+
     // submit card edits
     onConfirm: function(formindex) {
       // error validation
@@ -440,6 +504,9 @@ export default {
         document.getElementById("display_name").classList.add("md-invalid");
       } else if (this.name === "") {
         document.getElementById("name").classList.add("md-invalid");
+      } else if (this.formtags.length === 0) {
+        // not working
+        document.getElementById("formtags").classList.add("md-invalid");
 
         // no errors
       } else {
@@ -486,10 +553,13 @@ export default {
               JSON.stringify(this.formtags)
           )
           // does not update all fields
-          .then(
-            response =>
-              (this.channel = _.merge(this.topics[formindex], response.data))
-          )
+          .then(response => {
+            if (this.mode === "Edit") {
+              this.channel = _.merge(this.topics[formindex], response.data);
+            } else {
+              this.channel = response.data;
+            }
+          })
           //.then(response => console.log(this.channel))
           //.then(response => console.log(response.data))
           .then(response => {
@@ -784,9 +854,10 @@ li.tag {
 
 .md-tooltip:before {
   content: " ";
-  left: 34%; top: 32px;
+  left: 34%;
+  top: 32px;
   position: absolute;
-  border-color: #676767 transparent transparent transparent;
+  border-color: #6a6a6a transparent transparent transparent;
   border-style: solid;
   border-width: 11px;
 }

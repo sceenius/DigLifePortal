@@ -249,7 +249,7 @@ import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
 import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
-import { BASEURL, CHATURL } from "/constants.js";
+import { BASEURL, CHATURL } from "@/constants.js";
 import db from "@/firebase/init";
 
 export default {
@@ -372,6 +372,15 @@ export default {
         if (element.channel_id === data.channel_id) {
           // lodash function to merge objects recursively
           arr[index] = _.merge(arr[index], data);
+        }
+      });
+    });
+    channelsRef.on("child_removed", channel => {
+      let data = channel.val();
+      this.topics.forEach(function(element, index, arr) {
+        if (element.channel_id === data.channel_id) {
+          // lodash function to merge objects recursively
+          this.topics.splice(index, 1);
         }
       });
     });
@@ -558,20 +567,10 @@ export default {
               this.channel = _.merge(this.topics[formindex], response.data);
             } else {
               this.channel = response.data;
+              this.topics.push(response.data);
             }
           })
-          //.then(response => console.log(this.channel))
-          //.then(response => console.log(response.data))
-          .then(response => {
-            if (this.channel.status_code) {
-              this.showSnackBar = true;
-              this.snack =
-                "Mattermost Error (" +
-                this.channel.status_code +
-                "): " +
-                this.channel.message;
-            }
-          })
+
           .then(response =>
             db
               .database()
@@ -588,9 +587,12 @@ export default {
             this.snack = "This card has been successfully updated.";
           })
           .catch(error => {
+            if (this.channel.status_code) {
+              this.snack = "Mattermost Error: " + this.channel.message;
+            } else {
+              this.snack = "Network Error, please try again later.";
+            }
             this.showSnackBar = true;
-            this.snack = "Network Error, please try again later.";
-            console.log(error);
           });
 
         this.activeDialogTopic = false;

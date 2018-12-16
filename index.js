@@ -7,7 +7,7 @@ import "vue-material/dist/theme/default.css";
 import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import { BASEURL, CHATURL } from "/constants.js";
+import { BASEURL, CHATURL } from "@/constants.js";
 import db from "@/firebase/init";
 //import Vuex from "vuex";
 

@@ -357,15 +357,18 @@ export default {
       var data = channel.val();
       //console.log(channel.key, data.name);
       // only load topic channels into the card component
-      if (data.display_name.charAt(0) === "#") {
-        extensionsRef.child(channel.key).once("value", extension => {
-          if (extension.exists()) {
-            data = _.merge(data, extension.val());
-          }
-          this.topics.push(data);
-          //console.log(channel.key, data.name, extension.val());
-          //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-        });
+      if (channel.val().display_name.charAt(0) === "#") {
+        db.database()
+          .ref("portal_extensions")
+          .child(channel.key)
+          .once("value", extension => {
+            if (extension.exists()) {
+              data = _.merge(data, extension.val());
+            }
+            this.topics.push(data);
+            //console.log(channel.key, data.name, extension.val());
+            //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
+          });
       }
     });
 
@@ -517,9 +520,8 @@ export default {
       } else if (this.name === "") {
         document.getElementById("name").classList.add("md-invalid");
       } else if (this.formtags.length === 0) {
-        // not working
-        document.getElementById("formtags").classList.add("md-invalid");
-
+        // not working -- need to invoke requored field here
+        //document.getElementById("formtags").classList.add("md-invalid");
         // no errors
       } else {
         // we have two scripts for updating and creating channels
@@ -577,7 +579,7 @@ export default {
           .then(response =>
             db
               .database()
-              .ref("portal_channels/" + this.channel_id)
+              .ref("portal_channels/" + this.channel.id)
               .update({
                 name: this.channel.name,
                 display_name: this.channel.display_name,

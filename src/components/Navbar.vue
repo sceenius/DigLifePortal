@@ -580,13 +580,16 @@ export default {
     channelsRef.on("child_added", channel => {
       var data = channel.val();
       if (data.display_name.charAt(0) !== "#") {
-        extensionsRef.child(data.channel_id).once("value", extension => {
+        extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
           this.channels.push(data);
+          // sort here due to asnyc promise
           this.channels.sort(SortByName);
+          //console.log(channel.key, data.name, extension.val());
         });
+
         //console.log("This channel: ", this.channels);
       }
     });

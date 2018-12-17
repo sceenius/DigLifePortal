@@ -269,6 +269,7 @@ export default {
       result: "",
       status: "",
       topics: [],
+      topics2: [],
       groups: [],
       tags: [],
       autocompleteItems: [
@@ -354,18 +355,20 @@ export default {
     let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
+      //console.log(channel.key, data.name);
       // only load topic channels into the card component
       if (data.display_name.charAt(0) === "#") {
-        extensionsRef.child(data.channel_id).once("value", extension => {
+        extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
-          //console.log(data);
           this.topics.push(data);
+          //console.log(channel.key, data.name, extension.val());
           //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
         });
       }
     });
+
     channelsRef.on("child_changed", channel => {
       let data = channel.val();
       this.topics.forEach(function(element, index, arr) {
@@ -574,7 +577,7 @@ export default {
           .then(response =>
             db
               .database()
-              .ref("portal_channels/" + this.channel.id)
+              .ref("portal_channels/" + this.channel_id)
               .update({
                 name: this.channel.name,
                 display_name: this.channel.display_name,
@@ -619,7 +622,7 @@ export default {
             );
           break;
         case "open":
-          window.open(topic.purpose.link, topic.name);
+          window.open(topic.purpose.link, "theApp");
           break;
         case "ask":
           let question = prompt("Please ask your question", "Ask the Expert");

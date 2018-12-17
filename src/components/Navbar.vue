@@ -511,13 +511,13 @@
 </template>
 
 <script>
-import { BASEURL, CHATURL } from "@/constants.js";
-import Particles from "@/components/Particles";
-import Tags from "@/components/Tags";
-import Cards from "@/components/Cards";
+import { BASEURL, CHATURL } from "../constants.js";
+import Particles from "./Particles";
+import Tags from "./Tags";
+import Cards from "./Cards";
 import Slack from "node-slack";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
-import db from "@/firebase/init";
+import db from "../firebase/init";
 
 export default {
   name: "Navbar",

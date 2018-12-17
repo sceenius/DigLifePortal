@@ -92,17 +92,21 @@
           <span class="md-error"></span>
         </md-field>
 
-        <vue-tags-input
-          :validation="validation"
-          style="margin-top: 50px;"
-          required="true"
-          v-model="tag"
-          @tags-changed="newTags => (formtags = newTags)"
-          :tags="formtags"
-          :allow-edit-tags="true"
-          :autocomplete-items="autocompleteItems"
-        >
-        </vue-tags-input>
+        <md-field id="formtags">
+          <vue-tags-input
+            :validation="validation"
+            style="ma rgin-top: 50px; width: 100%; border: 0px"
+            required="true"
+            v-model="tag"
+            @tags-changed="newTags => (formtags = newTags)"
+            :tags="formtags"
+            :allow-edit-tags="true"
+            :autocomplete-items="autocompleteItems"
+          >
+          </vue-tags-input>
+          <span class="md-helper-text">Enter one or more tags</span>
+          <span class="md-error"></span>
+        </md-field>
 
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
@@ -358,17 +362,14 @@ export default {
       //console.log(channel.key, data.name);
       // only load topic channels into the card component
       if (channel.val().display_name.charAt(0) === "#") {
-        db.database()
-          .ref("portal_extensions")
-          .child(channel.key)
-          .once("value", extension => {
-            if (extension.exists()) {
-              data = _.merge(data, extension.val());
-            }
-            this.topics.push(data);
-            //console.log(channel.key, data.name, extension.val());
-            //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-          });
+        extensionsRef.child(channel.key).once("value", extension => {
+          if (extension.exists()) {
+            data = _.merge(data, extension.val());
+          }
+          this.topics.push(data);
+          //console.log(channel.key, data.name, extension.val());
+          //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
+        });
       }
     });
 
@@ -386,7 +387,7 @@ export default {
       this.topics.forEach(function(element, index, arr) {
         if (element.channel_id === data.channel_id) {
           // lodash function to merge objects recursively
-          this.topics.splice(index, 1);
+          arr.splice(index, 1);
         }
       });
     });
@@ -521,7 +522,7 @@ export default {
         document.getElementById("name").classList.add("md-invalid");
       } else if (this.formtags.length === 0) {
         // not working -- need to invoke requored field here
-        //document.getElementById("formtags").classList.add("md-invalid");
+        document.getElementById("formtags").classList.add("md-invalid");
         // no errors
       } else {
         // we have two scripts for updating and creating channels
@@ -572,7 +573,8 @@ export default {
               this.channel = _.merge(this.topics[formindex], response.data);
             } else {
               this.channel = response.data;
-              this.topics.push(response.data);
+              // this would be pushed twice, child_added
+              //this.topics.push(response.data);
             }
           })
 

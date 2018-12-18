@@ -1043,36 +1043,38 @@ export default {
       document.getElementById("drawer").classList.remove("md-active");
       this.showNavigation = false;
 
+      if (
+        JSON.stringify(this.groups).includes(this.channels[index].name) ||
+        this.channels[index].type === "O"
+      ) {
+        window.onload = function() {
+          window.open(this.channels[index].purpose.link, "theApp");
+        };
+      } else {
+        this.activeAccess = true;
+      }
+
       // get all users (members) for channel and show in members tab
-      this.axios
-        .get(
-          BASEURL +
-            "webhooks/portal_members.php?file=base-diglife-coop.php&channel_id=" +
-            this.channel.id
-        )
-        .then(response => (this.members = response.data))
+      // this.axios
+      //   .get(
+      //     BASEURL +
+      //       "webhooks/portal_members.php?file=base-diglife-coop.php&channel_id=" +
+      //       this.channel.id
+      //   )
+      //   .then(response => (this.members = response.data))
 
-        // hide and show elements on UI
-        //var element = document.getElementById("logo");
-        //element.style.display = "none";
+      // hide and show elements on UI
+      //var element = document.getElementById("logo");
+      //element.style.display = "none";
 
-        //element = document.getElementById("particles-js");
-        //element.style.display = "none";
+      //element = document.getElementById("particles-js");
+      //element.style.display = "none";
 
-        // var element = document.getElementById("theApp");
-        // element.style.display = "block";
+      // var element = document.getElementById("theApp");
+      // element.style.display = "block";
 
-        // open app link or request access dialog
-        .then(response => {
-          if (
-            JSON.stringify(this.groups).includes(this.channels[index].name) ||
-            this.channels[index].type === "O"
-          ) {
-            window.open(this.channels[index].purpose.link, "theApp");
-          } else {
-            this.activeAccess = true;
-          }
-        });
+      // open app link or request access dialog
+      // .then(response => {});
     }
   }
 };

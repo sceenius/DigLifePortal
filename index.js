@@ -1,18 +1,18 @@
 import Vue from "vue";
-import App from "@/App";
+import App from "./src/App";
 import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import "@/assets/styles/cards.css";
-import "@/assets/styles/navbar.css";
-import "@/assets/styles/particles.css";
-import "@/assets/styles/tags.css";
+import "./src/assets/styles/cards.css";
+import "./src/assets/styles/navbar.css";
+import "./src/assets/styles/particles.css";
+import "./src/assets/styles/tags.css";
 import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import { BASEURL, CHATURL } from "@/constants.js";
-import db from "@/firebase/init";
+import { BASEURL, CHATURL } from "./src/constants.js";
+import db from "./src/firebase/init";
 //import Vuex from "vuex";
 
 Vue.config.productionTip = false;

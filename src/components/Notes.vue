@@ -62,13 +62,21 @@
     -->
     <div id="actions">
       <md-button
-        title="Open app in new window"
+        title="Update card history"
         @click="activeDialogHistory = true;"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>view_module</md-icon>
+        <md-icon>file_copy</md-icon>
+      </md-button>
+      <md-button
+        title="Go back to card view"
+        @click="returnToCards();"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>view_comfy</md-icon>
       </md-button>
     </div>
+
     <!--
       ----------------------------------------------------------------------
         CARDS
@@ -76,9 +84,11 @@
     -->
     <md-card
       md-with-hover
+      v-if="service == 'Zettelkasten'"
       v-for="(note, index) in notes"
       :key="index"
       class="md-layout-item"
+      id="notesCards"
     >
       <div class="md-card-banner">
         <md-menu>
@@ -164,7 +174,7 @@ export default {
   components: { VueTagsInput, VueMarkdown },
   data() {
     return {
-      service: "",
+      service: "Zettelkasten",
       tag: "",
       mode: "", // Edit or Create mode for dialog
       script: "", // Edit or Create script for execution
@@ -233,6 +243,9 @@ export default {
       this.notes.push(data);
       //console.log(channel.key, data.name, extension.val());
     });
+
+    var element = document.getElementById("theApp");
+    element.style.display = "none";
     // //console.log("-------");
     // this.axios
     //   .get("https://notepad.diglife.coop/history")
@@ -279,6 +292,11 @@ export default {
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
+    },
+
+    returnToCards: function() {
+      this.service = "Zettelkasten";
+      document.getElementById("theApp").style.display = "none";
     },
 
     // create new card
@@ -470,70 +488,32 @@ export default {
     cardAction: function(action, note) {
       switch (action) {
         case "join":
-          // join channel
-          this.axios
-            .get(
-              BASEURL +
-                "webhooks/portal_join_channel.php?file=base-diglife-coop.php&username=" +
-                this.$cookies.get("username") +
-                "&channel_id=" +
-                note.channel_id
-            )
-            .then(response => (this.result = response.data))
-            .then(response => this.groups.push(note.team + "/" + note.name))
-            .then(response => note.members.push(this.$cookies.get("username")));
           break;
         case "open":
           // following not working since service is not visible in Navbar
           // window.onload = function() {
           //   window.open(note.purpose.link, "theApp");
-          window.open(note.purpose.link, note.name);
+          // let prefsRef = db
+          //   .database()
+          //   .ref("portal_profiles/" + this.username + "/prefs");
+          // prefsRef.update({
+          //   service: "Zettelkasten Note",
+          //   link: "https://notepad.diglife.coop/" + note.id
+          // });
+          this.service = "Zettelkasten Note";
+          var element = document.getElementById("theApp");
+          element.src = "about:blank";
+          element.style.display = "block";
+          // window.onload = function() {
+          window.open("https://notepad.diglife.coop/" + note.id, "theApp");
+
+          // };
+
           // };
           break;
         case "ask":
-          let question = prompt("Please ask your question", "Ask the Expert");
-
-          var slack = new Slack(CHATURL + "hooks/" + note.purpose.hook);
-          var err = slack.send({
-            text:
-              "##### :question: Question from @" +
-              this.username +
-              "\n" +
-              question +
-              "\n_Tip: you can respond via a direct message or invite the user into this channel._",
-            channel: note.name,
-            username: "ledgerbot",
-            icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
-            unfurl_links: true,
-            link_names: 1
-          });
-          this.snack = "Thank You. Your question has been submitted.";
-          this.showSnackBar = true;
-
           break;
         case "leave":
-          // leave channel
-          this.axios
-            .get(
-              BASEURL +
-                "webhooks/portal_leave_channel.php?file=base-diglife-coop.php&username=" +
-                this.$cookies.get("username") +
-                "&channel_id=" +
-                note.channel_id
-            )
-            .then(response => (this.result = response.data))
-            .then(response =>
-              this.groups.splice(
-                this.groups.indexOf(note.team + "/" + note.name),
-                1
-              )
-            )
-            .then(response =>
-              note.members.splice(
-                note.members.indexOf(this.$cookies.get("username")),
-                1
-              )
-            );
           break;
         default:
       }

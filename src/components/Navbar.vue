@@ -505,11 +505,14 @@
       <Notes v-if="service == 'Zettelkasten'" />
       <iframe
         v-if="
-          service && service !== 'Interest Groups' && service !== 'Zettelkasten'
+          true ||
+            (service &&
+              service !== 'Interest Groups' &&
+              service !== 'Zettelkasten')
         "
         name="theApp"
         id="theApp"
-        style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"
+        style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto; display: none"
         frameborder="0"
         scrolling="yes"
       ></iframe>
@@ -622,14 +625,28 @@ export default {
         }
       });
 
-      let prefsRef = db
-        .database()
-        .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
-      prefsRef.on("child_added", pref => {
-        if (pref.key === "showServices") {
-          this.showServices = pref.val();
-        }
-      });
+      // let prefsRef = db
+      //   .database()
+      //   .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+      // prefsRef.on("child_added", pref => {
+      //   if (pref.key === "showServices") {
+      //     this.showServices = pref.val();
+      //   } else if (pref.key === "service") {
+      //     this.service = pref.val();
+      //   } else if (pref.key === "link") {
+      //     window.open(pref.val(), "theApp");
+      //     console.log(pref.val());
+      //   }
+      // });
+      // prefsRef.on("child_changed", pref => {
+      //   if (pref.key === "showServices") {
+      //     this.showServices = pref.val();
+      //   } else if (pref.key === "service") {
+      //     this.service = pref.val();
+      //   } else if (pref.key === "link") {
+      //     window.open(pref.val(), "theApp");
+      //   }
+      // });
     }
 
     // update cookies
@@ -970,8 +987,8 @@ export default {
       this.selected = menu;
       this.showNavigation = true;
       this.service = "";
-      // var element = document.getElementById("theApp");
-      // element.style.display = "none";
+      var element = document.getElementById("theApp");
+      element.style.display = "none";
       //element = document.getElementById("particles-js");
       //element.style.display = "block";
       //element = document.getElementById("logo");
@@ -1046,7 +1063,28 @@ export default {
     },
 
     openService: function(index) {
-      this.service = this.channels[index].display_name;
+      // let prefsRef = db
+      //   .database()
+      //   .ref("portal_profiles/" + this.username + "/prefs");
+      // prefsRef.update({ service: this.channels[index].display_name });
+      if (this.channels[index].purpose.link.substring(8, 12) === "chat") {
+        this.service = "Mattermost";
+      } else {
+        this.service = this.channels[index].display_name;
+      }
+
+      var element = document.getElementById("theApp");
+      if (
+        this.service === "Zettelkasten" ||
+        this.service === "Interest Groups"
+      ) {
+        element.style.display = "none";
+      } else {
+        element.src = "about:blank";
+        element.style.display = "block";
+      }
+
+      // Need to change title to Mattermost for all non-service channels
       this.channel = this.channels[index];
       //this.$forceUpdate();
       document.getElementById("drawer").classList.remove("md-active");
@@ -1056,9 +1094,10 @@ export default {
         JSON.stringify(this.groups).includes(this.channels[index].name) ||
         this.channels[index].type === "O"
       ) {
-        window.onload = function() {
-          window.open(this.channels[index].purpose.link, "theApp");
-        };
+        // window.onload = function() {
+        // this.service = this.channels[index].display_name;
+        window.open(this.channels[index].purpose.link, "theApp");
+        // };
       } else {
         this.activeAccess = true;
       }
@@ -1078,9 +1117,6 @@ export default {
 
       //element = document.getElementById("particles-js");
       //element.style.display = "none";
-
-      // var element = document.getElementById("theApp");
-      // element.style.display = "block";
 
       // open app link or request access dialog
       // .then(response => {});

@@ -497,8 +497,11 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
       <Cards v-if="service == 'Interest Groups'" />
+      <Notes v-if="service == 'Zettelkasten'" />
       <iframe
-        v-if="service && service !== 'Interest Groups'"
+        v-if="
+          service && service !== 'Interest Groups' && service !== 'Zettelkasten'
+        "
         name="theApp"
         id="theApp"
         style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto;"
@@ -515,13 +518,14 @@ import { BASEURL, CHATURL } from "../constants.js";
 import Particles from "./Particles";
 import Tags from "./Tags";
 import Cards from "./Cards";
+import Notes from "./Notes";
 import Slack from "node-slack";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Cards },
+  components: { Particles, Tags, Cards, Notes },
   data: () => ({
     form: {
       username: null

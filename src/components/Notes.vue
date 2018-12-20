@@ -2,145 +2,12 @@
   <div class="md-layout md-gutter" v-if="service == ''">
     <!--
       ----------------------------------------------------------------------
-        SNACKBARS  - https://vuematerial.io/components/snackbar
-      ----------------------------------------------------------------------
-    -->o
-    <md-snackbar
-      :md-duration="4000"
-      :md-active.sync="showSnackBar"
-      md-persistent
-    >
-      <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackbar = false;"
-        >Dismiss</md-button
-      >
-    </md-snackbar>
-
-    <!--
-      ----------------------------------------------------------------------
-        DIALOG BOXES - EDIT CARD
-      ----------------------------------------------------------------------
-    -->
-    <md-button
-      v-if="!activeDialogTopic"
-      @click="createCard();"
-      class="md-fab md-primary"
-      style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
-    >
-      <md-icon>add</md-icon>
-    </md-button>
-
-    <md-dialog
-      :md-close-on-esc="false"
-      :md-click-outside-to-close="false"
-      :md-active.sync="activeDialogTopic"
-    >
-      <md-dialog-title
-        ><md-icon style="color: black;">group_work</md-icon> {{ mode }} Interest
-        Group</md-dialog-title
-      >
-
-      <!-- https://vuematerial.io/components/form name="dialog.cardForm" -->
-      <div style="padding: 0 25px ;">
-        <md-field id="display_name">
-          <label>Title</label>
-          <md-input
-            v-on:keyup="slug"
-            v-model="display_name"
-            required
-          ></md-input>
-          <span class="md-helper-text"
-            >Enter the name of this Interest Group</span
-          >
-          <span class="md-error">This field cannot be blank</span>
-        </md-field>
-
-        <md-field id="name">
-          <label>Slug</label>
-          <md-input v-model="name" required></md-input>
-          <span class="md-helper-text"
-            >Unique name as it appears in the URL</span
-          >
-          <span class="md-error">This field cannot be blank</span>
-        </md-field>
-
-        <md-field>
-          <label>Icon</label>
-          <md-input v-model="icon" required></md-input>
-          <span class="md-helper-text"
-            >Pick an icon
-            <a
-              href="https://material.io/tools/icons/?style=baseline"
-              target="icons"
-              >from this list</a
-            ></span
-          >
-          <span class="md-error"></span>
-          <md-icon>{{ icon }}</md-icon>
-        </md-field>
-
-        <md-field>
-          <label>Description</label>
-          <md-textarea
-            style="font-size: 0.9em;"
-            v-model="header"
-            required
-          ></md-textarea>
-          <span class="md-helper-text"
-            >Enter a short description for this Interest Group</span
-          >
-          <span class="md-error"></span>
-        </md-field>
-
-        <md-field id="formtags">
-          <vue-tags-input
-            :validation="validation"
-            style="ma rgin-top: 50px; width: 100%; border: 0px"
-            required="true"
-            v-model="tag"
-            @tags-changed="newTags => (formtags = newTags)"
-            :tags="formtags"
-            :allow-edit-tags="true"
-            :autocomplete-items="autocompleteItems"
-          >
-          </vue-tags-input>
-          <span class="md-helper-text">Enter one or more tags</span>
-          <span class="md-error"></span>
-        </md-field>
-
-        <md-dialog-actions style="padding: 25px 0;">
-          <md-button
-            class="md-success md-raised"
-            @click="activeDialogTopic = false;"
-            >Cancel</md-button
-          >
-          <md-button
-            v-if="mode == 'Edit'"
-            class="md-success md-raised"
-            @click="onConfirm(formindex);"
-            style="background: #C9162B; color: white;"
-            >Update</md-button
-          >
-          <md-button
-            v-if="mode == 'Create'"
-            class="md-success md-raised"
-            @click="onConfirm();"
-            style="background: #C9162B; color: white;"
-            >Create</md-button
-          >
-        </md-dialog-actions>
-      </div>
-    </md-dialog>
-
-    <!--
-      ----------------------------------------------------------------------
         CARDS
       ----------------------------------------------------------------------
     -->
     <md-card
       md-with-hover
-      v-if="(showServices && isMember(topic)) || !showServices"
-      v-for="(topic, index) in topics"
+      v-for="(note, index) in notes"
       :key="index"
       class="md-layout-item"
     >
@@ -257,7 +124,7 @@ import { BASEURL, CHATURL } from "../constants.js";
 import db from "../firebase/init";
 
 export default {
-  name: "Tags",
+  name: "Notes",
   components: { VueTagsInput, VueMarkdown },
   data() {
     return {
@@ -272,8 +139,8 @@ export default {
       snack: "",
       result: "",
       status: "",
-      topics: [],
-      topics2: [],
+      notes: "",
+      cards: [],
       groups: [],
       tags: [],
       autocompleteItems: [
@@ -322,75 +189,21 @@ export default {
   created: function() {
     this.username = this.$cookies.get("username");
 
-    // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
-    if (this.username) {
-      let groupsRef = db.database().ref("portal_profiles/" + this.username);
-      groupsRef.on("child_added", group => {
-        var data = group.val();
-        if (group.key === "channels") {
-          this.groups = data;
-        } else if (group.key === "tags") {
-          // convert tags to flat array
-          this.tags = data.reduce((accumulator, currentValue) => {
-            return [...accumulator, currentValue.text];
-          });
-        }
-      });
-    }
-
-    // LOAD USER PREFERENCES ///////////////////////////////////////////////////
-    let prefsRef = db
-      .database()
-      .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
-    prefsRef.on("child_added", pref => {
-      if (pref.key === "showServices") {
-        this.showServices = pref.val();
-      }
-    });
-    prefsRef.on("child_changed", pref => {
-      if (pref.key === "showServices") {
-        this.showServices = pref.val();
-      }
-    });
-
     // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
-    let channelsRef = db.database().ref("portal_channels");
-    // porta_extensions contains any channel info not stored in Mattermost
-    let extensionsRef = db.database().ref("portal_extensions");
-    channelsRef.on("child_added", channel => {
-      var data = channel.val();
-      //console.log(channel.key, data.name);
-      // only load topic channels into the card component
-      if (channel.val().display_name.charAt(0) === "#") {
-        extensionsRef.child(channel.key).once("value", extension => {
-          if (extension.exists()) {
-            data = _.merge(data, extension.val());
-          }
-          this.topics.push(data);
-          //console.log(channel.key, data.name, extension.val());
-          //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-        });
-      }
+    let notesRef = db.database().ref("portal_notes");
+    notesRef.on("child_added", note => {
+      var data = note.val();
+      this.notes.push(data);
+      //console.log(channel.key, data.name, extension.val());
     });
-
-    channelsRef.on("child_changed", channel => {
-      let data = channel.val();
-      this.topics.forEach(function(element, index, arr) {
-        if (element.channel_id === data.channel_id) {
-          // lodash function to merge objects recursively
-          arr[index] = _.merge(arr[index], data);
-        }
+    //console.log("-------");
+    this.axios
+      .post("https://notepad.diglife.coop/new")
+      .then(response => (this.notes = response.data))
+      .then(response => console.log("-------", response.data))
+      .catch(error => {
+        console.log(error.message);
       });
-    });
-    channelsRef.on("child_removed", channel => {
-      let data = channel.val();
-      this.topics.forEach(function(element, index, arr) {
-        if (element.channel_id === data.channel_id) {
-          // lodash function to merge objects recursively
-          arr.splice(index, 1);
-        }
-      });
-    });
 
     //this.$forceUpdate();
   },

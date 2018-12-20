@@ -1,5 +1,74 @@
 <template>
-  <div class="md-layout md-gutter" v-if="service == ''">
+  <div class="md-layout md-gutter">
+    <!--
+      ----------------------------------------------------------------------
+        SNACKBARS  - https://vuematerial.io/components/snackbar
+      ----------------------------------------------------------------------
+    -->
+    <md-snackbar
+      :md-duration="4000"
+      :md-active.sync="showSnackBar"
+      md-persistent
+    >
+      <span>{{ snack }}</span>
+      <md-button class="md-primary" @click="showSnackBar = false;"
+        >Dismiss</md-button
+      >
+    </md-snackbar>
+
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - HISTORY DIALOG
+      ----------------------------------------------------------------------
+    -->
+    <md-dialog
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+      :md-active.sync="activeDialogHistory"
+      style="width: 400px;"
+    >
+      <md-dialog-title>Update Notes</md-dialog-title>
+      <div style="padding: 0 25px ;">
+        text goes here
+        <md-field id="history">
+          <label>History</label>
+          <md-textarea v-model="history"></md-textarea>
+          <span class="md-helper-text">Paste your notes from below</span>
+          <span class="md-error">The history does not exist</span>
+        </md-field>
+        <iframe
+          name="theApp2"
+          src="https://notepad.diglife.coop/history"
+          width="100%"
+          frameborder="1"
+          scrolling="yes"
+        ></iframe>
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button
+            class="md-success md-raised"
+            @click="onConfirmHistory();"
+            style="background: #C9162B; color: white;"
+            ><md-icon style="color: white;">exit_to_app</md-icon>
+            Update</md-button
+          >
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
+    <!--
+      ----------------------------------------------------------------------
+        CONTEXTUAL ACTION BUTTONS
+      ----------------------------------------------------------------------
+    -->
+    <div id="actions">
+      <md-button
+        title="Open app in new window"
+        @click="activeDialogHistory = true;"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>view_module</md-icon>
+      </md-button>
+    </div>
     <!--
       ----------------------------------------------------------------------
         CARDS
@@ -24,26 +93,22 @@
           </md-button>
 
           <md-menu-content class="md-card-menu">
-            <md-menu-item @click="editCard(topic, index);">
+            <md-menu-item @click="editCard(note, index);">
               <md-icon>edit</md-icon>
               <span>Edit</span>
             </md-menu-item>
 
-            <md-menu-item @click="deleteCard(topic);">
+            <md-menu-item @click="deleteCard(note);">
               <md-icon>archive</md-icon>
               <span>Archive</span>
             </md-menu-item>
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead"></div>
+        <div class="md-subhead">Note</div>
         <img
           style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-        />
-        <img
-          style="width: 200px; position: absolute; top: -25px; left: 25px; z-index: 99; "
-          src="https://ledger.diglife.coop/images/brand/card_ribbon.png"
         />
       </div>
 
@@ -52,59 +117,30 @@
           <div class="md-title">
             <md-icon
               style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-              >{{ topic.purpose.icon }}</md-icon
-            >
-            {{ topic.display_name.replace("#", "") }}
+              >how_to_vote
+            </md-icon>
+            {{ note.text }}
           </div>
         </md-card-header-text>
 
-        <md-chip style="background-color: green" v-if="isMember(topic)"
-          >Joined</md-chip
-        >
-        <md-chip
-          style="background-color: orange"
-          v-if="isSuggested(topic) && !isMember(topic)"
-          >Suggested</md-chip
-        >
-        <md-chip
-          style="background-color: #ccc"
-          v-if="!isMember(topic) && !isSuggested(topic)"
-          >Not Joined</md-chip
-        >
+        <md-chip style="background-color: green">Authored</md-chip>
       </div>
 
       <div class="md-card-mid">
-        <p class="info">
-          <vue-markdown>{{
-            topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
-          }}</vue-markdown>
-        </p>
+        <p class="info"><vue-markdown>Text here</vue-markdown></p>
       </div>
 
       <md-card-actions>
-        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
-          >Leave</md-button
-        >
         <md-button
-          v-if="isMember(topic)"
           style="background: #C9162B; color: white;"
-          @click="cardAction('open', topic);"
+          @click="cardAction('open', note);"
           >Open</md-button
-        >
-        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
-          >Ask</md-button
-        >
-        <md-button
-          v-if="!isMember(topic)"
-          style="background: #C9162B; color: white;"
-          @click="cardAction('join', topic);"
-          >Join</md-button
         >
       </md-card-actions>
 
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
-          <md-avatar v-for="(member, index) in topic.members" :key="index">
+          <md-avatar v-for="(member, index) in note.members" :key="index">
             <img v-bind:src="avatarLink(member)" alt="Avatar" />
             <md-tooltip md-direction="top">{{ member }}</md-tooltip>
           </md-avatar>
@@ -134,12 +170,13 @@ export default {
       script: "", // Edit or Create script for execution
       showServices: false,
       showCardNavigation: false,
-      activeDialogTopic: false,
+      activeDialogHistory: false,
       showSnackBar: false,
       snack: "",
       result: "",
+      history: "",
       status: "",
-      notes: "",
+      notes: [],
       cards: [],
       groups: [],
       tags: [],
@@ -196,14 +233,14 @@ export default {
       this.notes.push(data);
       //console.log(channel.key, data.name, extension.val());
     });
-    //console.log("-------");
-    this.axios
-      .post("https://notepad.diglife.coop/new")
-      .then(response => (this.notes = response.data))
-      .then(response => console.log("-------", response.data))
-      .catch(error => {
-        console.log(error.message);
-      });
+    // //console.log("-------");
+    // this.axios
+    //   .get("https://notepad.diglife.coop/history")
+    //   .then(response => (this.notes = response.data))
+    //   .then(response => console.log("-------", response.data))
+    //   .catch(error => {
+    //     console.log(error.message);
+    //   });
 
     //this.$forceUpdate();
   },
@@ -220,17 +257,15 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     // is member
-    isMember: function(topic) {
-      return JSON.stringify(this.groups).includes(
-        topic.team + "/" + topic.name
-      );
+    isMember: function(note) {
+      return JSON.stringify(this.groups).includes(note.team + "/" + note.name);
     },
     // is suggested
-    isSuggested: function(topic) {
-      if (topic.purpose.tags) {
+    isSuggested: function(note) {
+      if (note.purpose.tags) {
         //alert(this.tags);
         return this.tags.filter(
-          value => -1 !== topic.purpose.tags.indexOf(value)
+          value => -1 !== note.purpose.tags.indexOf(value)
         ).length;
       } else {
         return false;
@@ -247,9 +282,9 @@ export default {
     },
 
     // create new card
-    createCard: function(topic) {
+    createCard: function(note) {
       // all interest groups created in the diglife domain
-      this.team_id = this.topics[0].team_id;
+      this.team_id = this.notes[0].team_id;
       this.channel_id = "";
       this.display_name = "";
       this.name = "";
@@ -257,40 +292,40 @@ export default {
       this.header = "";
       this.formtags = [];
       this.mode = "Create";
-      this.activeDialogTopic = true;
+      this.activeDialognote = true;
     },
 
-    // edit existing card (needs index of topic)
-    editCard: function(topic, index) {
-      //alert(topic.purpose.tags);
-      this.team_id = topic.team_id;
-      this.channel_id = topic.channel_id;
-      this.display_name = topic.display_name;
-      this.name = topic.name;
-      this.icon = topic.purpose.icon;
-      this.header = topic.header;
-      //this.formtags = topic.purpose.tags;
+    // edit existing card (needs index of note)
+    editCard: function(note, index) {
+      //alert(note.purpose.tags);
+      this.team_id = note.team_id;
+      this.channel_id = note.channel_id;
+      this.display_name = note.display_name;
+      this.name = note.name;
+      this.icon = note.purpose.icon;
+      this.header = note.header;
+      //this.formtags = note.purpose.tags;
       // the tag control needs text key-value pairs
-      if (topic.purpose.tags && topic.purpose.tags[0].text === undefined) {
-        this.formtags = topic.purpose.tags.map(function(element) {
+      if (note.purpose.tags && note.purpose.tags[0].text === undefined) {
+        this.formtags = note.purpose.tags.map(function(element) {
           return { text: element };
         });
       } else {
-        this.formtags = topic.purpose.tags;
+        this.formtags = note.purpose.tags;
       }
       this.formindex = index;
       this.mode = "Edit";
-      this.activeDialogTopic = true;
+      this.activeDialognote = true;
     },
 
-    // edit existing card (needs index of topic)
-    deleteCard: function(topic, index) {
+    // edit existing card (needs index of note)
+    deleteCard: function(note, index) {
       console.log(
         "webhooks/" +
           "portal_delete_channel.php" +
           "?file=base-diglife-coop.php" +
           "&channel_id=" +
-          topic.channel_id
+          note.channel_id
       );
 
       this.axios
@@ -300,19 +335,19 @@ export default {
             "portal_delete_channel.php" +
             "?file=base-diglife-coop.php" +
             "&channel_id=" +
-            topic.channel_id
+            note.channel_id
         )
-        .then(delete this.topics[index])
+        .then(delete this.notes[index])
         .then(
           db
             .database()
-            .ref("portal_channels/" + topic.channel_id)
+            .ref("portal_channels/" + note.channel_id)
             .remove()
         )
         .then(
           db
             .database()
-            .ref("portal_extensions/" + topic.channel_id)
+            .ref("portal_extensions/" + note.channel_id)
             .remove()
         )
         .then(response => {
@@ -324,6 +359,18 @@ export default {
           this.snack = "Network Error, please try again later.";
           console.log(error);
         });
+    },
+
+    // submit notes history
+    onConfirmHistory: function() {
+      let notesRef = db.database().ref("portal_notes");
+      this.notes = JSON.parse(this.history).history;
+      this.notes.forEach(function(note, index, arr) {
+        notesRef.child(note.id).update(note);
+        //this.notes[note.id] = "note";
+      });
+      console.log(this.notes);
+      this.activeDialogHistory = false;
     },
 
     // submit card edits
@@ -346,7 +393,7 @@ export default {
         }
 
         // prepare some values before writing them back to MM
-        // topic channels starting with "#"
+        // note channels starting with "#"
         if (this.display_name[0] !== "#") {
           this.display_name = "#" + this.display_name;
         }
@@ -383,11 +430,11 @@ export default {
           // does not update all fields
           .then(response => {
             if (this.mode === "Edit") {
-              this.channel = _.merge(this.topics[formindex], response.data);
+              this.channel = _.merge(this.notes[formindex], response.data);
             } else {
               this.channel = response.data;
               // this would be pushed twice, child_added
-              //this.topics.push(response.data);
+              //this.notes.push(response.data);
             }
           })
 
@@ -415,12 +462,12 @@ export default {
             this.showSnackBar = true;
           });
 
-        this.activeDialogTopic = false;
+        this.activeDialognote = false;
       }
     },
 
     // execute card action
-    cardAction: function(action, topic) {
+    cardAction: function(action, note) {
       switch (action) {
         case "join":
           // join channel
@@ -430,25 +477,23 @@ export default {
                 "webhooks/portal_join_channel.php?file=base-diglife-coop.php&username=" +
                 this.$cookies.get("username") +
                 "&channel_id=" +
-                topic.channel_id
+                note.channel_id
             )
             .then(response => (this.result = response.data))
-            .then(response => this.groups.push(topic.team + "/" + topic.name))
-            .then(response =>
-              topic.members.push(this.$cookies.get("username"))
-            );
+            .then(response => this.groups.push(note.team + "/" + note.name))
+            .then(response => note.members.push(this.$cookies.get("username")));
           break;
         case "open":
           // following not working since service is not visible in Navbar
           // window.onload = function() {
-          //   window.open(topic.purpose.link, "theApp");
-          window.open(topic.purpose.link, topic.name);
+          //   window.open(note.purpose.link, "theApp");
+          window.open(note.purpose.link, note.name);
           // };
           break;
         case "ask":
           let question = prompt("Please ask your question", "Ask the Expert");
 
-          var slack = new Slack(CHATURL + "hooks/" + topic.purpose.hook);
+          var slack = new Slack(CHATURL + "hooks/" + note.purpose.hook);
           var err = slack.send({
             text:
               "##### :question: Question from @" +
@@ -456,7 +501,7 @@ export default {
               "\n" +
               question +
               "\n_Tip: you can respond via a direct message or invite the user into this channel._",
-            channel: topic.name,
+            channel: note.name,
             username: "ledgerbot",
             icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
             unfurl_links: true,
@@ -474,18 +519,18 @@ export default {
                 "webhooks/portal_leave_channel.php?file=base-diglife-coop.php&username=" +
                 this.$cookies.get("username") +
                 "&channel_id=" +
-                topic.channel_id
+                note.channel_id
             )
             .then(response => (this.result = response.data))
             .then(response =>
               this.groups.splice(
-                this.groups.indexOf(topic.team + "/" + topic.name),
+                this.groups.indexOf(note.team + "/" + note.name),
                 1
               )
             )
             .then(response =>
-              topic.members.splice(
-                topic.members.indexOf(this.$cookies.get("username")),
+              note.members.splice(
+                note.members.indexOf(this.$cookies.get("username")),
                 1
               )
             );

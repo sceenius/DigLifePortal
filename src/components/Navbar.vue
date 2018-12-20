@@ -334,7 +334,12 @@
           <md-icon>folder_shared</md-icon>
       ----------------------------------------------------------------------
     -->
-    <div v-if="service && service != 'Interest Groups'" id="actions">
+    <div
+      v-if="
+        service && service != 'Interest Groups' && service != 'Zettelkasten'
+      "
+      id="actions"
+    >
       <md-button
         title="Open app in new window"
         @click="sub('appLink');"

@@ -223,7 +223,15 @@
       </div>
 
       <div class="md-card-mid">
-        <p class="info"><vue-markdown>Text here</vue-markdown></p>
+        <p class="info">
+          <md-icon>access_time</md-icon>
+          Last modified {{ note.fromTime }}
+        </p>
+        <p class="info" style="width: 250px; height: 90px; overflow: auto;">
+          <md-chip v-for="(tag, index) in note.tags" :key="tag.id">
+            {{ tag }}
+          </md-chip>
+        </p>
       </div>
 
       <md-card-actions>
@@ -250,6 +258,7 @@
 import VueTagsInput from "@johmun/vue-tags-input";
 import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
+import Moment from "moment";
 import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL } from "../constants.js";
@@ -327,8 +336,9 @@ export default {
     let notesRef = db.database().ref("portal_notes");
     notesRef.on("child_added", note => {
       var data = note.val();
+      data.fromTime = Moment(data.time).fromNow();
       this.notes.push(data);
-      //console.log(channel.key, data.name, extension.val());
+      console.log(data);
     });
 
     var element = document.getElementById("theApp");
@@ -348,6 +358,9 @@ export default {
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
+    time: function() {
+      return Moment(note.time).fromNow();
+    }
     // invalidate: function() {
     //   return this.invalid === true ? "md-invalid" : "";
     // }

@@ -3,3 +3,25 @@
   line-height: 1.2em;
   font-weight: normal !important;
 }
+
+#noteCards.md-card .info {
+  color: #404040;
+  padding: 10px;
+  line-height: 1.2em;
+  font-size: 0.9em;
+}
+
+#noteCards.md-card .info .md-icon {
+  font-size: 1.4em !important;
+}
+#noteCards.md-card .md-chip {
+  margin: 3px;
+  position: relative;
+  top: 0;
+  right: 0;
+  display: inline-block;
+  padding: 6px;
+  line-height: 15px;
+  height: 26px;
+  background-color: #aaa;
+}

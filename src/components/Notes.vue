@@ -46,6 +46,11 @@
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
             class="md-success md-raised"
+            @click="activeDialogHistory = false;"
+            >Cancel</md-button
+          >
+          <md-button
+            class="md-success md-raised"
             @click="onConfirmHistory();"
             style="background: #C9162B; color: white;"
             ><md-icon style="color: white;">exit_to_app</md-icon>
@@ -225,7 +230,7 @@
       <div class="md-card-mid">
         <p class="info">
           <md-icon>access_time</md-icon>
-          Last modified {{ note.fromTime }}
+          Changed {{ note.fromTime }}
         </p>
         <p class="info" style="width: 250px; height: 90px; overflow: auto;">
           <md-chip v-for="(tag, index) in note.tags" :key="tag.id">
@@ -332,13 +337,16 @@ export default {
   created: function() {
     this.username = this.$cookies.get("username");
 
+    function SortByTime(x, y) {
+      return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
+    }
     // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
     let notesRef = db.database().ref("portal_notes");
     notesRef.on("child_added", note => {
       var data = note.val();
       data.fromTime = Moment(data.time).fromNow();
       this.notes.push(data);
-      console.log(data);
+      this.notes.sort(SortByTime);
     });
 
     var element = document.getElementById("theApp");
@@ -483,10 +491,17 @@ export default {
       this.notes = JSON.parse(this.history).history;
       this.notes.forEach(function(note, index, arr) {
         notesRef.child(note.id).update(note);
+        note.fromTime = Moment(note.time).fromNow();
+        _.merge(arr, note);
         //this.notes[note.id] = "note";
       });
+      this.notes.sort(SortByTime);
       console.log(this.notes);
       this.activeDialogHistory = false;
+
+      function SortByTime(x, y) {
+        return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
+      }
     },
 
     // submit card edits

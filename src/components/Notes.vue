@@ -79,16 +79,104 @@
 
     <!--
       ----------------------------------------------------------------------
+        DIALOG BOXES - EDIT NOTE
+      ----------------------------------------------------------------------
+    -->
+    <md-button
+      v-if="!activeDialogNote"
+      @click="createCard();"
+      class="md-fab md-primary"
+      style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
+    >
+      <md-icon>add</md-icon>
+    </md-button>
+
+    <md-dialog
+      :md-close-on-esc="false"
+      :md-click-outside-to-close="false"
+      :md-active.sync="activeDialogNote"
+    >
+      <md-dialog-title
+        ><md-icon style="color: black;">how_to_vote </md-icon>
+        {{ mode }} Zetttelkasten Note</md-dialog-title
+      >
+
+      <div style="padding: 0 25px ;">
+        <md-field id="display_name">
+          <label>Title</label>
+          <md-input v-model="display_name" required></md-input>
+          <span class="md-helper-text">Enter the name of this Note</span>
+          <span class="md-error">This field cannot be blank</span>
+        </md-field>
+
+        <md-field>
+          <label>Icon</label>
+          <md-input v-model="icon" required></md-input>
+          <span class="md-helper-text"
+            >Pick an icon
+            <a
+              href="https://material.io/tools/icons/?style=baseline"
+              target="icons"
+              >from this list</a
+            ></span
+          >
+          <span class="md-error"></span>
+          <md-icon>{{ icon }}</md-icon>
+        </md-field>
+
+        <md-field id="formtags">
+          <vue-tags-input
+            :validation="validation"
+            style="ma rgin-top: 50px; width: 100%; border: 0px"
+            required="true"
+            v-model="tag"
+            @tags-changed="newTags => (formtags = newTags)"
+            :tags="formtags"
+            :allow-edit-tags="true"
+            :autocomplete-items="autocompleteItems"
+          >
+          </vue-tags-input>
+          <span class="md-helper-text">Enter one or more tags</span>
+          <span class="md-error"></span>
+        </md-field>
+
+        <md-dialog-actions style="padding: 25px 0;">
+          <md-button
+            class="md-success md-raised"
+            @click="activeDialogNote = false;"
+            >Cancel</md-button
+          >
+          <md-button
+            v-if="mode == 'Edit'"
+            class="md-success md-raised"
+            @click="onConfirm(formindex);"
+            style="background: #C9162B; color: white;"
+            >Update</md-button
+          >
+          <md-button
+            v-if="mode == 'Create'"
+            class="md-success md-raised"
+            @click="onConfirm();"
+            style="background: #C9162B; color: white;"
+            >Create</md-button
+          >
+        </md-dialog-actions>
+      </div>
+    </md-dialog>
+
+    <!--
+      ----------------------------------------------------------------------
         CARDS
       ----------------------------------------------------------------------
     -->
+
     <md-card
       md-with-hover
       v-if="service == 'Zettelkasten'"
       v-for="(note, index) in notes"
       :key="index"
       class="md-layout-item"
-      id="notesCards"
+      id="noteCards"
     >
       <div class="md-card-banner">
         <md-menu>
@@ -115,7 +203,7 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">Note</div>
+        <div class="md-subhead">Zettelkasten Note</div>
         <img
           style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
@@ -132,8 +220,6 @@
             {{ note.text }}
           </div>
         </md-card-header-text>
-
-        <md-chip style="background-color: green">Authored</md-chip>
       </div>
 
       <div class="md-card-mid">
@@ -181,6 +267,7 @@ export default {
       showServices: false,
       showCardNavigation: false,
       activeDialogHistory: false,
+      activeDialogNote: false,
       showSnackBar: false,
       snack: "",
       result: "",
@@ -302,15 +389,13 @@ export default {
     // create new card
     createCard: function(note) {
       // all interest groups created in the diglife domain
-      this.team_id = this.notes[0].team_id;
-      this.channel_id = "";
+      //this.note_id = Math.random().toString(36).substring(7);
       this.display_name = "";
       this.name = "";
       this.icon = "";
-      this.header = "";
       this.formtags = [];
       this.mode = "Create";
-      this.activeDialognote = true;
+      this.activeDialogNote = true;
     },
 
     // edit existing card (needs index of note)

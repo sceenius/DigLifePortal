@@ -8,6 +8,7 @@ import "./src/assets/styles/cards.css";
 import "./src/assets/styles/navbar.css";
 import "./src/assets/styles/particles.css";
 import "./src/assets/styles/tags.css";
+import "./src/assets/styles/notes.css";
 import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";

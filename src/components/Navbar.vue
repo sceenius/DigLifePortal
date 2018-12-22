@@ -75,7 +75,7 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
-      style="width: 400px;"
+      style="width: 400px; height: 350px;"
     >
       <md-dialog-title>Welcome to DigLife!</md-dialog-title>
       <div style="padding: 0 25px ;">
@@ -305,7 +305,7 @@
           v-bind:style="[
             selected == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
           ]"
-          >projects</md-button
+          >proj</md-button
         >
         <md-button
           @click="nav('Operations');"
@@ -321,6 +321,17 @@
           ]"
           >friends</md-button
         >
+
+        <md-menu v-if="profile && service == ''">
+          <md-avatar md-menu-trigger><img v-bind:src="avatarLink"/></md-avatar>
+
+          <md-menu-content class="md-card-menu">
+            <md-menu-item @click="onLogout();">
+              <md-icon>logout</md-icon>
+              <span>Logout</span>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
       </div>
     </md-toolbar>
 
@@ -495,9 +506,11 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <p id="welcome" v-if="profile && service == ''">
-        Welcome, <a @click="onReopen();">{{ username }}</a>
-      </p>
+      <!--
+        p id="welcome" v-if="profile && service == ''">
+          Welcome, <a @click="onReopen();">{{ username }}</a>
+        </p
+      -->
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
@@ -978,8 +991,10 @@ export default {
       }
     },
 
-    onReopen: function() {
-      // Open dialoug box again to change name
+    onLogout: function() {
+      // Logout
+      this.username = "";
+      this.$cookies.set("username", "");
       this.activeUser = true;
     },
 

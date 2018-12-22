@@ -80,6 +80,13 @@
       >
         <md-icon>view_comfy</md-icon>
       </md-button>
+      <md-button
+        title="Go back to app view"
+        @click="returnToApp();"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>exit_to_app</md-icon>
+      </md-button>
     </div>
 
     <!--
@@ -154,14 +161,14 @@
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
-            @click="onConfirm(formindex);"
+            @click="onConfirmNote(formindex);"
             style="background: #C9162B; color: white;"
             >Update</md-button
           >
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
-            @click="onConfirm();"
+            @click="onConfirmNote();"
             style="background: #C9162B; color: white;"
             >Create</md-button
           >
@@ -196,14 +203,14 @@
           </md-button>
 
           <md-menu-content class="md-card-menu">
-            <md-menu-item @click="editCard(note, index);">
-              <md-icon>edit</md-icon>
-              <span>Edit</span>
+            <md-menu-item @click="copyCard(note, index);">
+              <md-icon>file_copy</md-icon>
+              <span>Copy</span>
             </md-menu-item>
 
             <md-menu-item @click="deleteCard(note);">
-              <md-icon>archive</md-icon>
-              <span>Archive</span>
+              <md-icon>delete</md-icon>
+              <span>Delete</span>
             </md-menu-item>
           </md-menu-content>
         </md-menu>
@@ -404,13 +411,23 @@ export default {
 
     returnToCards: function() {
       this.service = "Zettelkasten";
-      document.getElementById("theApp").style.display = "none";
+      var element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "none";
+    },
+
+    returnToApp: function() {
+      this.service = "CodiMD";
+      var element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "block";
+      window.open("https://notepad.diglife.coop/", "theApp");
     },
 
     // create new card
     createCard: function(note) {
-      // all interest groups created in the diglife domain
-      //this.note_id = Math.random().toString(36).substring(7);
+      //this.note.id = Math.random().toString(36).substring(7);
+      //this.note.owner(s) = members
       this.display_name = "";
       this.name = "";
       this.icon = "";
@@ -505,7 +522,11 @@ export default {
     },
 
     // submit card edits
-    onConfirm: function(formindex) {
+    onConfirmNote: function(formindex) {
+      // open dialog to copy/paste template text
+      // assign temp id and owner(s)
+      // create note with /new
+
       // error validation
       if (this.display_name === "") {
         document.getElementById("display_name").classList.add("md-invalid");

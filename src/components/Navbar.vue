@@ -323,12 +323,18 @@
         >
 
         <md-menu v-if="profile && service == ''">
-          <md-avatar md-menu-trigger><img v-bind:src="avatarLink"/></md-avatar>
+          <md-avatar style="cursor: pointer;" md-menu-trigger
+            ><img v-bind:src="avatarLink"
+          /></md-avatar>
 
           <md-menu-content class="md-card-menu">
             <md-menu-item @click="onLogout();">
               <md-icon>logout</md-icon>
               <span>Logout</span>
+            </md-menu-item>
+            <md-menu-item @click="openSettings();">
+              <md-icon>settings</md-icon>
+              <span>Settings</span>
             </md-menu-item>
           </md-menu-content>
         </md-menu>

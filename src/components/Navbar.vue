@@ -323,7 +323,9 @@
         >
 
         <md-menu v-if="profile && service == ''">
-          <md-avatar style="cursor: pointer;" md-menu-trigger
+          <md-avatar
+            style="cursor: pointer; border: 2px solid transparent;"
+            md-menu-trigger
             ><img v-bind:src="avatarLink"
           /></md-avatar>
 

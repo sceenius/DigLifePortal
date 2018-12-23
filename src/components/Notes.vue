@@ -305,7 +305,7 @@ export default {
       name: "", //Slugify(this.display_name),
       header: "",
       icon: "",
-      formtags: [],
+      formtags: [{ text: "test" }],
       formindex: "",
       username: "",
       validation: [
@@ -374,12 +374,17 @@ export default {
         "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
         this.display_name +
         "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n## Subtitle goes here\n\n:::warning\n###### tags: " +
-        JSON.stringify(this.formtags[0]) +
+        (this.formtags.length > 0
+          ? this.formtags.reduce(function(accumulator, currentValue) {
+              return [...accumulator, "`" + currentValue.text + "`"];
+            })
+          : "") +
         "\n###### authors: `" +
         this.username +
         "`"
       );
     }
+
     // invalidate: function() {
     //   return this.invalid === true ? "md-invalid" : "";
     // }
@@ -435,7 +440,7 @@ export default {
       this.display_name = "";
       this.name = "";
       this.icon = "";
-      this.formtags = [];
+      this.formtags = [{ text: "test" }];
       this.mode = "Create";
       this.activeDialogNote = true;
     },

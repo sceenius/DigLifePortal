@@ -37,7 +37,7 @@
         DIALOG BOXES - SETTINGS DIALOG
       ----------------------------------------------------------------------
     -->
-    <md-dialog :md-active.sync="activeSettings">
+    <md-dialog :md-active.sync="activeSettings" style="width:650px;">
       <md-dialog-title>My Settings</md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="Tags">

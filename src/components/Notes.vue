@@ -91,7 +91,7 @@
 
     <!--
       ----------------------------------------------------------------------
-        DIALOG BOXES - EDIT NOTE
+        DIALOG BOXES - CREATE NOTE
       ----------------------------------------------------------------------
     -->
     <md-button
@@ -121,26 +121,10 @@
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
-        <md-field>
-          <label>Icon</label>
-          <md-input v-model="icon" required></md-input>
-          <span class="md-helper-text"
-            >Pick an icon
-            <a
-              href="https://material.io/tools/icons/?style=baseline"
-              target="icons"
-              >from this list</a
-            ></span
-          >
-          <span class="md-error"></span>
-          <md-icon>{{ icon }}</md-icon>
-        </md-field>
-
         <md-field id="formtags">
           <vue-tags-input
             :validation="validation"
             style="ma rgin-top: 50px; width: 100%; border: 0px"
-            required="true"
             v-model="tag"
             @tags-changed="newTags => (formtags = newTags)"
             :tags="formtags"
@@ -149,8 +133,16 @@
           >
           </vue-tags-input>
           <span class="md-helper-text">Enter one or more tags</span>
-          <span class="md-error"></span>
+          <span class="md-error">This field cannot be blank</span>
         </md-field>
+
+        <textarea
+          ref="tpl"
+          v-model="template"
+          style="width: 100%; height: 100px; background-color:#ddd; padding: 5px; font-size: 0.9em;"
+        >
+        </textarea>
+        <span class="md-helper-text">Paste this text into the new note</span>
 
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
@@ -375,6 +367,18 @@ export default {
   computed: {
     time: function() {
       return Moment(note.time).fromNow();
+    },
+
+    template: function() {
+      return (
+        "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
+        this.display_name +
+        "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n## Subtitle goes here\n\n:::warning\n###### tags: " +
+        JSON.stringify(this.formtags[0]) +
+        "\n###### authors: `" +
+        this.username +
+        "`"
+      );
     }
     // invalidate: function() {
     //   return this.invalid === true ? "md-invalid" : "";
@@ -526,96 +530,38 @@ export default {
       // open dialog to copy/paste template text
       // assign temp id and owner(s)
       // create note with /new
-
       // error validation
       if (this.display_name === "") {
         document.getElementById("display_name").classList.add("md-invalid");
-      } else if (this.name === "") {
-        document.getElementById("name").classList.add("md-invalid");
-      } else if (this.formtags.length === 0) {
-        // not working -- need to invoke requored field here
-        document.getElementById("formtags").classList.add("md-invalid");
-        // no errors
-      } else {
-        // we have two scripts for updating and creating channels
-        if (this.mode === "Edit") {
-          this.script = "portal_update_channel.php";
-        } else if (this.mode === "Create") {
-          this.script = "portal_create_channel.php";
-        }
-
-        // prepare some values before writing them back to MM
-        // note channels starting with "#"
-        if (this.display_name[0] !== "#") {
-          this.display_name = "#" + this.display_name;
-        }
-        this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
-        this.formtags = this.formtags.reduce(function(
-          accumulator,
-          currentValue
-        ) {
-          return [...accumulator, currentValue.text];
-        });
-
-        //console.log(this.formtags);
-        this.axios
-          .get(
-            BASEURL +
-              "webhooks/" +
-              this.script +
-              "?file=base-diglife-coop.php" +
-              "&channel_id=" +
-              this.channel_id +
-              "&team_id=" +
-              this.team_id +
-              "&display_name=" +
-              this.display_name.replace("#", "%23") +
-              "&name=" +
-              this.name +
-              "&header=" +
-              encodeURI(this.header) +
-              "&icon=" +
-              this.icon +
-              "&tags=" +
-              JSON.stringify(this.formtags)
-          )
-          // does not update all fields
-          .then(response => {
-            if (this.mode === "Edit") {
-              this.channel = _.merge(this.notes[formindex], response.data);
-            } else {
-              this.channel = response.data;
-              // this would be pushed twice, child_added
-              //this.notes.push(response.data);
-            }
-          })
-
-          .then(response =>
-            db
-              .database()
-              .ref("portal_channels/" + this.channel.id)
-              .update({
-                name: this.channel.name,
-                display_name: this.channel.display_name,
-                header: this.channel.header,
-                purpose: JSON.parse(this.channel.purpose)
-              })
-          )
-          .then(response => {
-            this.showSnackBar = true;
-            this.snack = "This card has been successfully updated.";
-          })
-          .catch(error => {
-            if (this.channel.status_code) {
-              this.snack = "Mattermost Error: " + this.channel.message;
-            } else {
-              this.snack = "Network Error, please try again later.";
-            }
-            this.showSnackBar = true;
-          });
-
-        this.activeDialognote = false;
       }
+      // } else if (this.formtags.length === 0) {
+      //   //console.log(this.formtags.length);
+      //   // not working -- need to invoke requored field here
+      //   //document.getElementById("formtags").classList.add("md-invalid");
+      //   // no errors
+      // } else {
+      //   // we have two scripts for updating and creating channels
+      //   if (this.mode === "Edit") {
+      //   } else if (this.mode === "Create") {
+      //   }
+
+      this.$refs.tpl.select();
+      document.execCommand("copy");
+
+      // this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
+      // this.formtags = this.formtags.reduce(function(
+      //   accumulator,
+      //   currentValue
+      // ) {
+      //   return [...accumulator, currentValue.text];
+      // });
+      // console.log(JSON.stringify(this.formtags));
+      this.service = "CodiMD";
+      var element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "block";
+      window.open("https://notepad.diglife.coop/new", "theApp");
+      this.activeDialogNote = false;
     },
 
     // execute card action

@@ -305,7 +305,7 @@ export default {
       name: "", //Slugify(this.display_name),
       header: "",
       icon: "",
-      formtags: [{ text: "test" }],
+      formtags: [],
       formindex: "",
       username: "",
       validation: [
@@ -381,7 +381,7 @@ export default {
           : "") +
         "\n###### authors: `" +
         this.username +
-        "`"
+        "`\n:::"
       );
     }
 
@@ -440,7 +440,7 @@ export default {
       this.display_name = "";
       this.name = "";
       this.icon = "";
-      this.formtags = [{ text: "test" }];
+      this.formtags = [];
       this.mode = "Create";
       this.activeDialogNote = true;
     },
@@ -553,13 +553,15 @@ export default {
       this.$refs.tpl.select();
       document.execCommand("copy");
 
-      // this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
-      // this.formtags = this.formtags.reduce(function(
-      //   accumulator,
-      //   currentValue
-      // ) {
-      //   return [...accumulator, currentValue.text];
-      // });
+      this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
+      this.formtags = this.formtags.reduce(function(accumulator, currentValue) {
+        return [...accumulator, "`" + currentValue.text + "`"];
+      });
+      var tmp = this.template.str_replace(
+        "tags:",
+        "tags:" + JSON.stringify(this.formtags)
+      );
+      console.log(tmp);
       // console.log(JSON.stringify(this.formtags));
       this.service = "CodiMD";
       var element = document.getElementById("theApp");

@@ -217,11 +217,13 @@
       <div class="md-card-header">
         <md-card-header-text>
           <div class="md-title">
-            <md-icon
-              style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-              >how_to_vote
-            </md-icon>
-            {{ note.text }}
+            <!--
+              md-icon
+                style="line-height: 0.9; font-size: 1em !important; color: #404040;"
+                >how_to_vote
+              </md-icon
+            -->
+            {{ note.text.replace(/:[\w]+:/, "") }}
           </div>
         </md-card-header-text>
       </div>
@@ -346,6 +348,13 @@ export default {
       data.fromTime = Moment(data.time).fromNow();
       this.notes.push(data);
       this.notes.sort(SortByTime);
+    });
+    notesRef.on("child_changed", note => {
+      var data = note.val();
+      //_.merge(this.notes.find(x => x.id === data.id), data);
+      //console.log(this.notes.find(x => x.id === data.id));
+      //      arr.splice(i, 1);
+      //this.notes.sort(SortByTime);
     });
 
     var element = document.getElementById("theApp");
@@ -514,15 +523,16 @@ export default {
     // submit notes history
     onConfirmHistory: function() {
       let notesRef = db.database().ref("portal_notes");
-      this.notes = JSON.parse(this.history).history;
-      this.notes.forEach(function(note, index, arr) {
-        notesRef.child(note.id).update(note);
+      let notes = JSON.parse(this.history).history;
+      // console.log(notes);
+      notes.forEach(function(note, index, arr) {
         note.fromTime = Moment(note.time).fromNow();
-        _.merge(arr, note);
-        //this.notes[note.id] = "note";
+        notesRef.child(note.id).update(note);
+        // console.log(note);
+        // _.merge(arr[index], note);
+        //---this.notes[note.id] = "note";
       });
-      this.notes.sort(SortByTime);
-      console.log(this.notes);
+      //----this.notes.sort(SortByTime);
       this.activeDialogHistory = false;
 
       function SortByTime(x, y) {

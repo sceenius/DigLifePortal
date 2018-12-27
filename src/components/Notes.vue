@@ -241,6 +241,7 @@
       </div>
 
       <md-card-actions>
+        <md-button @click="cardAction('edit', note);">Edit</md-button>
         <md-button
           style="background: #C9162B; color: white;"
           @click="cardAction('open', note);"
@@ -343,32 +344,27 @@ export default {
     }
     // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
     let notesRef = db.database().ref("portal_notes");
+    // FB ADDED PATTERN /////////////////////////////
     notesRef.on("child_added", note => {
       var data = note.val();
-      data.fromTime = Moment(data.time).fromNow();
       this.notes.push(data);
       this.notes.sort(SortByTime);
     });
+    // FB CHANGED PATTERN /////////////////////////////
     notesRef.on("child_changed", note => {
       var data = note.val();
-      //_.merge(this.notes.find(x => x.id === data.id), data);
-      //console.log(this.notes.find(x => x.id === data.id));
-      //      arr.splice(i, 1);
-      //this.notes.sort(SortByTime);
+      // do not use arrow function here since it won't update this.notes
+      // also merge Firebase data after form submission, not here
+      this.notes.forEach(function(element, index, arr) {
+        if (element.id === data.id) {
+          // lodash function to merge objects recursively
+          arr[index] = _.merge(arr[index], data);
+        }
+      });
     });
 
     var element = document.getElementById("theApp");
     element.style.display = "none";
-    // //console.log("-------");
-    // this.axios
-    //   .get("https://notepad.diglife.coop/history")
-    //   .then(response => (this.notes = response.data))
-    //   .then(response => console.log("-------", response.data))
-    //   .catch(error => {
-    //     console.log(error.message);
-    //   });
-
-    //this.$forceUpdate();
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
@@ -522,11 +518,14 @@ export default {
 
     // submit notes history
     onConfirmHistory: function() {
+      // loop through the JSON array and update Firebase
+      // must use arrow function to access this.variables
+      // merge variables is courtesy of Firebase
       let notesRef = db.database().ref("portal_notes");
       let notes = JSON.parse(this.history).history;
-      // console.log(notes);
-      notes.forEach(function(note, index, arr) {
+      notes.forEach(note => {
         note.fromTime = Moment(note.time).fromNow();
+        note.members = [this.username];
         notesRef.child(note.id).update(note);
         // console.log(note);
         // _.merge(arr[index], note);
@@ -584,7 +583,16 @@ export default {
     // execute card action
     cardAction: function(action, note) {
       switch (action) {
-        case "join":
+        case "edit":
+          this.service = "Zettelkasten Note";
+          var element = document.getElementById("theApp");
+          element.src = "about:blank";
+          element.style.display = "block";
+          // window.onload = function() {
+          window.open(
+            "https://notepad.diglife.coop/" + note.id + "?both",
+            "theApp"
+          );
           break;
         case "open":
           // following not working since service is not visible in Navbar

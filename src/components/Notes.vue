@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter">
+  <div class="md-layout md-gutter" style="padding: 20px;">
     <!--
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar
@@ -175,15 +175,44 @@
         CARDS
       ----------------------------------------------------------------------
     -->
+    <md-speed-dial v-if="service == 'Zettelkasten'">
+      <md-speed-dial-target>
+        <md-icon class="md-morph-initial">add</md-icon>
+        <md-icon class="md-morph-final">close</md-icon>
+      </md-speed-dial-target>
 
-    <md-button
-      v-if="service == 'Zettelkasten'"
-      @click="createCard();"
-      class="md-fab md-primary"
-      style="position: absolute; bottom: 20px; right: 20px; z-index: 199"
-    >
-      <md-icon>add</md-icon>
-    </md-button>
+      <md-speed-dial-content>
+        <textarea
+          id="Clipboard"
+          style="position: absolute; opacity: 0; width: 0%; height: 0px;"
+        >
+        </textarea>
+
+        <md-button
+          class="md-icon-button"
+          @click="createNote('plain');"
+          title="Create plain note"
+        >
+          <md-icon>assignment</md-icon>
+        </md-button>
+
+        <md-button
+          class="md-icon-button"
+          @click="createNote('meeting');"
+          title="Create meeting note"
+        >
+          <md-icon>videocam</md-icon>
+        </md-button>
+
+        <md-button
+          class="md-icon-button"
+          @click="createNote('news');"
+          title="Create news note"
+        >
+          <md-icon>date_range</md-icon>
+        </md-button>
+      </md-speed-dial-content>
+    </md-speed-dial>
 
     <md-card
       md-with-hover
@@ -411,22 +440,6 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
-    // is member
-    isMember: function(note) {
-      return JSON.stringify(this.groups).includes(note.team + "/" + note.name);
-    },
-    // is suggested
-    isSuggested: function(note) {
-      if (note.purpose.tags) {
-        //alert(this.tags);
-        return this.tags.filter(
-          value => -1 !== note.purpose.tags.indexOf(value)
-        ).length;
-      } else {
-        return false;
-      }
-    },
-
     // create slug for URL
     slug: function() {
       this.name = Slugify(this.display_name, { lower: true });
@@ -452,18 +465,6 @@ export default {
       window.open("https://notepad.diglife.coop/", "theApp");
     },
 
-    // create new card
-    createCard: function(note) {
-      //this.note.id = Math.random().toString(36).substring(7);
-      //this.note.owner(s) = members
-      this.display_name = "";
-      this.name = "";
-      this.icon = "";
-      this.formtags = [];
-      this.mode = "Create";
-      this.activeDialogNote = true;
-    },
-
     // edit existing card (needs index of note)
     editCard: function(note, index) {
       alert("Please use the application to edit a card.");
@@ -471,6 +472,94 @@ export default {
 
     deleteCard: function(note, index) {
       alert("Please use the application to delete a card.");
+    },
+
+    // submit card edits
+    createNote: function(type) {
+      let clipboard = document.getElementById("Clipboard");
+      switch (type) {
+        case "plain":
+          clipboard.value =
+            "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
+            this.display_name +
+            "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n" +
+            "## Subtitle goes here\n\n" +
+            ":::warning\n" +
+            "###### tags: `plain`" +
+            "\n###### authors: `" +
+            this.username +
+            "`\n:::" +
+            "";
+          break;
+        case "meeting":
+          clipboard.value =
+            "#  :video_camera: Core Team Meeting Agenda & Notes\n" +
+            "## ```" +
+            Moment().format("LLLL") +
+            "```\n" +
+            ":warning: Please record the call and post the [link to the recording here](https://wherever.com).\n" +
+            "### :eyes: Participants\n" +
+            "Chair:\nScribe:\nAttendees:\nApologies:\n" +
+            "### :alarm_clock: Meeting Agenda\n" +
+            "Please announce that the call will be recorded and posted publicly unless anyone objects; note clearly in call if any sections are not to be shared publicly; allow for short [check-ins & check-outs](https://toolbox.hyperisland.com/check-in-questions) (one thing you liked/learned, one thing you'd change).\n" +
+            "- [x] \n" +
+            "- [ ] \n" +
+            "- [ ] \n" +
+            "### :memo: Meeting Notes\n" +
+            "Please update this section during the meeting; you can edit this content concurrently.\n" +
+            "- [x] \n" +
+            "- [ ] \n" +
+            "- [ ] \n" +
+            "### :clapper: Actions & Decisions\n" +
+            "Please record any actions and/or decisions from the meeting; attach names & dates and check off items completed, if possible.\n" +
+            "- [x] \n" +
+            "- [ ] \n" +
+            "- [ ] \n" +
+            ":::warning\n" +
+            "###### tags: `meeting`" +
+            "\n###### authors: `" +
+            this.username +
+            "`\n:::" +
+            "";
+          break;
+        case "news":
+          clipboard.value =
+            "#  :newspaper: Newsletter Topics\n" +
+            "Please contribute to our newsletter and fill out one of the sections below.\n" +
+            "### :calendar: Campaign Info\n" +
+            "Launch Date:\nAudience:\n" +
+            "### :tada: Topic 1\n" +
+            "Author: ```name```\n" +
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
+            "### :tada: Topic 2\n" +
+            "Author: ```name```\n" +
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
+            "### :tada: Topic 3\n" +
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
+            "Author: ```name```\n" +
+            "### :tada: Topic 4\n" +
+            "Author: ```name```\n" +
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
+            ":::warning\n" +
+            "###### tags: `news`" +
+            "\n###### authors: `" +
+            this.username +
+            "`\n:::" +
+            "";
+          break;
+        default:
+          break;
+      }
+
+      clipboard.focus();
+      clipboard.select();
+      document.execCommand("copy");
+
+      this.service = "CodiMD";
+      var element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "block";
+      window.open("https://notepad.diglife.coop/new", "theApp");
     },
 
     // submit notes history
@@ -486,84 +575,6 @@ export default {
         notesRef.child(note.id).update(note);
       });
       this.activeDialogHistory = false;
-    },
-
-    // submit card edits
-    onConfirmNote: function(formindex) {
-      // error validation
-      if (this.display_name === "") {
-        document.getElementById("display_name").classList.add("md-invalid");
-      } else if (this.formtags.length === 0) {
-        document.getElementById("formtags").classList.add("md-invalid");
-      } else {
-        let element = document.getElementById("templatetext");
-        switch (this.template) {
-          case "plain":
-            element.value =
-              "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
-              this.display_name +
-              "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n" +
-              "## Subtitle goes here\n\n";
-            break;
-          case "meeting":
-            element.value =
-              "#  :video_camera: Core Team Meeting Agenda & Notes\n" +
-              "## ```" +
-              Moment().format("LLLL") +
-              "```\n" +
-              ":warning: Please record the call and post the [link to the recording here](https://wherever.com).\n" +
-              "### :eyes: Participants\n" +
-              "Chair:\nScribe:\nAttendees:\nApologies:\n" +
-              "### :alarm_clock: Meeting Agenda\n" +
-              "Please announce that the call will be recorded and posted publicly unless anyone objects; note clearly in call if any sections are not to be shared publicly; allow for short [check-ins & check-outs](https://toolbox.hyperisland.com/check-in-questions) (one thing you liked/learned, one thing you'd change).\n" +
-              "- [x] \n" +
-              "- [ ] \n" +
-              "- [ ] \n" +
-              "### :memo: Meeting Notes\n" +
-              "Please update this section during the meeting; you can edit this content concurrently.\n" +
-              "- [x] \n" +
-              "- [ ] \n" +
-              "- [ ] \n" +
-              "### :clapper: Actions & Decisions\n" +
-              "Please record any actions and/or decisions from the meeting; attach names & dates and check off items completed, if possible.\n" +
-              "- [x] \n" +
-              "- [ ] \n" +
-              "- [ ] \n" +
-              "";
-            break;
-          case "other":
-            break;
-          default:
-            break;
-        }
-
-        // prepare the template tags for CodiMD
-        let templatetags = this.formtags.slice();
-        // It's missing the first element, so faking it
-        templatetags.unshift({ text: "test" });
-        let result = templatetags.reduce(function(accumulator, currentValue) {
-          return [...accumulator, "`" + currentValue.text + "`"];
-        });
-
-        element.value =
-          element.value +
-          ":::warning\n" +
-          "###### tags: " +
-          result +
-          "\n###### authors: `" +
-          this.username +
-          "`\n:::";
-        element.focus();
-        element.select();
-        document.execCommand("copy");
-        this.activeDialogNote = false;
-
-        this.service = "CodiMD";
-        var element = document.getElementById("theApp");
-        element.src = "about:blank";
-        element.style.display = "block";
-        window.open("https://notepad.diglife.coop/new", "theApp");
-      }
     },
 
     // execute card action

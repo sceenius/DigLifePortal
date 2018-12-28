@@ -411,31 +411,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  computed: {
-    time: function() {
-      return Moment(note.time).fromNow();
-    }
-
-    // template: function() {
-    //   return (
-    //     "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
-    //     this.display_name +
-    //     "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n## Subtitle goes here\n\n:::warning\n###### tags: " +
-    //     (this.formtags.length > 0
-    //       ? this.formtags.reduce(function(accumulator, currentValue) {
-    //           return [...accumulator, "`" + currentValue.text + "`"];
-    //         })
-    //       : "") +
-    //     "\n###### authors: `" +
-    //     this.username +
-    //     "`\n:::"
-    //   );
-    // }
-
-    // invalidate: function() {
-    //   return this.invalid === true ? "md-invalid" : "";
-    // }
-  },
+  computed: {},
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
@@ -480,10 +456,9 @@ export default {
       switch (type) {
         case "plain":
           clipboard.value =
-            "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
-            this.display_name +
+            "# Title goes here\n" +
+            "## Subtitle goes here\n" +
             "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n" +
-            "## Subtitle goes here\n\n" +
             ":::warning\n" +
             "###### tags: `plain`" +
             "\n###### authors: `" +
@@ -500,8 +475,12 @@ export default {
             ":warning: Please record the call and post the [link to the recording here](https://wherever.com).\n" +
             "### :eyes: Participants\n" +
             "Chair:\nScribe:\nAttendees:\nApologies:\n" +
+            "### :heavy_check_mark: Meeting Checklist\n" +
+            "- [x] Did you appoint a chair and note-taker for this meeting?\n" +
+            "- [ ] Did you start the recording and announce the call will be recorded & posted publicly?\n" +
+            "- [ ] Did you allow for short [check-ins and/or check-outs](https://toolbox.hyperisland.com/check-in-questions)?\n" +
+            "- [ ] Did you post the recording and created a link above in the note?\n" +
             "### :alarm_clock: Meeting Agenda\n" +
-            "Please announce that the call will be recorded and posted publicly unless anyone objects; note clearly in call if any sections are not to be shared publicly; allow for short [check-ins & check-outs](https://toolbox.hyperisland.com/check-in-questions) (one thing you liked/learned, one thing you'd change).\n" +
             "- [x] \n" +
             "- [ ] \n" +
             "- [ ] \n" +
@@ -527,7 +506,7 @@ export default {
             "#  :newspaper: Newsletter Topics\n" +
             "Please contribute to our newsletter and fill out one of the sections below.\n" +
             "### :calendar: Campaign Info\n" +
-            "Launch Date:\nAudience:\n" +
+            "Launch Date:\nTarget Audience:\nNewsletter Editors:\n" +
             "### :tada: Topic 1\n" +
             "Author: ```name```\n" +
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +

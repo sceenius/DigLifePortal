@@ -379,6 +379,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    // use only locally since logout may change this
     this.username = this.$cookies.get("username");
 
     function SortByTime(x, y) {
@@ -462,7 +463,7 @@ export default {
             ":::warning\n" +
             "###### tags: `plain`" +
             "\n###### authors: `" +
-            this.username +
+            this.$cookies.get("username") +
             "`\n:::" +
             "";
           break;
@@ -497,7 +498,7 @@ export default {
             ":::warning\n" +
             "###### tags: `meeting`" +
             "\n###### authors: `" +
-            this.username +
+            this.$cookies.get("username") +
             "`\n:::" +
             "";
           break;
@@ -522,7 +523,7 @@ export default {
             ":::warning\n" +
             "###### tags: `news`" +
             "\n###### authors: `" +
-            this.username +
+            this.$cookies.get("username") +
             "`\n:::" +
             "";
           break;
@@ -550,7 +551,6 @@ export default {
       let notes = JSON.parse(this.history).history;
       notes.forEach(note => {
         note.fromTime = Moment(note.time).fromNow();
-        note.members = [this.username];
         notesRef.child(note.id).update(note);
       });
       this.activeDialogHistory = false;
@@ -564,6 +564,17 @@ export default {
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
+          //add member on edit action
+          if (
+            note.members &&
+            !JSON.stringify(note.members).includes(
+              this.$cookies.get("username")
+            )
+          ) {
+            let notesRef = db.database().ref("portal_notes");
+            note.members.push(this.$cookies.get("username"));
+            notesRef.child(note.id).update(note);
+          }
           // window.onload = function() {
           window.open(
             "https://notepad.diglife.coop/" + note.id + "?both",

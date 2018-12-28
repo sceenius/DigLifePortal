@@ -322,7 +322,7 @@
           >friends</md-button
         >
 
-        <md-menu v-if="profile && service == ''">
+        <md-menu v-if="profile">
           <md-avatar
             style="cursor: pointer; border: 2px solid transparent;"
             md-menu-trigger

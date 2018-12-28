@@ -94,15 +94,6 @@
         DIALOG BOXES - CREATE NOTE
       ----------------------------------------------------------------------
     -->
-    <md-button
-      v-if="!activeDialogNote"
-      @click="createCard();"
-      class="md-fab md-primary"
-      style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
-    >
-      <md-icon>add</md-icon>
-    </md-button>
-
     <md-dialog
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
@@ -136,13 +127,24 @@
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
+        <md-field>
+          <label for="template">Template</label>
+          <md-select v-model="template" name="template" id="template">
+            <md-option value="plain">Plain</md-option>
+            <md-option value="meeting">Meeting</md-option>
+          </md-select>
+          <span class="md-helper-text"
+            >Select your template. The text will be copied to your clipboard, so
+            you can paste it into the document.</span
+          >
+          <span class="md-error">This field cannot be blank</span>
+        </md-field>
+
         <textarea
-          ref="tpl"
-          v-model="template"
-          style="width: 100%; height: 100px; background-color:#ddd; padding: 5px; font-size: 0.9em;"
+          id="templatetext"
+          style="width: 0%; height: 0px; background-color:#ddd; padding: 5px; font-size: 0.9em;"
         >
         </textarea>
-        <span class="md-helper-text">Paste this text into the new note</span>
 
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
@@ -173,6 +175,15 @@
         CARDS
       ----------------------------------------------------------------------
     -->
+
+    <md-button
+      v-if="service == 'Zettelkasten'"
+      @click="createCard();"
+      class="md-fab md-primary"
+      style="position: absolute; bottom: 20px; right: 20px; z-index: 199"
+    >
+      <md-icon>add</md-icon>
+    </md-button>
 
     <md-card
       md-with-hover
@@ -305,6 +316,8 @@ export default {
       ],
       channel_id: "",
       display_name: "",
+      template: "",
+      templatetext: "",
       name: "", //Slugify(this.display_name),
       header: "",
       icon: "",
@@ -372,23 +385,23 @@ export default {
   computed: {
     time: function() {
       return Moment(note.time).fromNow();
-    },
-
-    template: function() {
-      return (
-        "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
-        this.display_name +
-        "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n## Subtitle goes here\n\n:::warning\n###### tags: " +
-        (this.formtags.length > 0
-          ? this.formtags.reduce(function(accumulator, currentValue) {
-              return [...accumulator, "`" + currentValue.text + "`"];
-            })
-          : "") +
-        "\n###### authors: `" +
-        this.username +
-        "`\n:::"
-      );
     }
+
+    // template: function() {
+    //   return (
+    //     "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
+    //     this.display_name +
+    //     "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n## Subtitle goes here\n\n:::warning\n###### tags: " +
+    //     (this.formtags.length > 0
+    //       ? this.formtags.reduce(function(accumulator, currentValue) {
+    //           return [...accumulator, "`" + currentValue.text + "`"];
+    //         })
+    //       : "") +
+    //     "\n###### authors: `" +
+    //     this.username +
+    //     "`\n:::"
+    //   );
+    // }
 
     // invalidate: function() {
     //   return this.invalid === true ? "md-invalid" : "";
@@ -425,6 +438,7 @@ export default {
 
     returnToCards: function() {
       this.service = "Zettelkasten";
+      this.activeDialogNote = false;
       var element = document.getElementById("theApp");
       element.src = "about:blank";
       element.style.display = "none";
@@ -452,68 +466,11 @@ export default {
 
     // edit existing card (needs index of note)
     editCard: function(note, index) {
-      //alert(note.purpose.tags);
-      this.team_id = note.team_id;
-      this.channel_id = note.channel_id;
-      this.display_name = note.display_name;
-      this.name = note.name;
-      this.icon = note.purpose.icon;
-      this.header = note.header;
-      //this.formtags = note.purpose.tags;
-      // the tag control needs text key-value pairs
-      if (note.purpose.tags && note.purpose.tags[0].text === undefined) {
-        this.formtags = note.purpose.tags.map(function(element) {
-          return { text: element };
-        });
-      } else {
-        this.formtags = note.purpose.tags;
-      }
-      this.formindex = index;
-      this.mode = "Edit";
-      this.activeDialognote = true;
+      alert("Please use the application to edit a card.");
     },
 
-    // edit existing card (needs index of note)
     deleteCard: function(note, index) {
-      console.log(
-        "webhooks/" +
-          "portal_delete_channel.php" +
-          "?file=base-diglife-coop.php" +
-          "&channel_id=" +
-          note.channel_id
-      );
-
-      this.axios
-        .get(
-          BASEURL +
-            "webhooks/" +
-            "portal_delete_channel.php" +
-            "?file=base-diglife-coop.php" +
-            "&channel_id=" +
-            note.channel_id
-        )
-        .then(delete this.notes[index])
-        .then(
-          db
-            .database()
-            .ref("portal_channels/" + note.channel_id)
-            .remove()
-        )
-        .then(
-          db
-            .database()
-            .ref("portal_extensions/" + note.channel_id)
-            .remove()
-        )
-        .then(response => {
-          this.showSnackBar = true;
-          this.snack = "This card has been successfully removed.";
-        })
-        .catch(error => {
-          this.showSnackBar = true;
-          this.snack = "Network Error, please try again later.";
-          console.log(error);
-        });
+      alert("Please use the application to delete a card.");
     },
 
     // submit notes history
@@ -527,57 +484,86 @@ export default {
         note.fromTime = Moment(note.time).fromNow();
         note.members = [this.username];
         notesRef.child(note.id).update(note);
-        // console.log(note);
-        // _.merge(arr[index], note);
-        //---this.notes[note.id] = "note";
       });
-      //----this.notes.sort(SortByTime);
       this.activeDialogHistory = false;
-
-      function SortByTime(x, y) {
-        return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
-      }
     },
 
     // submit card edits
     onConfirmNote: function(formindex) {
-      // open dialog to copy/paste template text
-      // assign temp id and owner(s)
-      // create note with /new
       // error validation
       if (this.display_name === "") {
         document.getElementById("display_name").classList.add("md-invalid");
+      } else if (this.formtags.length === 0) {
+        document.getElementById("formtags").classList.add("md-invalid");
+      } else {
+        let element = document.getElementById("templatetext");
+        switch (this.template) {
+          case "plain":
+            element.value =
+              "<p style='text-align: right; position: absolute; right: 50px'><img width=120 src='https://ledger.diglife.coop/images/brand/logo_primary.svg'></p>\n\n# " +
+              this.display_name +
+              "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n" +
+              "## Subtitle goes here\n\n";
+            break;
+          case "meeting":
+            element.value =
+              "#  :video_camera: Core Team Meeting Agenda & Notes\n" +
+              "## ```" +
+              Moment().format("LLLL") +
+              "```\n" +
+              ":warning: Please record the call and post the [link to the recording here](https://wherever.com).\n" +
+              "### :eyes: Participants\n" +
+              "Chair:\nScribe:\nAttendees:\nApologies:\n" +
+              "### :alarm_clock: Meeting Agenda\n" +
+              "Please announce that the call will be recorded and posted publicly unless anyone objects; note clearly in call if any sections are not to be shared publicly; allow for short [check-ins & check-outs](https://toolbox.hyperisland.com/check-in-questions) (one thing you liked/learned, one thing you'd change).\n" +
+              "- [x] \n" +
+              "- [ ] \n" +
+              "- [ ] \n" +
+              "### :memo: Meeting Notes\n" +
+              "Please update this section during the meeting; you can edit this content concurrently.\n" +
+              "- [x] \n" +
+              "- [ ] \n" +
+              "- [ ] \n" +
+              "### :clapper: Actions & Decisions\n" +
+              "Please record any actions and/or decisions from the meeting; attach names & dates and check off items completed, if possible.\n" +
+              "- [x] \n" +
+              "- [ ] \n" +
+              "- [ ] \n" +
+              "";
+            break;
+          case "other":
+            break;
+          default:
+            break;
+        }
+
+        // prepare the template tags for CodiMD
+        let templatetags = this.formtags.slice();
+        // It's missing the first element, so faking it
+        templatetags.unshift({ text: "test" });
+        let result = templatetags.reduce(function(accumulator, currentValue) {
+          return [...accumulator, "`" + currentValue.text + "`"];
+        });
+
+        element.value =
+          element.value +
+          ":::warning\n" +
+          "###### tags: " +
+          result +
+          "\n###### authors: `" +
+          this.username +
+          "`\n:::";
+        element.focus();
+        element.select();
+        document.execCommand("copy");
+        this.activeDialogNote = false;
+
+        this.service = "CodiMD";
+        var element = document.getElementById("theApp");
+        element.src = "about:blank";
+        element.style.display = "block";
+        window.open("https://notepad.diglife.coop/new", "theApp");
       }
-      // } else if (this.formtags.length === 0) {
-      //   //console.log(this.formtags.length);
-      //   // not working -- need to invoke requored field here
-      //   //document.getElementById("formtags").classList.add("md-invalid");
-      //   // no errors
-      // } else {
-      //   // we have two scripts for updating and creating channels
-      //   if (this.mode === "Edit") {
-      //   } else if (this.mode === "Create") {
-      //   }
-
-      this.$refs.tpl.select();
-      document.execCommand("copy");
-
-      this.formtags.unshift({ text: "test" }); // It's missing the first element, so faking it
-      this.formtags = this.formtags.reduce(function(accumulator, currentValue) {
-        return [...accumulator, "`" + currentValue.text + "`"];
-      });
-      var tmp = this.template.str_replace(
-        "tags:",
-        "tags:" + JSON.stringify(this.formtags)
-      );
-      console.log(tmp);
-      // console.log(JSON.stringify(this.formtags));
-      this.service = "CodiMD";
-      var element = document.getElementById("theApp");
-      element.src = "about:blank";
-      element.style.display = "block";
-      window.open("https://notepad.diglife.coop/new", "theApp");
-      this.activeDialogNote = false;
     },
 
     // execute card action

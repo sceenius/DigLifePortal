@@ -89,7 +89,7 @@
           <span class="md-helper-text"
             >Enter a short description for this Interest Group</span
           >
-          <span class="md-error"></span>
+          <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-field id="formtags">
@@ -105,7 +105,7 @@
           >
           </vue-tags-input>
           <span class="md-helper-text">Enter one or more tags</span>
-          <span class="md-error"></span>
+          <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-dialog-actions style="padding: 25px 0;">

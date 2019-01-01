@@ -322,7 +322,7 @@
           >friends</md-button
         >
 
-        <md-menu v-if="profile">
+        <md-menu v-if="profile.username">
           <md-avatar
             style="cursor: pointer; border: 2px solid transparent;"
             md-menu-trigger
@@ -564,7 +564,7 @@ export default {
     showServices: false,
     showSnackBar: false,
     showProfileReminder: false,
-    activeUser: true,
+    activeUser: false,
     activeAccess: false,
     activeInfo: false,
     activeSettings: false,
@@ -575,9 +575,9 @@ export default {
     snack: "",
     users: [],
     channels: [],
-    profile: false,
+    profile: [],
     groups: [],
-    members: "",
+    members: [],
     total: "",
     channel: "",
     invalid: true,
@@ -587,7 +587,8 @@ export default {
     menutitle: "",
     menulink: "",
     menuicon: "",
-    menuindex: ""
+    menuindex: "",
+    lastUser: ""
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -595,18 +596,29 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
+    let lastUser = "";
+    // find the last user so we can invoke the dialog box
+    usersRef.limitToLast(1).once("child_added", user => {
+      lastUser = user.key;
+    });
+
+    //.then(
     usersRef.on("child_added", user => {
       //snapshot.forEach(user => {
       this.users.push(user.val());
       if (user.val().username === this.$cookies.get("username")) {
         this.profile = user.val();
         this.username = this.$cookies.get("username");
-        this.activeUser = false;
-        console.log("This user: ", user.val());
+        //this.activeUser = false;
+        //console.log("This user: ", user.val());
+        //console.log(lastUser);
       }
-      //});
+      //invoke the dialog box if user not found
+      if (user.key === lastUser && !this.username) {
+        this.activeUser = true;
+      }
     });
-
+    //)
     let channelsRef = db.database().ref("portal_channels");
     // porta_extensions contains any channel info not stored in Mattermost
     let extensionsRef = db.database().ref("portal_extensions");
@@ -713,7 +725,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  MOUNTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  mounted: function() {},
+  //mounted: function() {},
 
   ///////////////////////////////////////////////////////////////////////////////
   //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html

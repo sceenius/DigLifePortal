@@ -98,7 +98,7 @@
           <md-button
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             ><md-icon style="color: white;">exit_to_app</md-icon>
             Enter</md-button
           >
@@ -195,7 +195,7 @@
         <md-button
           class="md-success md-raised"
           @click="requestAccess();"
-          style="background: #C9162B; color: white;"
+          style="background: #00B0A0; color: white;"
           ><md-icon style="color: white;">lock_open</md-icon> Request
           Access</md-button
         >
@@ -254,7 +254,7 @@
             v-if="mode == 'Add'"
             class="md-success md-raised"
             @click="onConfirmAddMenu();"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Save</md-button
           >
           <md-button
@@ -262,14 +262,14 @@
             class="md-success md-raised"
             @click="onConfirmDeleteMenu(menuindex);"
             sty
-            le="background: #C9162B; color: white;"
+            le="background: #00B0A0; color: white;"
             >Remove</md-button
           >
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmEditMenu(menuindex);"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Save</md-button
           >
         </md-dialog-actions>

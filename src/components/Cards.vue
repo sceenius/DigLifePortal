@@ -118,14 +118,14 @@
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirm(formindex);"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Update</md-button
           >
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Create</md-button
           >
         </md-dialog-actions>
@@ -174,10 +174,6 @@
           style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
         />
-        <img
-          style="width: 200px; position: absolute; top: -25px; left: 25px; z-index: 99; "
-          src="https://ledger.diglife.coop/images/brand/card_ribbon.png"
-        />
       </div>
 
       <div class="md-card-header">
@@ -220,7 +216,7 @@
         >
         <md-button
           v-if="isMember(topic)"
-          style="background: #C9162B; color: white;"
+          style="background: #00B0A0; color: white;"
           @click="cardAction('open', topic);"
           >Open</md-button
         >
@@ -229,7 +225,7 @@
         >
         <md-button
           v-if="!isMember(topic)"
-          style="background: #C9162B; color: white;"
+          style="background: #00B0A0; color: white;"
           @click="cardAction('join', topic);"
           >Join</md-button
         >

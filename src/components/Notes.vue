@@ -52,7 +52,7 @@
           <md-button
             class="md-success md-raised"
             @click="onConfirmHistory();"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             ><md-icon style="color: white;">exit_to_app</md-icon>
             Update</md-button
           >
@@ -156,14 +156,14 @@
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmNote(formindex);"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Update</md-button
           >
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirmNote();"
-            style="background: #C9162B; color: white;"
+            style="background: #00B0A0; color: white;"
             >Create</md-button
           >
         </md-dialog-actions>
@@ -283,7 +283,7 @@
       <md-card-actions>
         <md-button @click="cardAction('edit', note);">Edit</md-button>
         <md-button
-          style="background: #C9162B; color: white;"
+          style="background: #00B0A0; color: white;"
           @click="cardAction('open', note);"
           >Open</md-button
         >

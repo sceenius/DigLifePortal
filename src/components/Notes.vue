@@ -240,7 +240,7 @@
               <span>Copy</span>
             </md-menu-item>
 
-            <md-menu-item @click="deleteCard(note);">
+            <md-menu-item @click="deleteCard(note, index);">
               <md-icon>delete</md-icon>
               <span>Delete</span>
             </md-menu-item>
@@ -405,7 +405,7 @@ export default {
         }
       });
     });
-
+    console.log(this.notes);
     var element = document.getElementById("theApp");
     element.style.display = "none";
   },
@@ -448,7 +448,17 @@ export default {
     },
 
     deleteCard: function(note, index) {
-      alert("Please use the application to delete a card.");
+      //remove from Firebase
+      db.database()
+        .ref("portal_notes/" + note.id)
+        .remove();
+      // remove from array
+      //console.log(this.notes);
+      this.notes = this.notes.filter(element => element.id !== note.id);
+      //remove from app (manually)
+      this.snack =
+        "Card successfully removed. Please also remove from the app. ";
+      this.showSnackBar = true;
     },
 
     // submit card edits
@@ -477,7 +487,8 @@ export default {
             "### :eyes: Participants\n" +
             "Chair:\nScribe:\nAttendees:\nApologies:\n" +
             "### :heavy_check_mark: Meeting Checklist\n" +
-            "- [x] Did you appoint a chair and note-taker for this meeting?\n" +
+            "- [x] Did you change access to this file to 'Freely' (top right)?\n" +
+            "- [ ] Did you appoint a chair and note-taker for this meeting?\n" +
             "- [ ] Did you start the recording and announce the call will be recorded & posted publicly?\n" +
             "- [ ] Did you allow for short [check-ins and/or check-outs](https://toolbox.hyperisland.com/check-in-questions)?\n" +
             "- [ ] Did you post the recording and created a link above in the note?\n" +
@@ -540,6 +551,9 @@ export default {
       element.src = "about:blank";
       element.style.display = "block";
       window.open("https://notepad.diglife.coop/new", "theApp");
+      this.snack =
+        "Template copied to clipboard. Please paste it into the new file.";
+      this.showSnackBar = true;
     },
 
     // submit notes history
@@ -573,6 +587,10 @@ export default {
           ) {
             let notesRef = db.database().ref("portal_notes");
             note.members.push(this.$cookies.get("username"));
+            notesRef.child(note.id).update(note);
+          } else if (!note.members) {
+            let notesRef = db.database().ref("portal_notes");
+            note.members = [this.$cookies.get("username")];
             notesRef.child(note.id).update(note);
           }
           // window.onload = function() {

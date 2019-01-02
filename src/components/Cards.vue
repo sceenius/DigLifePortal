@@ -468,14 +468,6 @@ export default {
 
     // edit existing card (needs index of topic)
     deleteCard: function(topic, index) {
-      console.log(
-        "webhooks/" +
-          "portal_delete_channel.php" +
-          "?file=base-diglife-coop.php" +
-          "&channel_id=" +
-          topic.channel_id
-      );
-
       this.axios
         .get(
           BASEURL +

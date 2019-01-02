@@ -281,7 +281,7 @@
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
-    <md-toolbar class="md-primary">
+    <md-toolbar class="md-primary" v-if="username">
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
@@ -322,7 +322,7 @@
           >friends</md-button
         >
 
-        <md-menu v-if="profile.username">
+        <md-menu>
           <md-avatar
             style="cursor: pointer; border: 2px solid transparent;"
             md-menu-trigger
@@ -556,15 +556,15 @@ export default {
   name: "Navbar",
   components: { Particles, Tags, Cards, Notes },
   data: () => ({
-    form: {
-      username: null
-    },
+    // form: {
+    //   username: null
+    // },
     showNavigation: false,
     showSidepanel: false,
     showServices: false,
     showSnackBar: false,
     showProfileReminder: false,
-    activeUser: false,
+    activeUser: true,
     activeAccess: false,
     activeInfo: false,
     activeSettings: false,
@@ -588,7 +588,7 @@ export default {
     menulink: "",
     menuicon: "",
     menuindex: "",
-    lastUser: ""
+    foundUser: false
   }),
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -596,29 +596,16 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
-    let lastUser = "";
-    // find the last user so we can invoke the dialog box
-    usersRef.limitToLast(1).once("child_added", user => {
-      lastUser = user.key;
-    });
 
-    //.then(
     usersRef.on("child_added", user => {
-      //snapshot.forEach(user => {
       this.users.push(user.val());
       if (user.val().username === this.$cookies.get("username")) {
         this.profile = user.val();
         this.username = this.$cookies.get("username");
-        //this.activeUser = false;
-        //console.log("This user: ", user.val());
-        //console.log(lastUser);
-      }
-      //invoke the dialog box if user not found
-      if (user.key === lastUser && !this.username) {
-        this.activeUser = true;
+        this.activeUser = false;
       }
     });
-    //)
+
     let channelsRef = db.database().ref("portal_channels");
     // porta_extensions contains any channel info not stored in Mattermost
     let extensionsRef = db.database().ref("portal_extensions");
@@ -725,7 +712,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  MOUNTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  //mounted: function() {},
+  mounted: function() {},
 
   ///////////////////////////////////////////////////////////////////////////////
   //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html
@@ -1013,6 +1000,7 @@ export default {
 
     onLogout: function() {
       // Logout
+      this.profile = "";
       this.username = "";
       this.$cookies.set("username", "");
       this.activeUser = true;

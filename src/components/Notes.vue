@@ -291,10 +291,27 @@
 
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
-          <md-avatar v-for="(member, index) in note.members" :key="index">
-            <img v-bind:src="avatarLink(member)" alt="Avatar" />
-            <md-tooltip md-direction="top">{{ member }}</md-tooltip>
-          </md-avatar>
+          <md-menu v-for="(member, index2) in note.members" :key="index2">
+            <md-avatar
+              style="cursor: pointer; border: 2px solid transparent;"
+              md-menu-trigger
+            >
+              <img v-bind:src="avatarLink(member)" alt="Avatar" />
+              <!-- md-tooltip md-direction="top">{{ member }}</md-tooltip -->
+            </md-avatar>
+
+            <md-menu-content class="md-card-menu">
+              <md-menu-item>
+                <md-icon>person</md-icon>
+                <span>{{ member }}</span>
+              </md-menu-item>
+
+              <md-menu-item @click="removeMember(member, index);">
+                <md-icon>delete</md-icon>
+                <span>Remove</span>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
         </div>
       </div>
     </md-card>
@@ -405,7 +422,6 @@ export default {
         }
       });
     });
-    console.log(this.notes);
     var element = document.getElementById("theApp");
     element.style.display = "none";
   },
@@ -458,6 +474,21 @@ export default {
       //remove from app (manually)
       this.snack =
         "Card successfully removed. Please also remove from the app. ";
+      this.showSnackBar = true;
+    },
+
+    removeMember: function(member, index) {
+      // remove from array
+      console.log(this.notes);
+      this.notes[index].members = this.notes[index].members.filter(
+        element => element !== member
+      );
+      //remove from Firebase
+      db.database()
+        .ref("portal_notes/" + this.notes[index].id)
+        .update(this.notes[index]);
+
+      this.snack = "Member successfully removed.";
       this.showSnackBar = true;
     },
 

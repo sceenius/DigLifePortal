@@ -223,6 +223,11 @@
       id="noteCards"
     >
       <div class="md-card-banner">
+        <md-icon
+          class="md-size-1x"
+          style="cursor: pointer; color: #FEC019; z-index: 99;position: absolute; top:-5px; right: 20px;"
+          >bookmark</md-icon
+        >
         <md-menu>
           <md-button
             style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"

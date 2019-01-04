@@ -4,7 +4,7 @@
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
-    -->o
+    -->
     <md-snackbar
       :md-duration="4000"
       :md-active.sync="showSnackBar"
@@ -617,7 +617,11 @@ export default {
           // following not working since service is not visible in Navbar
           // window.onload = function() {
           //   window.open(topic.purpose.link, "theApp");
-          window.open(topic.purpose.link, topic.name);
+          this.service = topic.display_name.replace("#", "");
+          var element = document.getElementById("theApp");
+          element.src = "about:blank";
+          element.style.display = "block";
+          window.open(topic.purpose.link, "theApp");
           // };
           break;
         case "ask":

@@ -483,8 +483,7 @@ export default {
     },
 
     removeMember: function(member, index) {
-      // remove from array
-      console.log(this.notes);
+      // PATTERN remove from array, then update FB with array
       this.notes[index].members = this.notes[index].members.filter(
         element => element !== member
       );

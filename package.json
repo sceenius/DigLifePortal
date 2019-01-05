@@ -4,6 +4,8 @@
   "dependencies": {
     "@johmun/vue-tags-input": "1.5.9",
     "axios": "0.18.0",
+    "d3": "5.7.0",
+    "d3-hierarchy": "1.1.8",
     "firebase": "5.5.9",
     "kinto-http": "4.6.1",
     "lodash": "4.17.11",

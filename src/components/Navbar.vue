@@ -355,7 +355,10 @@
     -->
     <div
       v-if="
-        service && service != 'Interest Groups' && service != 'Zettelkasten'
+        service &&
+          service != 'Interest Groups' &&
+          service != 'Zettelkasten' &&
+          service != 'Holonic Chart'
       "
       id="actions"
     >
@@ -524,12 +527,14 @@
       <Particles v-if="!service" />
       <Cards v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
+      <Holons v-if="service == 'Holonic Chart'" />
       <iframe
         v-if="
           true ||
             (service &&
               service !== 'Interest Groups' &&
-              service !== 'Zettelkasten')
+              service !== 'Zettelkasten' &&
+              service !== 'Holonic Chart')
         "
         name="theApp"
         id="theApp"
@@ -548,13 +553,14 @@ import Particles from "./Particles";
 import Tags from "./Tags";
 import Cards from "./Cards";
 import Notes from "./Notes";
+import Holons from "./Holons";
 import Slack from "node-slack";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Cards, Notes },
+  components: { Particles, Tags, Cards, Notes, Holons },
   data: () => ({
     // form: {
     //   username: null
@@ -1099,7 +1105,8 @@ export default {
       var element = document.getElementById("theApp");
       if (
         this.service === "Zettelkasten" ||
-        this.service === "Interest Groups"
+        this.service === "Interest Groups" ||
+        this.service === "Holonic Chart"
       ) {
         element.style.display = "none";
       } else {

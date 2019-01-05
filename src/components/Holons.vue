@@ -22,7 +22,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  created: function() {
+  mounted: function() {
     this.color = d3
       .scaleLinear()
       .domain([0, 5])
@@ -44,7 +44,8 @@ const root = this.pack(this.flare);
   let focus = root;
   let view;
 
-  const svg = d3.select("svg")
+
+  const svg = d3.select("svg")  //this.$el
     .attr("width", this.width)
     .attr("height", this.height)
       .attr("viewBox", `-${this.width / 2} -${this.height / 2} ${this.width} ${this.height}`)
@@ -108,8 +109,10 @@ const root = this.pack(this.flare);
         .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
         .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
   }
-
+  console.log(svg.node())
   return svg.node();
+
+
 
   },
   ///////////////////////////////////////////////////////////////////////////////

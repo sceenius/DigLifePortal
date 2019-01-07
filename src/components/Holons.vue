@@ -38,7 +38,8 @@ export default {
       if (data.team === "projects") {
         this.holons.projects.push({
           name: data.display_name,
-          size: data.total_msg_count
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name
         });
       } else if (
         data.team === "diglife" &&
@@ -46,7 +47,8 @@ export default {
       ) {
         this.holons.diglife.push({
           name: data.display_name,
-          size: data.total_msg_count
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name
         });
       } else if (
         data.team === "diglife" &&
@@ -152,9 +154,7 @@ export default {
         "font",
         d => (d.depth === 1 ? 40 : d.depth > 1 ? 24 : null) + "px Roboto"
       )
-      // .style("font-weight", "bold")
       .text(d => d.data.name)
-      //.text(d => drawCircularText(d.parent, d.data.name, "14px", "san-serif", 0,0,0))
       // note: you cannot change the bg color in SVG
       .on("click", d =>
         !d.children ? window.open(d.data.link, d.data.name) : null

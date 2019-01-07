@@ -388,7 +388,15 @@
         <md-icon>add</md-icon>
       </md-button>
     </div>
-
+    <div v-else-if="service != 'Holonic Chart'" id="actions">
+      <md-button
+        title="Add Menu Entry"
+        @click="sub('holonLink');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>blur_circular</md-icon>
+      </md-button>
+    </div>
     <!--
       ----------------------------------------------------------------------
         DRAWER MENU BAR - https://vuematerial.io/components/drawer
@@ -1027,6 +1035,11 @@ export default {
     sub: function(menu) {
       // Open the contextual action button
       switch (menu) {
+        case "holonLink":
+          // Open dialoug to request access
+          this.selected = "";
+          this.service = "Holonic Chart";
+          break;
         case "infoLink":
           // Open dialoug to request access
           this.activeInfo = true;

@@ -141,6 +141,7 @@ export default {
     const label = svg
       .append("g")
       .attr("text-anchor", "middle")
+      .attr("dominant-baseline", "middle")
       .selectAll("text")
       .data(root.descendants())
       .enter()

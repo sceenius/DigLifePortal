@@ -7,6 +7,7 @@
 import * as d3 from "d3"; //all
 import hierachy from "d3-hierarchy";
 import db from "../firebase/init";
+import { BASEURL, CHATURL } from "../constants.js";
 
 export default {
   name: "Holons",
@@ -53,17 +54,20 @@ export default {
       ) {
         this.holons.topics.push({
           name: data.display_name,
-          size: data.total_msg_count
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name
         });
       } else if (data.team === "ops") {
         this.holons.operations.push({
           name: data.display_name,
-          size: data.total_msg_count
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name
         });
       } else if (data.team === "friends") {
         this.holons.friends.push({
           name: data.display_name,
-          size: data.total_msg_count
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name
         });
       }
     });
@@ -73,8 +77,8 @@ export default {
     this.color = d3
       .scaleLinear()
       .domain([0, 5])
-      .range(["#00e8d2", "#00554d"])
-      // .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+      .range(["rgba(0, 176, 160,0.4)", "rgba(0, 176, 160,1)"])
+      //.range(["#00e8d2", "#00554d"])
       .interpolate(d3.interpolateHcl);
 
     this.format = d3.format(",d");
@@ -134,17 +138,28 @@ export default {
 
     const label = svg
       .append("g")
-      .attr("pointer-events", "none")
+      //.attr("pointer-events", "none")
       .attr("text-anchor", "middle")
       .selectAll("text")
       .data(root.descendants())
       .enter()
       .append("text")
+      .attr("class", "label")
       .style("fill-opacity", d => (d.parent === root ? 1 : 0))
       .style("display", d => (d.parent === root ? "inline" : "none"))
+      //.style("font", d => 40 - d.depth*5 + "px Roboto")
+      .style(
+        "font",
+        d => (d.depth === 1 ? 40 : d.depth > 1 ? 24 : null) + "px Roboto"
+      )
+      // .style("font-weight", "bold")
       .text(d => d.data.name)
-      .style("font", d => 10 - d.depth + 10 + "px sans-serif");
-    // .style("font-weight", "bold")
+      //.text(d => drawCircularText(d.parent, d.data.name, "14px", "san-serif", 0,0,0))
+      // note: you cannot change the bg color in SVG
+      .on("click", d =>
+        !d.children ? window.open(d.data.link, d.data.name) : null
+      );
+    //      .on("click", d => window.open(d.link, "_blank"))
 
     zoomTo([root.x, root.y, root.r * 2]);
 
@@ -190,7 +205,59 @@ export default {
           if (d.parent !== focus) this.style.display = "none";
         });
     }
-    console.log(svg.node());
+
+    //Adjusted from: http://blog.graphicsgen.com/2015/03/html5-canvas-rounded-text.html
+    function drawCircularText(
+      ctx,
+      text,
+      fontSize,
+      titleFont,
+      centerX,
+      centerY,
+      radius,
+      startAngle,
+      kerning
+    ) {
+      // startAngle:   In degrees, Where the text will be shown. 0 degrees if the top of the circle
+      // kearning:     0 for normal gap between letters. Positive or negative number to expand/compact gap in pixels
+
+      //Setup letters and positioning
+      ctx.textBaseline = "alphabetic";
+      ctx.textAlign = "center"; // Ensure we draw in exact center
+      ctx.font = fontSize + "px " + titleFont;
+
+      startAngle = startAngle * (Math.PI / 180); // convert to radians
+      text = text
+        .split("")
+        .reverse()
+        .join(""); // Reverse letters
+      text = text.replace("-", " ").toUpperCase(); // MOD JS
+
+      //Rotate 50% of total angle for center alignment
+      for (var j = 0; j < text.length; j++) {
+        var charWid = ctx.measureText(text[j]).width;
+        startAngle +=
+          (charWid + (j == text.length - 1 ? 0 : kerning)) / radius / 2;
+      } //for j
+
+      ctx.save(); //Save the default state before doing any transformations
+      ctx.translate(centerX, centerY); // Move to center
+      ctx.rotate(startAngle); //Rotate into final start position
+
+      //Now for the fun bit: draw, rotate, and repeat
+      for (var j = 0; j < text.length; j++) {
+        var charWid = ctx.measureText(text[j]).width / 2; // half letter
+        //Rotate half letter
+        ctx.rotate(-charWid / radius);
+        //Draw the character at "top" or "bottom" depending on inward or outward facing
+        ctx.fillText(text[j], 0, -radius);
+        //Rotate half letter
+        ctx.rotate(-(charWid + kerning) / radius);
+      } //for j
+
+      ctx.restore(); //Restore to state as it was before transformations
+    } //function drawCircularText
+
     return svg.node();
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -221,3 +288,12 @@ export default {
   methods: {}
 };
 </script>
+
+<style>
+.label {
+  font: 16px "Roboto", Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  text-anchor: middle;
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+</style>

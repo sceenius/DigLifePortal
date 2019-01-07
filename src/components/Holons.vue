@@ -147,6 +147,7 @@ export default {
       .enter()
       .append("text")
       .attr("class", "label")
+      .attr("cursor", d => (!d.children ? "alias" : "default"))
       .style("fill-opacity", d => (d.parent === root ? 1 : 0))
       .style("display", d => (d.parent === root ? "inline" : "none"))
       //.style("font", d => 40 - d.depth*5 + "px Roboto")

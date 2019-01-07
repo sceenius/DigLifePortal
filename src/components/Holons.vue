@@ -1,5 +1,7 @@
 <template>
-  <svg></svg>
+<div>{{flare}}
+  <svg width="100%" height="100%"></svg>
+</div>
 </template>
 
 <script>
@@ -15,6 +17,8 @@ export default {
   data() {
     return {
       service: "Holons",
+      channels: [],
+      holons: [],
       width: "",
       height: ""
     };
@@ -22,6 +26,30 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
+  created: function() {
+   this.holons.projects = []; // { name:"projects", children : 
+   this.holons.diglife = [];
+   this.holons.operations = [];
+   this.holons.friends = [];   
+   let channelsRef = db.database().ref("portal_channels");
+    channelsRef.on("child_added", channel => {
+      var data = channel.val();
+      this.channels.push(data);
+      if (data.team === "projects") {
+        this.holons.projects.push ({ name : data.display_name, size : data.members.length })
+      } else if (data.team === "diglife") {
+        this.holons.diglife.push ({ name : data.display_name, size : data.members.length })
+      } else if (data.team === "ops") {
+        this.holons.operations.push ({ name : data.display_name, size : data.members.length })
+      } else if (data.team === "friends") {
+        this.holons.friends.push ({ name : data.display_name, size : data.members.length })
+      }
+
+
+      })
+
+    },
+
   mounted: function() {
     this.color = d3
       .scaleLinear()
@@ -46,11 +74,15 @@ const root = this.pack(this.flare);
 
 
   const svg = d3.select("svg")  //this.$el
-    .attr("width", this.width)
-    .attr("height", this.height)
+    // .attr("width", this.width)
+    // .attr("height", this.height)
+    //     .attr("width", '100%')
+    // .attr("height", '100%')
+    // .attr('viewBox','0 0 '+Math.min(this.width,this.height)+' '+Math.min(this.width,this.height))
+    .attr('preserveAspectRatio','xMinYMin')
       .attr("viewBox", `-${this.width / 2} -${this.height / 2} ${this.width} ${this.height}`)
       .style("display", "block")
-      .style("margin", "0 -14px")
+      // .style("margin", "0 -14px")
       .style("width", "calc(100% + 28px)")
       .style("height", "auto")
       .style("background", this.color(0))
@@ -76,7 +108,7 @@ const root = this.pack(this.flare);
       .style("fill-opacity", d => d.parent === root ? 1 : 0)
       .style("display", d => d.parent === root ? "inline" : "none")
       .text(d => d.data.name)
-  .style("font", d => 5-d.depth+"0px sans-serif");
+  .style("font", d => 4-d.depth+"0px sans-serif");
 
   zoomTo([root.x, root.y, root.r * 2]);
 
@@ -119,8 +151,15 @@ const root = this.pack(this.flare);
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
-
-    flare: function() {
+flare: function() {
+return { name : "Digital Life Collective", children : 
+          [{ name: "Home", children : this.holons.diglife }, 
+            { name: "Projects", children : this.holons.projects }, 
+            { name: "Operations", children : this.holons.operations },
+            { name: "Friends", children : this.holons.friends }] 
+       }
+},
+    flare2: function() {
 return {name:"flare",children:[{name:"analytics",children:[{name:"cluster",children:[{name:"AgglomerativeCluster",size:3938},
 
 {name:"CommunityStructure",size:3812},{name:"HierarchicalCluster",size:6714},{name:"MergeEdge",size:743}]},{name:"graph",children:

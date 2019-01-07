@@ -1,7 +1,5 @@
 <template>
-<div>{{flare}}
   <svg width="100%" height="100%"></svg>
-</div>
 </template>
 
 <script>
@@ -82,8 +80,8 @@ const root = this.pack(this.flare);
     .attr('preserveAspectRatio','xMinYMin')
       .attr("viewBox", `-${this.width / 2} -${this.height / 2} ${this.width} ${this.height}`)
       .style("display", "block")
-      // .style("margin", "0 -14px")
-      .style("width", "calc(100% + 28px)")
+      .style("margin", "0 -14px")
+      .style("width", "calc(100% + 14px)")
       .style("height", "auto")
       .style("background", this.color(0))
       .style("cursor", "pointer")

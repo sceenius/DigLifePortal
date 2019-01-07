@@ -390,7 +390,7 @@
     </div>
     <div v-else-if="service != 'Holonic Chart'" id="actions">
       <md-button
-        title="Add Menu Entry"
+        title="Show Holonic Chart"
         @click="sub('holonLink');"
         class="md-fab md-mini md-plain"
       >

@@ -140,14 +140,14 @@ export default {
 
     const label = svg
       .append("g")
-      //.attr("pointer-events", "none")
       .attr("text-anchor", "middle")
       .selectAll("text")
       .data(root.descendants())
       .enter()
       .append("text")
       .attr("class", "label")
-      .attr("cursor", d => (!d.children ? "alias" : "default"))
+      .attr("pointer-events", d => (d.children ? "none" : null))
+      .attr("cursor", "alias")
       .style("fill-opacity", d => (d.parent === root ? 1 : 0))
       .style("display", d => (d.parent === root ? "inline" : "none"))
       //.style("font", d => 40 - d.depth*5 + "px Roboto")

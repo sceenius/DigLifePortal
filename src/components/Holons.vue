@@ -34,13 +34,13 @@ export default {
       var data = channel.val();
       this.channels.push(data);
       if (data.team === "projects") {
-        this.holons.projects.push ({ name : data.display_name, size : data.members.length })
+        this.holons.projects.push ({ name : data.display_name, size : data.total_msg_count })
       } else if (data.team === "diglife") {
-        this.holons.diglife.push ({ name : data.display_name, size : data.members.length })
+        this.holons.diglife.push ({ name : data.display_name, size : data.total_msg_count })
       } else if (data.team === "ops") {
-        this.holons.operations.push ({ name : data.display_name, size : data.members.length })
+        this.holons.operations.push ({ name : data.display_name, size : data.total_msg_count })
       } else if (data.team === "friends") {
-        this.holons.friends.push ({ name : data.display_name, size : data.members.length })
+        this.holons.friends.push ({ name : data.display_name, size : data.total_msg_count })
       }
 
 

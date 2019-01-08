@@ -5,7 +5,7 @@
 <script>
 //import {scaleLinear} from "d3-scale";
 import * as d3 from "d3"; //all
-import hierachy from "d3-hierarchy";
+//REMOVE DEPENDCY LATER  -- import hierachy from "d3-hierarchy";
 import db from "../firebase/init";
 import { BASEURL, CHATURL } from "../constants.js";
 
@@ -26,6 +26,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    let utime = new Date().getTime();
     this.holons.projects = []; // { name:"projects", children :
     this.holons.diglife = [];
     this.holons.operations = [];
@@ -39,7 +40,8 @@ export default {
         this.holons.projects.push({
           name: data.display_name,
           size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       } else if (
         data.team === "diglife" &&
@@ -48,7 +50,8 @@ export default {
         this.holons.diglife.push({
           name: data.display_name,
           size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       } else if (
         data.team === "diglife" &&
@@ -57,25 +60,29 @@ export default {
         this.holons.topics.push({
           name: data.display_name,
           size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       } else if (data.team === "ops") {
         this.holons.operations.push({
           name: data.display_name,
           size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       } else if (data.team === "friends") {
         this.holons.friends.push({
           name: data.display_name,
           size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       }
     });
   },
 
   mounted: function() {
+    // https://beta.observablehq.com/@mbostock/d3-zoomable-circle-packing
     this.color = d3
       .scaleLinear()
       .domain([0, 5])
@@ -103,7 +110,8 @@ export default {
     let view;
 
     const svg = d3
-      .select("svg")
+      .select("svg") //this.$el
+
       .attr("preserveAspectRatio", "xMinYMin")
       .attr(
         "viewBox",
@@ -124,7 +132,11 @@ export default {
       .data(root.descendants().slice(1))
       .enter()
       .append("circle")
-      .attr("fill", d => (d.children ? this.color(d.depth) : "white"))
+      .attr("fill", d =>
+        d.children
+          ? this.color(d.depth)
+          : "rgba(255,255,255, " + d.data.opacity + ")"
+      )
       .attr("pointer-events", d => (!d.children ? "none" : null))
       .on("mouseover", function() {
         d3.select(this).attr("stroke", "#fff");
@@ -139,6 +151,7 @@ export default {
       .attr("text-anchor", "middle")
       .attr("dominant-baseline", "middle")
       .selectAll("text")
+      .call(wrap, 20)
       .data(root.descendants())
       .enter()
       .append("text")
@@ -153,13 +166,52 @@ export default {
         d => (d.depth === 1 ? 40 : d.depth > 1 ? 24 : null) + "px Roboto"
       )
       .text(d => d.data.name)
+
       // note: you cannot change the bg color in SVG
       .on("click", d =>
         !d.children ? window.open(d.data.link, d.data.name) : null
       );
+
     //      .on("click", d => window.open(d.link, "_blank"))
 
     zoomTo([root.x, root.y, root.r * 2]);
+
+    function wrap(text, width) {
+      text.each(function() {
+        var text = d3.select(this),
+          words = text
+            .text()
+            .split(/\s+/)
+            .reverse(),
+          word,
+          line = [],
+          lineNumber = 0,
+          lineHeight = 1.1, // ems
+          y = text.attr("y"),
+          dy = parseFloat(text.attr("dy")),
+          tspan = text
+            .text(null)
+            .append("tspan")
+            .attr("x", 0)
+            .attr("y", y)
+            .attr("dy", dy + "em");
+        while ((word = words.pop())) {
+          line.push(word);
+          tspan.text(line.join(" "));
+          if (tspan.node().getComputedTextLength() > width) {
+            line.pop();
+            tspan.text(line.join(" "));
+            line = [word];
+            tspan = text
+              .append("tspan")
+              .attr("x", 0)
+              .attr("y", y)
+              .attr("dy", ++lineNumber * lineHeight + dy + "em")
+              .text(word);
+          }
+        }
+      });
+    }
 
     function zoomTo(v) {
       const k = 982 / v[2];
@@ -203,58 +255,6 @@ export default {
           if (d.parent !== focus) this.style.display = "none";
         });
     }
-
-    //Adjusted from: http://blog.graphicsgen.com/2015/03/html5-canvas-rounded-text.html
-    function drawCircularText(
-      ctx,
-      text,
-      fontSize,
-      titleFont,
-      centerX,
-      centerY,
-      radius,
-      startAngle,
-      kerning
-    ) {
-      // startAngle:   In degrees, Where the text will be shown. 0 degrees if the top of the circle
-      // kearning:     0 for normal gap between letters. Positive or negative number to expand/compact gap in pixels
-
-      //Setup letters and positioning
-      ctx.textBaseline = "alphabetic";
-      ctx.textAlign = "center"; // Ensure we draw in exact center
-      ctx.font = fontSize + "px " + titleFont;
-
-      startAngle = startAngle * (Math.PI / 180); // convert to radians
-      text = text
-        .split("")
-        .reverse()
-        .join(""); // Reverse letters
-      text = text.replace("-", " ").toUpperCase(); // MOD JS
-
-      //Rotate 50% of total angle for center alignment
-      for (var j = 0; j < text.length; j++) {
-        var charWid = ctx.measureText(text[j]).width;
-        startAngle +=
-          (charWid + (j == text.length - 1 ? 0 : kerning)) / radius / 2;
-      } //for j
-
-      ctx.save(); //Save the default state before doing any transformations
-      ctx.translate(centerX, centerY); // Move to center
-      ctx.rotate(startAngle); //Rotate into final start position
-
-      //Now for the fun bit: draw, rotate, and repeat
-      for (var j = 0; j < text.length; j++) {
-        var charWid = ctx.measureText(text[j]).width / 2; // half letter
-        //Rotate half letter
-        ctx.rotate(-charWid / radius);
-        //Draw the character at "top" or "bottom" depending on inward or outward facing
-        ctx.fillText(text[j], 0, -radius);
-        //Rotate half letter
-        ctx.rotate(-(charWid + kerning) / radius);
-      } //for j
-
-      ctx.restore(); //Restore to state as it was before transformations
-    } //function drawCircularText
 
     return svg.node();
   },

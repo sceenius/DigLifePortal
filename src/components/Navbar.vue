@@ -358,7 +358,8 @@
         service &&
           service != 'Interest Groups' &&
           service != 'Zettelkasten' &&
-          service != 'Holonic Chart'
+          service != 'Holonic Chart' &&
+          service != 'Skills Graph'
       "
       id="actions"
     >
@@ -388,13 +389,23 @@
         <md-icon>add</md-icon>
       </md-button>
     </div>
-    <div v-else-if="service != 'Holonic Chart'" id="actions">
+    <div
+      v-else-if="service != 'Holonic Chart' && service != 'Skills Graph'"
+      id="actions"
+    >
       <md-button
         title="Show Holonic Chart"
         @click="sub('holonLink');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>blur_circular</md-icon>
+      </md-button>
+      <md-button
+        title="Show Skills Graph"
+        @click="sub('graphLink');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>people_outline</md-icon>
       </md-button>
     </div>
     <!--
@@ -536,13 +547,15 @@
       <Cards v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
       <Holons v-if="service == 'Holonic Chart'" />
+      <Skills v-if="service == 'Skills Graph'" />
       <iframe
         v-if="
           true ||
             (service &&
               service !== 'Interest Groups' &&
               service !== 'Zettelkasten' &&
-              service !== 'Holonic Chart')
+              service !== 'Holonic Chart' &&
+              service !== 'Skills Graph')
         "
         name="theApp"
         id="theApp"
@@ -562,13 +575,14 @@ import Tags from "./Tags";
 import Cards from "./Cards";
 import Notes from "./Notes";
 import Holons from "./Holons";
+import Skills from "./Skills";
 import Slack from "node-slack";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Cards, Notes, Holons },
+  components: { Particles, Tags, Cards, Notes, Holons, Skills },
   data: () => ({
     // form: {
     //   username: null
@@ -969,7 +983,9 @@ export default {
             db
               .database()
               .ref("portal_profiles/" + this.username)
-              .update(this.groups)
+              // overwrite channels and grouptags for this user
+              // note: this will NOT overwrite other data of this user profile
+              .set(this.groups)
           )
           .then(
             // load personal channels and tags from group membership
@@ -1039,6 +1055,11 @@ export default {
           // Open dialoug to request access
           this.selected = "";
           this.service = "Holonic Chart";
+          break;
+        case "graphLink":
+          // Open dialoug to request access
+          this.selected = "";
+          this.service = "Skills Graph";
           break;
         case "infoLink":
           // Open dialoug to request access
@@ -1118,8 +1139,7 @@ export default {
       var element = document.getElementById("theApp");
       if (
         this.service === "Zettelkasten" ||
-        this.service === "Interest Groups" ||
-        this.service === "Holonic Chart"
+        this.service === "Interest Groups"
       ) {
         element.style.display = "none";
       } else {
@@ -1134,7 +1154,9 @@ export default {
       this.showNavigation = false;
 
       if (
-        JSON.stringify(this.groups).includes(this.channels[index].name) ||
+        JSON.stringify(this.groups).includes(
+          this.channels[index].team + "/" + this.channels[index].name
+        ) ||
         this.channels[index].type === "O"
       ) {
         // window.onload = function() {

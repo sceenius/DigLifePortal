@@ -982,10 +982,12 @@ export default {
           .then(response =>
             db
               .database()
-              .ref("portal_profiles/" + this.username)
-              // overwrite channels and grouptags for this user
-              // note: this will NOT overwrite other data of this user profile
-              .set(this.groups)
+              .ref("portal_profiles/" + this.username + "/channels")
+              // update channels and grouptags for this user
+              // note: SET  WILL  overwrite other data of this user profile
+              .set(this.groups.channels)
+              .ref("portal_profiles/" + this.username + "/grouptags")
+              .set(this.groups.grouptags)
           )
           .then(
             // load personal channels and tags from group membership

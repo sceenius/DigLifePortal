@@ -26,53 +26,12 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    // let channelsRef = db.database().ref("portal_channels");
-    // channelsRef.on("child_added", channel => {
-    //   var data = channel.val();
-    //   this.channels.push(data);
-    //   if (data.team === "projects") {
-    //     this.holons.projects.push({
-    //       name: data.display_name,
-    //       size: data.total_msg_count,
-    //       link: CHATURL + data.team + "/channels/" + data.name,
-    //       opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-    //     });
-    //   } else if (
-    //     data.team === "diglife" &&
-    //     data.display_name.charAt(0) !== "#"
-    //   ) {
-    //     this.holons.diglife.push({
-    //       name: data.display_name,
-    //       size: data.total_msg_count,
-    //       link: CHATURL + data.team + "/channels/" + data.name,
-    //       opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-    //     });
-    //   } else if (
-    //     data.team === "diglife" &&
-    //     data.display_name.charAt(0) === "#"
-    //   ) {
-    //     this.holons.topics.push({
-    //       name: data.display_name,
-    //       size: data.total_msg_count,
-    //       link: CHATURL + data.team + "/channels/" + data.name,
-    //       opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-    //     });
-    //   } else if (data.team === "ops") {
-    //     this.holons.operations.push({
-    //       name: data.display_name,
-    //       size: data.total_msg_count,
-    //       link: CHATURL + data.team + "/channels/" + data.name,
-    //       opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-    //     });
-    //   } else if (data.team === "friends") {
-    //     this.holons.friends.push({
-    //       name: data.display_name,
-    //       size: data.total_msg_count,
-    //       link: CHATURL + data.team + "/channels/" + data.name,
-    //       opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-    //     });
-    //   }
-    // });
+    let usersRef = db.database().ref("portal_users");
+    usersRef.on("child_added", user => {
+      var data = user.val();
+      this.users.push(data);
+      this.nodes.push({ id: data.username, group: 1 });
+    });
   },
 
   mounted: function() {

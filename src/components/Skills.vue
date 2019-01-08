@@ -14,8 +14,9 @@ export default {
   data() {
     return {
       service: "Skills",
-      channels: [],
-      holons: [],
+      users: [],
+      nodes: [],
+      links: [],
       width: "",
       height: "",
       color: "",
@@ -27,10 +28,22 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
+    let counter = 0;
     usersRef.on("child_added", user => {
       var data = user.val();
+      counter += 1;
       this.users.push(data);
       this.nodes.push({ id: data.username, group: 1 });
+      this.users.forEach((user, index, arr) => {
+        if (user.username !== data.username) {
+          console.log(user.username, data.username, index, counter);
+          this.links.push({
+            source: user.username,
+            target: data.username,
+            value: 1
+          });
+        }
+      });
     });
   },
 
@@ -125,10 +138,10 @@ export default {
   computed: {
     graph: function() {
       return {
-        nodes: [{ id: "Myriel", group: 4 }, { id: "Napoleon", group: 4 }],
-        links: [{ source: "Napoleon", target: "Myriel", value: 1 }]
-        // nodes: this.nodes,
-        // links: this.links
+        // nodes: [{ id: "Myriel", group: 4 }, { id: "Napoleon", group: 4 }],
+        // links: [{ source: "Napoleon", target: "Myriel", value: 1 }]
+        nodes: this.nodes,
+        links: this.links
       };
     }
   },

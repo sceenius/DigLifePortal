@@ -103,16 +103,12 @@ export default {
     let view;
 
     const svg = d3
-      .select("svg") //this.$el
-      // .attr("width", this.width)
-      // .attr("height", this.height)
-      //     .attr("width", '100%')
-      // .attr("height", '100%')
-      // .attr('viewBox','0 0 '+Math.min(this.width,this.height)+' '+Math.min(this.width,this.height))
+      .select("svg")
       .attr("preserveAspectRatio", "xMinYMin")
       .attr(
         "viewBox",
-        `-${this.width / 2} -${this.height / 2} ${this.width} ${this.height}`
+        `-${this.width / 2 + 50} -${this.height / 2} ${this.width + 100} ${this
+          .height + 200}`
       )
       .style("display", "block")
       .style("margin", "0 -14px")

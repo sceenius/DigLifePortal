@@ -35,7 +35,12 @@ export default {
       var data = user.val();
       //console.log(this.profiles);
       this.users.push(data);
-      this.nodes.push({ id: data.username, group: 1 });
+      this.nodes.push({
+        id: data.username,
+        group: 1,
+        tags: data.tags,
+        fullname: data.first_name + " " + data.last_name
+      });
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
           //console.log(user.tags, data.tags);
@@ -111,6 +116,12 @@ export default {
         .on("end", dragended);
     };
 
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
     const links = this.graph.links.map(d => Object.create(d));
     const nodes = this.graph.nodes.map(d => Object.create(d));
 
@@ -152,9 +163,37 @@ export default {
       .style("fill", d => {
         return "url(#avatar_" + d.id + ")";
       })
+      .on("mouseover.tooltip", d => {
+        tooltip
+          .transition()
+          .duration(300)
+          .style("opacity", 0.8);
+        tooltip
+          .html(
+            "<p>" +
+              (d.fullname !== " " ? d.fullname : d.id) +
+              "</p><br>" +
+              (d.tags.length === 0
+                ? d.tags
+                    .map(el => {
+                      return el + "<br>";
+                    })
+                    .toString()
+                    .replace(/,/g, "")
+                : "No tags defined")
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY + 10 + "px");
+      })
+      .on("mouseout.tooltip", d => {
+        tooltip
+          .transition()
+          .duration(100)
+          .style("opacity", 0);
+      })
       //.attr("stroke", d =>  this.color(d.group) )
       .call(drag(simulation));
-    node.append("title").text(d => d.id);
+    //node.append("title").text(d => d.id);
 
     simulation.on("tick", () => {
       link
@@ -220,10 +259,21 @@ export default {
 </script>
 
 <style>
-.label {
-  font: 16px "Roboto", Helvetica, Arial, sans-serif;
-  font-weight: 700;
-  text-anchor: middle;
-  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+div.tooltip {
+  position: absolute;
+  background-color: #00b0a0;
+  color: white;
+  max-width: 200px;
+  height: auto;
+  padding: 10px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+div.tooltip p {
+  background-color: white;
+  color: #00b0a0;
+  font-weight: bold;
+  padding: 5px;
+  margin: 0 0 -10px;
 }
 </style>

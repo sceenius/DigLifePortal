@@ -7,6 +7,7 @@
 import * as d3 from "d3"; //all
 import db from "../firebase/init";
 import { BASEURL, CHATURL } from "../constants.js";
+import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 
 export default {
   name: "Skills",
@@ -17,6 +18,7 @@ export default {
       users: [],
       nodes: [],
       links: [],
+      profiles: [],
       width: "",
       height: "",
       color: "",
@@ -28,15 +30,33 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
-    let counter = 0;
+    let profilesRef = db.database().ref("portal_profiles");
+
+    profilesRef.on("child_added", profile => {
+      var data = profile.val();
+      if (data.tags) {
+        this.profiles.push({ tags: data.tags, id: profile.key });
+      }
+    });
+
     usersRef.on("child_added", user => {
       var data = user.val();
-      counter += 1;
       this.users.push(data);
       this.nodes.push({ id: data.username, group: 1 });
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
-          console.log(user.username, data.username, index, counter);
+          let source = "";
+          let target = "";
+          source = this.profiles.find(item => {
+            return item.id === user.username;
+          });
+          target = this.profiles.find(item => {
+            return item.id === data.username;
+          });
+          if (source && target) {
+            console.log("----------" + source.id, target.id);
+          }
+          //console.log(user.username, data.username);
           this.links.push({
             source: user.username,
             target: data.username,
@@ -45,6 +65,33 @@ export default {
         }
       });
     });
+
+    // usersRef.on("child_added", user => {
+    //   var data = user.val();
+    //   profilesRef
+    //     .child(data.username.replace(".", "%2E"))
+    //     .once("value", profile => {
+    //       if (profile.exists()) {
+    //         //data = _.merge(data, profile.val());
+    //       }
+    //       console.log(this.graph);
+    //       this.users.push(data);
+    //       this.nodes.push({ id: data.username, group: 1 });
+    //       this.users.forEach((user, index, arr) => {
+    //         if (user.username !== data.username) {
+    //           console.log(user.username, data.username);
+    //           if (data.tags) {
+    //           }
+    //           this.links.push({
+    //             source: user.username,
+    //             target: data.username,
+    //             value: 1
+    //           });
+    //           //console.log(this.links);
+    //         }
+    //       });
+    //     });
+    // });
   },
 
   mounted: function() {

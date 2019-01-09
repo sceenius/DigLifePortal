@@ -7,7 +7,7 @@
 import * as d3 from "d3"; //all
 import db from "../firebase/init";
 import { BASEURL, CHATURL } from "../constants.js";
-import _ from "lodash/fp/object"; //lodash/fp/object for objects only
+import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 
 export default {
   name: "Skills",
@@ -30,38 +30,23 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
-    let profilesRef = db.database().ref("portal_profiles");
-
-    profilesRef.on("child_added", profile => {
-      var data = profile.val();
-      if (data.tags) {
-        this.profiles.push({ tags: data.tags, id: profile.key });
-      }
-    });
 
     usersRef.on("child_added", user => {
       var data = user.val();
+      //console.log(this.profiles);
       this.users.push(data);
       this.nodes.push({ id: data.username, group: 1 });
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
-          let source = "";
-          let target = "";
-          source = this.profiles.find(item => {
-            return item.id === user.username;
-          });
-          target = this.profiles.find(item => {
-            return item.id === data.username;
-          });
-          if (source && target) {
-            console.log("----------" + source.id, target.id);
+          console.log(user.tags, data.tags);
+          let intersection = _.intersection(user.tags, data.tags);
+          if (intersection.length > 0) {
+            this.links.push({
+              source: user.username,
+              target: data.username,
+              value: 1
+            });
           }
-          //console.log(user.username, data.username);
-          this.links.push({
-            source: user.username,
-            target: data.username,
-            value: 1
-          });
         }
       });
     });

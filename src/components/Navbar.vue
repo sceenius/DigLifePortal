@@ -624,14 +624,34 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
+    let profilesRef = db.database().ref("portal_profiles");
 
     usersRef.on("child_added", user => {
-      this.users.push(user.val());
-      if (user.val().username === this.$cookies.get("username")) {
-        this.profile = user.val();
-        this.username = this.$cookies.get("username");
-        this.activeUser = false;
-      }
+      let data = user.val();
+      profilesRef
+        .child(data.username.replace(".", "%2E"))
+        .once("value", profile => {
+          let snapshot = profile.val();
+          if (profile.exists()) {
+            // update firebase
+            if (snapshot.tags) {
+              snapshot.tags = snapshot.tags.reduce(
+                (accumulator, currentValue) => {
+                  return [...accumulator, currentValue.text];
+                }
+              );
+            }
+            usersRef.child(user.key).update(snapshot);
+          }
+          // add  data to users array
+          this.users.push(data);
+
+          if (data.username === this.$cookies.get("username")) {
+            this.profile = user.val();
+            this.username = this.$cookies.get("username");
+            this.activeUser = false;
+          }
+        });
     });
 
     let channelsRef = db.database().ref("portal_channels");

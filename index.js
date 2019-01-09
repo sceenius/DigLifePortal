@@ -76,6 +76,12 @@ new Vue({
             .ref("portal_profiles/" + this.$cookies.get("username"))
             .update(this.groups)
         );
+
+      this.axios.get(
+        BASEURL +
+          "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
+          this.$cookies.get("username")
+      );
     }
 
     this.axios

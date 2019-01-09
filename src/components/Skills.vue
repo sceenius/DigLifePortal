@@ -38,7 +38,7 @@ export default {
       this.nodes.push({ id: data.username, group: 1 });
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
-          console.log(user.tags, data.tags);
+          //console.log(user.tags, data.tags);
           let intersection = _.intersection(user.tags, data.tags);
           if (intersection.length > 0) {
             this.links.push({
@@ -117,6 +117,7 @@ export default {
     const simulation = d3
       .forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id))
+      .force("collide", d3.forceCollide(45))
       .force("charge", d3.forceManyBody())
       .force("center", d3.forceCenter(this.width / 2, this.height / 2));
 
@@ -138,14 +139,20 @@ export default {
 
     const node = svg
       .append("g")
-      .attr("stroke", "#fff")
+      .attr("stroke", "#eee")
       .attr("stroke-width", 1.5)
       .selectAll("circle")
       .data(nodes)
       .enter()
       .append("circle")
-      .attr("r", 5)
-      .attr("fill", d => this.color(d.group))
+      .attr("r", 20)
+      .attr("id", d => {
+        return d.id;
+      })
+      .style("fill", d => {
+        return "url(#avatar_" + d.id + ")";
+      })
+      //.attr("stroke", d =>  this.color(d.group) )
       .call(drag(simulation));
     node.append("title").text(d => d.id);
 
@@ -159,8 +166,36 @@ export default {
       node.attr("cx", d => d.x).attr("cy", d => d.y);
     });
 
+    const defs = svg.append("svg:defs");
+
+    for (var i = 0; i < this.graph.nodes.length; i++) {
+      defs
+        .append("svg:pattern")
+        .data(this.graph.nodes)
+        .attr("id", d => {
+          return "avatar_" + this.graph.nodes[i].id;
+        })
+        .attr("width", "1")
+        .attr("height", "1")
+        .append("svg:image")
+        .attr("xlink:href", d => {
+          return (
+            "https://ledger.diglife.coop/images/avatars/avatar_" +
+            this.graph.nodes[i].id +
+            ".png"
+          );
+        })
+        .attr("id", d => {
+          return "image_" + this.graph.nodes[i].id;
+        })
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 40)
+        .attr("height", 40);
+    }
+
     //invalidation.then(() => simulation.stop());
-    console.log(this.graph);
+    //console.log(this.graph);
     return svg.node();
   },
 

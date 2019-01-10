@@ -39,6 +39,7 @@ export default {
       if (data.team === "projects") {
         this.holons.projects.push({
           name: data.display_name,
+          members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -49,6 +50,7 @@ export default {
       ) {
         this.holons.diglife.push({
           name: data.display_name,
+          members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -59,6 +61,7 @@ export default {
       ) {
         this.holons.topics.push({
           name: data.display_name,
+          members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -66,6 +69,7 @@ export default {
       } else if (data.team === "ops") {
         this.holons.operations.push({
           name: data.display_name,
+          members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -109,14 +113,20 @@ export default {
     let focus = root;
     let view;
 
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+
     const svg = d3
       .select("svg") //this.$el
 
       .attr("preserveAspectRatio", "xMinYMin")
       .attr(
         "viewBox",
-        `-${this.width / 2 + 50} -${this.height / 2} ${this.width + 100} ${this
-          .height + 200}`
+        `-${this.width / 2 + 150} -${this.height / 2} ${this.width + 250} ${this
+          .height + 1050}`
       )
       .style("display", "block")
       .style("margin", "0 -14px")
@@ -137,14 +147,47 @@ export default {
           ? this.color(d.depth)
           : "rgba(255,255,255, " + d.data.opacity + ")"
       )
-      .attr("pointer-events", d => (!d.children ? "none" : null))
+      .attr("pointer-events", d => (!d.children ? null : null)) // "none" to turn off
       .on("mouseover", function() {
         d3.select(this).attr("stroke", "#fff");
       })
       .on("mouseout", function() {
         d3.select(this).attr("stroke", null);
       })
-      .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()));
+      .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()))
+      .on("mouseover.tooltip", d => {
+        console.log(focus);
+        if (!d.children) {
+          tooltip
+            .transition()
+            .duration(300)
+            .style("opacity", 0.8);
+          tooltip
+            .html(
+              "<p>" +
+                d.data.name +
+                "</p><br>" +
+                (d.data.members
+                  ? d.data.members
+                      .map(el => {
+                        return el + "<br>";
+                      })
+                      .toString()
+                      .replace(/,/g, "")
+                  : "No members defined")
+            )
+            .style("left", d3.event.pageX + "px")
+            .style("top", d3.event.pageY + 10 + "px");
+        }
+      })
+      .on("mouseout.tooltip", d => {
+        //if (d.children && focus === d) {
+        tooltip
+          .transition()
+          .duration(100)
+          .style("opacity", 0);
+        //}
+      });
 
     const label = svg
       .append("g")
@@ -293,5 +336,23 @@ export default {
   font-weight: 700;
   text-anchor: middle;
   text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+div.tooltip {
+  position: absolute;
+  background-color: #00b0a0;
+  color: white;
+  max-width: 200px;
+  height: auto;
+  padding: 10px;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+}
+div.tooltip p {
+  background-color: white;
+  color: #00b0a0;
+  font-weight: bold;
+  padding: 5px;
+  margin: 0 0 -10px;
 }
 </style>

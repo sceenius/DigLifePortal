@@ -159,7 +159,11 @@ export default {
           .style("opacity", 0.8);
         tooltip
           .html(
-            "<p>Shared Tags:</p><br>" +
+            "<p>" +
+              d.value +
+              " Shared Tag" +
+              (d.value > 1 ? "s" : "") +
+              ":</p><br>" +
               (d.tags
                 ? d.tags
                     .map(el => {

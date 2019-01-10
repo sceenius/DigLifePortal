@@ -75,7 +75,24 @@ export default {
     usersRef.on("child_changed", user => {
       var data = user.val();
       // find node and update
-      // update edges for node
+      var foundIndex = this.nodes.findIndex(node => node.id === data.username);
+      // remove the tag field meta data
+      if (data.tags.length > 1) {
+        data.tags = data.tags.reduce((accumulator, currentValue) => {
+          return [...accumulator, currentValue.text];
+        });
+      } else {
+        data.tags = [data.tags[0].text];
+      }
+      this.nodes[foundIndex] = {
+        id: data.username,
+        group: 1,
+        tags: data.tags,
+        fullname: data.first_name + " " + data.last_name
+      };
+      console.log(this.nodes);
+
+      // add edges for node
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
           //console.log(user.tags, data.tags);
@@ -91,39 +108,11 @@ export default {
         }
       });
     });
-
-    // child_changed for user after profile updates
-
-    // usersRef.on("child_added", user => {
-    //   var data = user.val();
-    //   profilesRef
-    //     .child(data.username.replace(".", "%2E"))
-    //     .once("value", profile => {
-    //       if (profile.exists()) {
-    //         //data = _.merge(data, profile.val());
-    //       }
-    //       console.log(this.graph);
-    //       this.users.push(data);
-    //       this.nodes.push({ id: data.username, group: 1 });
-    //       this.users.forEach((user, index, arr) => {
-    //         if (user.username !== data.username) {
-    //           console.log(user.username, data.username);
-    //           if (data.tags) {
-    //           }
-    //           this.links.push({
-    //             source: user.username,
-    //             target: data.username,
-    //             value: 1
-    //           });
-    //           //console.log(this.links);
-    //         }
-    //       });
-    //     });
-    // });
   },
 
   mounted: function() {
-    //https://beta.observablehq.com/@mbostock/d3-force-directed-graph
+    // https://beta.observablehq.com/@mbostock/d3-force-directed-graph
+    // possible refinement of skills is a radar map with n corners (each corner is a skill)
     this.height = 932;
     this.width = this.height;
 

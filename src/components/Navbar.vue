@@ -359,7 +359,7 @@
           service != 'Interest Groups' &&
           service != 'Zettelkasten' &&
           service != 'Holonic Chart' &&
-          service != 'Skills Graph'
+          service != 'Skills Map'
       "
       id="actions"
     >
@@ -390,7 +390,7 @@
       </md-button>
     </div>
     <div
-      v-else-if="service != 'Holonic Chart' && service != 'Skills Graph'"
+      v-else-if="service != 'Holonic Chart' && service != 'Skills Map'"
       id="actions"
     >
       <md-button
@@ -401,7 +401,7 @@
         <md-icon>blur_circular</md-icon>
       </md-button>
       <md-button
-        title="Show Skills Graph"
+        title="Show Skills Map"
         @click="sub('graphLink');"
         class="md-fab md-mini md-plain"
       >
@@ -550,7 +550,7 @@
       <Cards v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
       <Holons v-if="service == 'Holonic Chart'" />
-      <Skills v-if="service == 'Skills Graph'" />
+      <Skills v-if="service == 'Skills Map'" />
       <iframe
         v-if="
           true ||
@@ -558,7 +558,7 @@
               service !== 'Interest Groups' &&
               service !== 'Zettelkasten' &&
               service !== 'Holonic Chart' &&
-              service !== 'Skills Graph')
+              service !== 'Skills Map')
         "
         name="theApp"
         id="theApp"
@@ -1096,7 +1096,7 @@ export default {
         case "graphLink":
           // Open dialoug to request access
           this.selected = "";
-          this.service = "Skills Graph";
+          this.service = "Skills Map";
           break;
         case "infoLink":
           // Open dialoug to request access

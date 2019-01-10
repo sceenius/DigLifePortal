@@ -77,6 +77,7 @@ export default {
       } else if (data.team === "friends") {
         this.holons.friends.push({
           name: data.display_name,
+          members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -142,6 +143,8 @@ export default {
       .data(root.descendants().slice(1))
       .enter()
       .append("circle")
+      // adjust opacity levels based on time-to-last-update
+      // would be nice to auto-archive after XX months
       .attr("fill", d =>
         d.children
           ? this.color(d.depth)
@@ -156,7 +159,6 @@ export default {
       })
       .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()))
       .on("mouseover.tooltip", d => {
-        console.log(focus);
         if (!d.children) {
           tooltip
             .transition()
@@ -305,6 +307,8 @@ export default {
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
+    // this is the data structure that is loaded into the graph
+    // in the future, would be good to store the revision history
     flare: function() {
       return {
         name: "Digital Life Collective",

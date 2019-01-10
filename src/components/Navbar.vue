@@ -542,6 +542,9 @@
         </p
       -->
       <img v-if="!service" id="logo" v-bind:src="logoLink" />
+      <!--
+        animation: https://vuejs.org/v2/guide/transitioning-state.html#Organizing-Transitions-into-Components
+      -->
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
       <Cards v-if="service == 'Interest Groups'" />

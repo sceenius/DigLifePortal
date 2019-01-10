@@ -1,17 +1,30 @@
 <template>
-  <svg width="100%" height="100%"></svg>
+  <div>
+    <!--
+      ----------------------------------------------------------------------
+        DIALOG BOXES - SETTINGS DIALOG
+      ----------------------------------------------------------------------
+    -->
+    <md-dialog :md-active.sync="activeSettings" style="width:650px;">
+      <md-dialog-title>Profile Tags</md-dialog-title>
+      <Tags style="padding: 20px;" />
+    </md-dialog>
+
+    <svg width="100%" height="100%"></svg>
+  </div>
 </template>
 
 <script>
 //import {scaleLinear} from "d3-scale";
 import * as d3 from "d3"; //all
 import db from "../firebase/init";
+import Tags from "./Tags";
 import { BASEURL, CHATURL } from "../constants.js";
 import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 
 export default {
   name: "Skills",
-  components: {},
+  components: { Tags },
   data() {
     return {
       service: "Skills",
@@ -19,6 +32,7 @@ export default {
       nodes: [],
       links: [],
       profiles: [],
+      activeSettings: false,
       width: "",
       height: "",
       color: "",
@@ -57,6 +71,28 @@ export default {
         }
       });
     });
+
+    usersRef.on("child_changed", user => {
+      var data = user.val();
+      // find node and update
+      // update edges for node
+      this.users.forEach((user, index, arr) => {
+        if (user.username !== data.username) {
+          //console.log(user.tags, data.tags);
+          let intersection = _.intersection(user.tags, data.tags);
+          if (intersection.length > 0) {
+            this.links.push({
+              source: user.username,
+              target: data.username,
+              value: intersection.length,
+              tags: intersection
+            });
+          }
+        }
+      });
+    });
+
+    // child_changed for user after profile updates
 
     // usersRef.on("child_added", user => {
     //   var data = user.val();
@@ -225,6 +261,11 @@ export default {
           .transition()
           .duration(100)
           .style("opacity", 0);
+      })
+      .on("click", d => {
+        if (d.id === this.$cookies.get("username")) {
+          this.activeSettings = true;
+        }
       })
       //.attr("stroke", d =>  this.color(d.group) )
       .call(drag(simulation));

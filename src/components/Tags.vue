@@ -242,6 +242,7 @@ export default {
       this.users.push(user.val());
       if (user.val().username === this.$cookies.get("username")) {
         this.profile = user.val();
+        this.profile.id = user.key;
       }
     });
 
@@ -323,10 +324,12 @@ export default {
         )
       ) {
         this.tags.push(this.autocompleteItems[index]);
-        // add tags to Firebase
-        //console.log("New Tags:" + this.tags);
+        // add tags to Firebase for both profiles and users
         db.database()
           .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+          .set(this.tags);
+        db.database()
+          .ref("portal_users/" + this.profile.id + "/tags")
           .set(this.tags);
       } else {
         alert("This is a duplicate!");
@@ -335,6 +338,12 @@ export default {
 
     deleteTag(obj) {
       obj.deleteTag();
+      db.database()
+        .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+        .set(this.tags);
+      db.database()
+        .ref("portal_users/" + this.profile.id + "/tags")
+        .set(this.tags);
     },
 
     formatTag(obj) {
@@ -346,6 +355,9 @@ export default {
       // add tags to Firebase
       db.database()
         .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+        .set(this.tags);
+      db.database()
+        .ref("portal_users/" + this.profile.id + "/tags")
         .set(this.tags);
     },
     addDupe(obj) {

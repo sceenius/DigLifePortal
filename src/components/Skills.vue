@@ -50,7 +50,8 @@ export default {
             this.links.push({
               source: user.username,
               target: data.username,
-              value: 1
+              value: intersection.length,
+              tags: intersection
             });
           }
         }
@@ -129,14 +130,17 @@ export default {
     const simulation = d3
       .forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id))
-      .force("collide", d3.forceCollide(45))
+      .force("collide", d3.forceCollide(35))
       .force("charge", d3.forceManyBody())
       .force("center", d3.forceCenter(this.width / 2, this.height / 2));
 
     const svg = d3
       .select("svg")
       .attr("preserveAspectRatio", "xMinYMin")
-      .attr("viewBox", `${0} ${0} ${this.width} ${this.height}`)
+      .attr(
+        "viewBox",
+        `${-100} ${-100} ${this.width + 100} ${this.height + 100}`
+      )
       .style("display", "block");
 
     const link = svg
@@ -147,7 +151,33 @@ export default {
       .data(links)
       .enter()
       .append("line")
-      .attr("stroke-width", d => Math.sqrt(d.value));
+      .attr("stroke-width", d => Math.sqrt(d.value))
+      .on("mouseover.tooltip", d => {
+        tooltip
+          .transition()
+          .duration(300)
+          .style("opacity", 0.8);
+        tooltip
+          .html(
+            "<p>Shared Tags:</p><br>" +
+              (d.tags
+                ? d.tags
+                    .map(el => {
+                      return el + "<br>";
+                    })
+                    .toString()
+                    .replace(/,/g, "")
+                : "No tags defined")
+          )
+          .style("left", d3.event.pageX + "px")
+          .style("top", d3.event.pageY + 10 + "px");
+      })
+      .on("mouseout.tooltip", d => {
+        tooltip
+          .transition()
+          .duration(100)
+          .style("opacity", 0);
+      });
 
     const node = svg
       .append("g")

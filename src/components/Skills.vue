@@ -41,6 +41,7 @@ export default {
         tags: data.tags,
         fullname: data.first_name + " " + data.last_name
       });
+      //console.log(data.tags, data.username);
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
           //console.log(user.tags, data.tags);
@@ -173,7 +174,7 @@ export default {
             "<p>" +
               (d.fullname !== " " ? d.fullname : d.id) +
               "</p><br>" +
-              (d.tags.length === 0
+              (d.tags
                 ? d.tags
                     .map(el => {
                       return el + "<br>";

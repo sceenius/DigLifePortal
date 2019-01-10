@@ -635,11 +635,15 @@ export default {
           if (profile.exists()) {
             // update firebase
             if (snapshot.tags) {
-              snapshot.tags = snapshot.tags.reduce(
-                (accumulator, currentValue) => {
-                  return [...accumulator, currentValue.text];
-                }
-              );
+              if (snapshot.tags.length > 1) {
+                snapshot.tags = snapshot.tags.reduce(
+                  (accumulator, currentValue) => {
+                    return [...accumulator, currentValue.text];
+                  }
+                );
+              } else {
+                snapshot.tags = [snapshot.tags[0].text];
+              }
             }
             usersRef.child(user.key).update(snapshot);
           }
@@ -991,6 +995,13 @@ export default {
             this.username
         );
 
+        //update avatar
+        this.axios.get(
+          BASEURL +
+            "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
+            this.$cookies.get("username")
+        );
+
         this.axios
           .get(
             BASEURL +
@@ -1016,9 +1027,10 @@ export default {
               .ref("portal_profiles/" + this.username)
               .once("value")
               .then(group => {
-                this.groups = group.val().channels;
+                let data = group.val();
+                this.groups = data.channels;
                 //console.log("This channel:" + this.groups);
-                this.tags = group.val().tags;
+                this.tags = data.tags ? data.tags : [];
                 //console.log("This tag:" + this.tags[1]);
               })
           );

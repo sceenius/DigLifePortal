@@ -47,7 +47,14 @@ export default {
 
     usersRef.on("child_added", user => {
       var data = user.val();
-      //console.log(this.profiles);
+      if (data.tags && data.tags[0].text && data.tags.length > 1) {
+        data.tags = data.tags.reduce((accumulator, currentValue) => {
+          return [...accumulator, currentValue.text];
+        });
+      } else if (data.tags && data.tags[0].text && data.tags.length === 1) {
+        data.tags = [data.tags[0].text];
+      }
+      //console.log(data.tags);
       this.users.push(data);
       this.nodes.push({
         id: data.username,
@@ -72,42 +79,42 @@ export default {
       });
     });
 
-    usersRef.on("child_changed", user => {
-      var data = user.val();
-      // find node and update
-      var foundIndex = this.nodes.findIndex(node => node.id === data.username);
-      // remove the tag field meta data
-      if (data.tags.length > 1) {
-        data.tags = data.tags.reduce((accumulator, currentValue) => {
-          return [...accumulator, currentValue.text];
-        });
-      } else {
-        data.tags = [data.tags[0].text];
-      }
-      this.nodes[foundIndex] = {
-        id: data.username,
-        group: 1,
-        tags: data.tags,
-        fullname: data.first_name + " " + data.last_name
-      };
-      console.log(this.nodes);
+    // usersRef.on("child_changed", user => {
+    //   var data = user.val();
+    //   // find node and update
+    //   var foundIndex = this.nodes.findIndex(node => node.id === data.username);
+    //   // remove the tag field meta data
+    //   if (data.tags.length > 1) {
+    //     data.tags = data.tags.reduce((accumulator, currentValue) => {
+    //       return [...accumulator, currentValue.text];
+    //     });
+    //   } else {
+    //     data.tags = [data.tags[0].text];
+    //   }
+    //   this.nodes[foundIndex] = {
+    //     id: data.username,
+    //     group: 1,
+    //     tags: data.tags,
+    //     fullname: data.first_name + " " + data.last_name
+    //   };
+    //   //console.log(this.nodes);
 
-      // add edges for node
-      this.users.forEach((user, index, arr) => {
-        if (user.username !== data.username) {
-          //console.log(user.tags, data.tags);
-          let intersection = _.intersection(user.tags, data.tags);
-          if (intersection.length > 0) {
-            this.links.push({
-              source: user.username,
-              target: data.username,
-              value: intersection.length,
-              tags: intersection
-            });
-          }
-        }
-      });
-    });
+    //   // add edges for node
+    //   this.users.forEach((user, index, arr) => {
+    //     if (user.username !== data.username) {
+    //       //console.log(user.tags, data.tags);
+    //       let intersection = _.intersection(user.tags, data.tags);
+    //       if (intersection.length > 0) {
+    //         this.links.push({
+    //           source: user.username,
+    //           target: data.username,
+    //           value: intersection.length,
+    //           tags: intersection
+    //         });
+    //       }
+    //     }
+    //   });
+    // });
   },
 
   mounted: function() {

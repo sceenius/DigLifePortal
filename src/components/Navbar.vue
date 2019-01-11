@@ -390,7 +390,9 @@
       </md-button>
     </div>
     <div
-      v-else-if="service != 'Holonic Chart' && service != 'Skills Map'"
+      v-else-if="
+        selected && service != 'Holonic Chart' && service != 'Skills Map'
+      "
       id="actions"
     >
       <md-button
@@ -406,6 +408,27 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>people_outline</md-icon>
+      </md-button>
+    </div>
+    <div
+      v-else-if="service === 'Holonic Chart' || service === 'Skills Map'"
+      id="actions"
+    >
+      <md-button
+        v-if="service === 'Skills Map'"
+        title="Refresh Map"
+        @click="sub('graphRefresh');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>refresh</md-icon>
+      </md-button>
+      <md-button
+        v-if="service === 'Holonic Chart'"
+        title="Refresh Map"
+        @click="sub('holonRefresh');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>refresh</md-icon>
       </md-button>
     </div>
     <!--
@@ -1097,6 +1120,22 @@ export default {
           // Open dialoug to request access
           this.selected = "";
           this.service = "Skills Map";
+          break;
+        case "holonRefresh":
+          // Open dialoug to request access
+          this.selected = "";
+          this.service = "";
+          this.$nextTick(function() {
+            this.service = "Holonic Chart";
+          });
+          break;
+        case "graphRefresh":
+          // Open dialoug to request access
+          this.selected = "";
+          this.service = "";
+          this.$nextTick(function() {
+            this.service = "Skills Map";
+          });
           break;
         case "infoLink":
           // Open dialoug to request access

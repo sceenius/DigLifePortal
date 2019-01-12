@@ -162,9 +162,9 @@ export default {
     const simulation = d3
       .forceSimulation(nodes)
       .force("link", d3.forceLink(links).id(d => d.id))
-      .force("collide", d3.forceCollide(35))
+      .force("collide", d3.forceCollide(40))
       .force("charge", d3.forceManyBody())
-      .force("center", d3.forceCenter(this.width / 2, this.height / 2));
+      .force("center", d3.forceCenter(this.width / 2, this.height / 2 - 100));
 
     const svg = d3
       .select("svg")

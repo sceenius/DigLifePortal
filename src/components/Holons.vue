@@ -1,5 +1,18 @@
 <template>
-  <svg width="100%" height="100%"></svg>
+  <svg width="100%" height="100%">
+    <defs>
+      <filter id="gooey">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix
+          in="blur"
+          mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
+          result="gooey"
+        />
+        <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
 </template>
 
 <script>
@@ -24,6 +37,7 @@ export default {
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
+  //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let utime = new Date().getTime();
@@ -122,7 +136,6 @@ export default {
 
     const svg = d3
       .select("svg") //this.$el
-
       .attr("preserveAspectRatio", "xMinYMin")
       .attr(
         "viewBox",
@@ -139,10 +152,12 @@ export default {
 
     const node = svg
       .append("g")
+      .style("filter", "url(#gooey)")
       .selectAll("circle")
       .data(root.descendants().slice(1))
       .enter()
       .append("circle")
+      .attr("class", "node")
       // adjust opacity levels based on time-to-last-update
       // would be nice to auto-archive after XX months
       .attr("fill", d =>
@@ -151,12 +166,12 @@ export default {
           : "rgba(255,255,255, " + d.data.opacity + ")"
       )
       .attr("pointer-events", d => (!d.children ? null : null)) // "none" to turn off
-      .on("mouseover", function() {
-        d3.select(this).attr("stroke", "#fff");
-      })
-      .on("mouseout", function() {
-        d3.select(this).attr("stroke", null);
-      })
+      // .on("mouseover", function() {
+      //   d3.select(this).attr("stroke", "#fff");
+      // })
+      // .on("mouseout", function() {
+      //   d3.select(this).attr("stroke", null);
+      // })
       .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()))
       .on("mouseover.tooltip", d => {
         if (!d.children) {
@@ -217,9 +232,24 @@ export default {
         !d.children ? window.open(d.data.link, d.data.name) : null
       );
 
-    //      .on("click", d => window.open(d.link, "_blank"))
+    d3.selectAll("text")
+      .style("stroke-width", 0)
+      .style("stroke", "transparent")
+      .style("fill", "transparent")
+      .transition()
+      .duration(6000)
+      .style("stroke", "white")
+      .style("fill", "black");
 
-    zoomTo([root.x, root.y, root.r * 2]);
+    d3.selectAll("circle")
+      .transition()
+      .duration(0)
+      .attr("r", 0)
+      .transition()
+      .duration(5000)
+      .attr("r", d => d.r * 1);
+
+    zoomTo([root.x, root.y, root.r * 2]); /////////////
 
     function wrap(text, width) {
       text.each(function() {
@@ -301,6 +331,18 @@ export default {
         });
     }
 
+    // var circle = svg.selectAll("circle").data(root.descendants().slice(1));
+
+    // circle = circle
+    //   // .transition()
+    //   // .duration(2000)
+    //   // .attr("stroke-width", 20)
+    //   .attr("r", 0)
+    //   .transition()
+    //   .duration(2000)
+    //   // .attr('stroke-width', 0.5)
+    //   .attr("r", d => d.size);
+    // // .ease('sine')
     return svg.node();
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -309,6 +351,7 @@ export default {
   computed: {
     // this is the data structure that is loaded into the graph
     // in the future, would be good to store the revision history
+    // https://bl.ocks.org/feifang/664c0f16adfcb4dea31b923f74e897a0
     flare: function() {
       return {
         name: "Digital Life Collective",

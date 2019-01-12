@@ -988,7 +988,6 @@ export default {
         this.activeUser = true;
         document.getElementById("username").classList.add("md-invalid");
       } else {
-        this.activeUser = false;
         document.getElementById("username").classList.remove("md-invalid");
         this.username = this.username.replace("@", "").toLowerCase();
         // cookies are not stored on mobile devices, new prommpt for every session
@@ -1083,6 +1082,9 @@ export default {
         //   });
 
         this.showProfileReminder = true;
+        this.$nextTick(function() {
+          this.activeUser = false;
+        });
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();
       }

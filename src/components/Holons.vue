@@ -105,7 +105,7 @@ export default {
     this.color = d3
       .scaleLinear()
       .domain([0, 5])
-      .range(["rgba(0, 176, 160,0.4)", "rgba(0, 176, 160,1)"])
+      .range(["rgba(0, 176, 160,0.4)", "rgba(0,95,86,1)"])
       //.range(["#00e8d2", "#00554d"])
       .interpolate(d3.interpolateHcl);
 
@@ -249,7 +249,7 @@ export default {
       .duration(5000)
       .attr("r", d => d.r * 1);
 
-    zoomTo([root.x, root.y, root.r * 2]); /////////////
+    zoomTo([root.x, root.y, root.r * 2.15]); /////////////
 
     function wrap(text, width) {
       text.each(function() {

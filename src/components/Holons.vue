@@ -32,7 +32,8 @@ export default {
       channels: [],
       holons: [],
       width: "",
-      height: ""
+      height: "",
+      element: ""
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -52,6 +53,7 @@ export default {
       this.channels.push(data);
       if (data.team === "projects") {
         this.holons.projects.push({
+          id: data.channel_id,
           name: data.display_name,
           members: data.members,
           size: data.total_msg_count,
@@ -63,6 +65,7 @@ export default {
         data.display_name.charAt(0) !== "#"
       ) {
         this.holons.diglife.push({
+          id: data.channel_id,
           name: data.display_name,
           members: data.members,
           size: data.total_msg_count,
@@ -74,6 +77,7 @@ export default {
         data.display_name.charAt(0) === "#"
       ) {
         this.holons.topics.push({
+          id: data.channel_id,
           name: data.display_name,
           members: data.members,
           size: data.total_msg_count,
@@ -82,6 +86,7 @@ export default {
         });
       } else if (data.team === "ops") {
         this.holons.operations.push({
+          id: data.channel_id,
           name: data.display_name,
           members: data.members,
           size: data.total_msg_count,
@@ -90,6 +95,7 @@ export default {
         });
       } else if (data.team === "friends") {
         this.holons.friends.push({
+          id: data.channel_id,
           name: data.display_name,
           members: data.members,
           size: data.total_msg_count,
@@ -331,18 +337,71 @@ export default {
         });
     }
 
-    // var circle = svg.selectAll("circle").data(root.descendants().slice(1));
+    const defs = svg.append("svg:defs");
 
-    // circle = circle
-    //   // .transition()
-    //   // .duration(2000)
-    //   // .attr("stroke-width", 20)
-    //   .attr("r", 0)
-    //   .transition()
-    //   .duration(2000)
-    //   // .attr('stroke-width', 0.5)
-    //   .attr("r", d => d.size);
-    // // .ease('sine')
+    // .style("fill", d => {
+    //   return "url(#avatar_" + d.id + ")";
+    // })
+
+    var queue = [];
+    var animX = 0;
+    queue.push(this.flare);
+    while (queue.length !== 0) {
+      this.element = queue.shift();
+
+      defs
+        .append("svg:pattern")
+        .data(this.flare.name)
+        .attr("id", d => {
+          //console.log("d:", d, "element:", element, element.id);
+          return this.element.id;
+        })
+        .attr("width", "1")
+        .attr("height", "1")
+        .append("svg:image")
+        .attr("xlink:href", d => {
+          return (
+            "https://ledger.diglife.coop/images/holons/" +
+            this.element.id +
+            ".jpg"
+          );
+        });
+
+      //console.log(element, animX);
+      animX = animX + 1;
+      if (this.element.children !== undefined) {
+        for (var i = 0; i < this.element.children.length; i++) {
+          queue.push(this.element.children[i]);
+        }
+      }
+    }
+
+    //     for (var i = 0; i < this.graph.nodes.length; i++) {
+    //   defs
+    //     .append("svg:pattern")
+    //     .data(this.graph.nodes)
+    //     .attr("id", d => {
+    //       return "avatar_" + this.graph.nodes[i].id;
+    //     })
+    //     .attr("width", "1")
+    //     .attr("height", "1")
+    //     .append("svg:image")
+    //     .attr("xlink:href", d => {
+    //       return (
+    //         "https://ledger.diglife.coop/images/avatars/avatar_" +
+    //         this.graph.nodes[i].id +
+    //         ".png"
+    //       );
+    //     })
+    //     // .attr("id", d => {
+    //     //   return "image_" + this.graph.nodes[i].id;
+    //     // })
+    //     .attr("x", 0)
+    //     .attr("y", 0)
+    //     .attr("width", 40)
+    //     .attr("height", 40);
+    // }
+
     return svg.node();
   },
   ///////////////////////////////////////////////////////////////////////////////

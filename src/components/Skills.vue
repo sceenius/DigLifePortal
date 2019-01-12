@@ -296,9 +296,9 @@ export default {
             ".png"
           );
         })
-        .attr("id", d => {
-          return "image_" + this.graph.nodes[i].id;
-        })
+        // .attr("id", d => {
+        //   return "image_" + this.graph.nodes[i].id;
+        // })
         .attr("x", 0)
         .attr("y", 0)
         .attr("width", 40)

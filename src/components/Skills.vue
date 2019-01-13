@@ -284,6 +284,7 @@ export default {
         .append("svg:pattern")
         .data(this.graph.nodes)
         .attr("id", d => {
+          //console.log(this.graph.nodes[i]);
           return "avatar_" + this.graph.nodes[i].id;
         })
         .attr("width", "1")

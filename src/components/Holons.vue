@@ -55,6 +55,7 @@ export default {
         this.holons.projects.push({
           id: data.channel_id,
           name: data.display_name,
+          image: data.image,
           members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
@@ -67,6 +68,7 @@ export default {
         this.holons.diglife.push({
           id: data.channel_id,
           name: data.display_name,
+          image: data.image,
           members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
@@ -79,6 +81,7 @@ export default {
         this.holons.topics.push({
           id: data.channel_id,
           name: data.display_name,
+          image: data.image,
           members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
@@ -88,6 +91,7 @@ export default {
         this.holons.operations.push({
           id: data.channel_id,
           name: data.display_name,
+          image: data.image,
           members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
@@ -97,6 +101,7 @@ export default {
         this.holons.friends.push({
           id: data.channel_id,
           name: data.display_name,
+          image: data.image,
           members: data.members,
           size: data.total_msg_count,
           link: CHATURL + data.team + "/channels/" + data.name,
@@ -158,7 +163,7 @@ export default {
 
     const node = svg
       .append("g")
-      .style("filter", "url(#gooey)")
+      //.style("filter", "url(#gooey)")
       .selectAll("circle")
       .data(root.descendants().slice(1))
       .enter()
@@ -169,8 +174,11 @@ export default {
       .attr("fill", d =>
         d.children
           ? this.color(d.depth)
+          : d.data.image
+          ? "url(#" + d.data.id + ")"
           : "rgba(255,255,255, " + d.data.opacity + ")"
       )
+      .style("opacity", d => (d.data.image ? d.data.opacity : 1))
       .attr("pointer-events", d => (!d.children ? null : null)) // "none" to turn off
       // .on("mouseover", function() {
       //   d3.select(this).attr("stroke", "#fff");
@@ -204,7 +212,6 @@ export default {
         }
       })
       .on("mouseout.tooltip", d => {
-        //if (d.children && focus === d) {
         tooltip
           .transition()
           .duration(100)
@@ -238,6 +245,7 @@ export default {
         !d.children ? window.open(d.data.link, d.data.name) : null
       );
 
+    // animation when loading map
     d3.selectAll("text")
       .style("stroke-width", 0)
       .style("stroke", "transparent")
@@ -333,12 +341,13 @@ export default {
           if (d.parent === focus) this.style.display = "inline";
         })
         .on("end", function(d) {
-          if (d.parent !== focus) this.style.display = "none";
+          if (d.parent !== focus) this.style.display = "none"; //none
         });
     }
 
     const defs = svg.append("svg:defs");
-
+    //https://bl.ocks.org/mph006/7e7d7f629de75ada9af5
+    // goal:
     // .style("fill", d => {
     //   return "url(#avatar_" + d.id + ")";
     // })
@@ -347,60 +356,33 @@ export default {
     var animX = 0;
     queue.push(this.flare);
     while (queue.length !== 0) {
-      this.element = queue.shift();
+      let el = queue.shift();
+      if (el.id && el.image) {
+        defs
+          .append("svg:pattern")
+          // data MUST have an array to work
+          .data([el])
+          .attr("id", d => {
+            //console.log(d.id);
+            return d.id;
+          })
+          .attr("width", "1")
+          .attr("height", "1")
+          .append("svg:image")
+          .attr("xlink:href", d => {
+            return (
+              "https://ledger.diglife.coop/images/holons/" + el.id + ".jpg"
+            );
+          });
+      }
 
-      defs
-        .append("svg:pattern")
-        .data(this.flare.name)
-        .attr("id", d => {
-          //console.log("d:", d, "element:", element, element.id);
-          return this.element.id;
-        })
-        .attr("width", "1")
-        .attr("height", "1")
-        .append("svg:image")
-        .attr("xlink:href", d => {
-          return (
-            "https://ledger.diglife.coop/images/holons/" +
-            this.element.id +
-            ".jpg"
-          );
-        });
-
-      //console.log(element, animX);
       animX = animX + 1;
-      if (this.element.children !== undefined) {
-        for (var i = 0; i < this.element.children.length; i++) {
-          queue.push(this.element.children[i]);
+      if (el.children !== undefined) {
+        for (var i = 0; i < el.children.length; i++) {
+          queue.push(el.children[i]);
         }
       }
     }
-
-    //     for (var i = 0; i < this.graph.nodes.length; i++) {
-    //   defs
-    //     .append("svg:pattern")
-    //     .data(this.graph.nodes)
-    //     .attr("id", d => {
-    //       return "avatar_" + this.graph.nodes[i].id;
-    //     })
-    //     .attr("width", "1")
-    //     .attr("height", "1")
-    //     .append("svg:image")
-    //     .attr("xlink:href", d => {
-    //       return (
-    //         "https://ledger.diglife.coop/images/avatars/avatar_" +
-    //         this.graph.nodes[i].id +
-    //         ".png"
-    //       );
-    //     })
-    //     // .attr("id", d => {
-    //     //   return "image_" + this.graph.nodes[i].id;
-    //     // })
-    //     .attr("x", 0)
-    //     .attr("y", 0)
-    //     .attr("width", 40)
-    //     .attr("height", 40);
-    // }
 
     return svg.node();
   },

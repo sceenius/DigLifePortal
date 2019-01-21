@@ -82,12 +82,6 @@ export default {
         // personal tags
         if (group.val().tags) {
           this.tags = group.val().tags;
-          console.log(this.tags);
-          // loop through tags
-          // call API with tag
-          // get word frequency
-          // add {frequency: xxx}
-          // change background color
           this.tags.forEach((tag, index, arr) => {
             this.axios
               .get(
@@ -95,27 +89,30 @@ export default {
                   tag.text +
                   "&qe=sp&md=f&max=1"
               )
-              .then(
-                response =>
-                  (arr[index].frequency = parseFloat(
-                    response.data[0].tags[1].replace("f:", "")
-                  ))
-              )
-              .then(
-                response => (arr[index].style2 = 44)
-                // ((arr[index].frequency > 10)
-                //   ? "background-color: red;"
-                //   : "background-color: green;"))
-              )
-              .then(console.log(arr[index].style2))
-              .then(response =>
-                db
-                  .database()
+
+              .then(response => {
+                let frequency = parseFloat(
+                  response.data[0].tags[1].replace("f:", "")
+                );
+                let color =
+                  frequency > 0.3 && frequency < 50
+                    ? "background-color: #00b0a0 !important;"
+                    : "background-color: red !important;";
+                this.tags[index].style = color;
+                this.tags[index].frequency = frequency;
+
+                db.database()
                   .ref(
-                    "portal_profiles/" + this.$cookies.get("username") + "/tags"
+                    "portal_profiles/" +
+                      this.$cookies.get("username") +
+                      "/tags/" +
+                      index
                   )
-                  .update(arr[index].frequency)
-              );
+                  .update({
+                    frequency: frequency,
+                    style: color
+                  });
+              });
           });
         }
       })

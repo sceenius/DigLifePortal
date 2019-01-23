@@ -683,6 +683,7 @@ export default {
                 snapshot.tags = [snapshot.tags[0].text];
               }
             }
+            // change this to include ALL tags properties, incl freq
             usersRef.child(user.key).update(snapshot);
           }
           // add  data to users array

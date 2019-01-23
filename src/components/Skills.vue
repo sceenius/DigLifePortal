@@ -317,8 +317,6 @@ export default {
   computed: {
     graph: function() {
       return {
-        // nodes: [{ id: "Myriel", group: 4 }, { id: "Napoleon", group: 4 }],
-        // links: [{ source: "Napoleon", target: "Myriel", value: 1 }]
         nodes: this.nodes,
         links: this.links
       };

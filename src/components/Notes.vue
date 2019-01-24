@@ -214,112 +214,114 @@
       </md-speed-dial-content>
     </md-speed-dial>
 
-    <md-card
-      md-with-hover
-      v-if="service == 'Zettelkasten'"
-      v-for="(note, index) in notes"
-      :key="index"
-      class="md-layout-item"
-      id="noteCards"
-    >
-      <div class="md-card-banner">
-        <md-icon
-          class="md-size-1x"
-          style="cursor: pointer; color: #FEC019; z-index: 99;position: absolute; top:-5px; right: 20px;"
-          >bookmark</md-icon
-        >
-        <md-menu>
-          <md-button
-            style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
-            class="md-icon-button"
-            md-menu-trigger
+    <sequential-entrance>
+      <md-card
+        md-with-hover
+        v-if="service == 'Zettelkasten'"
+        v-for="(note, index) in notes"
+        :key="index"
+        class="md-layout-item"
+        id="noteCards"
+      >
+        <div class="md-card-banner">
+          <md-icon
+            class="md-size-1x"
+            style="cursor: pointer; color: #FEC019; z-index: 99;position: absolute; top:-5px; right: 20px;"
+            >bookmark</md-icon
           >
-            <md-icon style="font-size: 1.8em !important; color: white;"
-              >menu</md-icon
-            >
-          </md-button>
-
-          <md-menu-content class="md-card-menu">
-            <md-menu-item @click="copyCard(note, index);">
-              <md-icon>file_copy</md-icon>
-              <span>Copy</span>
-            </md-menu-item>
-
-            <md-menu-item @click="deleteCard(note, index);">
-              <md-icon>delete</md-icon>
-              <span>Delete</span>
-            </md-menu-item>
-          </md-menu-content>
-        </md-menu>
-
-        <div class="md-subhead">Zettelkasten Note</div>
-        <img
-          style="width: 20px; position: absolute; top: 5px; right: 2px; "
-          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-        />
-      </div>
-
-      <div class="md-card-header">
-        <md-card-header-text>
-          <div class="md-title">
-            <!--
-              md-icon
-                style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-                >how_to_vote
-              </md-icon
-            -->
-            {{ note.text.replace(/:[\w]+:/, "") }}
-          </div>
-        </md-card-header-text>
-      </div>
-
-      <div class="md-card-mid">
-        <p class="info">
-          <md-icon>access_time</md-icon>
-          Changed {{ note.fromTime }}
-        </p>
-        <p class="info" style="width: 250px; height: 90px; overflow: auto;">
-          <md-chip v-for="(tag, index) in note.tags" :key="tag.id">
-            {{ tag }}
-          </md-chip>
-        </p>
-      </div>
-
-      <md-card-actions>
-        <md-button @click="cardAction('edit', note);">Edit</md-button>
-        <md-button
-          style="background: #00B0A0; color: white;"
-          @click="cardAction('open', note);"
-          >Open</md-button
-        >
-      </md-card-actions>
-
-      <div class="md-card-footer">
-        <div class="md-card-avatars md-scrollbar">
-          <md-menu v-for="(member, index2) in note.members" :key="index2">
-            <md-avatar
-              style="cursor: pointer; border: 2px solid transparent;"
+          <md-menu>
+            <md-button
+              style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
+              class="md-icon-button"
               md-menu-trigger
             >
-              <img v-bind:src="avatarLink(member)" alt="Avatar" />
-              <!-- md-tooltip md-direction="top">{{ member }}</md-tooltip -->
-            </md-avatar>
+              <md-icon style="font-size: 1.8em !important; color: white;"
+                >menu</md-icon
+              >
+            </md-button>
 
             <md-menu-content class="md-card-menu">
-              <md-menu-item>
-                <md-icon>person</md-icon>
-                <span>{{ member }}</span>
+              <md-menu-item @click="copyCard(note, index);">
+                <md-icon>file_copy</md-icon>
+                <span>Copy</span>
               </md-menu-item>
 
-              <md-menu-item @click="removeMember(member, index);">
+              <md-menu-item @click="deleteCard(note, index);">
                 <md-icon>delete</md-icon>
-                <span>Remove</span>
+                <span>Delete</span>
               </md-menu-item>
             </md-menu-content>
           </md-menu>
+
+          <div class="md-subhead">Zettelkasten Note</div>
+          <img
+            style="width: 20px; position: absolute; top: 5px; right: 2px; "
+            src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
+          />
         </div>
-      </div>
-    </md-card>
+
+        <div class="md-card-header">
+          <md-card-header-text>
+            <div class="md-title">
+              <!--
+                md-icon
+                  style="line-height: 0.9; font-size: 1em !important; color: #404040;"
+                  >how_to_vote
+                </md-icon
+              -->
+              {{ note.text.replace(/:[\w]+:/, "") }}
+            </div>
+          </md-card-header-text>
+        </div>
+
+        <div class="md-card-mid">
+          <p class="info">
+            <md-icon>access_time</md-icon>
+            Changed {{ note.fromTime }}
+          </p>
+          <p class="info" style="width: 250px; height: 90px; overflow: auto;">
+            <md-chip v-for="(tag, index) in note.tags" :key="tag.id">
+              {{ tag }}
+            </md-chip>
+          </p>
+        </div>
+
+        <md-card-actions>
+          <md-button @click="cardAction('edit', note);">Edit</md-button>
+          <md-button
+            style="background: #00B0A0; color: white;"
+            @click="cardAction('open', note);"
+            >Open</md-button
+          >
+        </md-card-actions>
+
+        <div class="md-card-footer">
+          <div class="md-card-avatars md-scrollbar">
+            <md-menu v-for="(member, index2) in note.members" :key="index2">
+              <md-avatar
+                style="cursor: pointer; border: 2px solid transparent;"
+                md-menu-trigger
+              >
+                <img v-bind:src="avatarLink(member)" alt="Avatar" />
+                <!-- md-tooltip md-direction="top">{{ member }}</md-tooltip -->
+              </md-avatar>
+
+              <md-menu-content class="md-card-menu">
+                <md-menu-item>
+                  <md-icon>person</md-icon>
+                  <span>{{ member }}</span>
+                </md-menu-item>
+
+                <md-menu-item @click="removeMember(member, index);">
+                  <md-icon>delete</md-icon>
+                  <span>Remove</span>
+                </md-menu-item>
+              </md-menu-content>
+            </md-menu>
+          </div>
+        </div>
+      </md-card>
+    </sequential-entrance>
   </div>
 </template>
 

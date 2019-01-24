@@ -4,7 +4,8 @@ import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import "odometer/themes/odometer-theme-default.css";
+//import "odometer/themes/odometer-theme-default.css";
+import "vue-sequential-entrance/vue-sequential-entrance.css";
 import "./src/assets/styles/cards.css";
 import "./src/assets/styles/navbar.css";
 import "./src/assets/styles/particles.css";
@@ -13,6 +14,7 @@ import "./src/assets/styles/notes.css";
 import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";
+import SequentialEntrance from "vue-sequential-entrance";
 import { BASEURL, CHATURL } from "./src/constants.js";
 import db from "./src/firebase/init";
 //import Vuex from "vuex";
@@ -23,6 +25,7 @@ Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.use(VueMaterial);
+Vue.use(SequentialEntrance);
 //Vue.use(Vuex);
 
 new Vue({

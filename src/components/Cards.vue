@@ -137,109 +137,111 @@
         CARDS
       ----------------------------------------------------------------------
     -->
-    <md-card
-      md-with-hover
-      v-if="(showServices && isMember(topic)) || !showServices"
-      v-for="(topic, index) in topics"
-      :key="index"
-      class="md-layout-item"
-    >
-      <div class="md-card-banner">
-        <md-menu>
-          <md-button
-            style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
-            class="md-icon-button"
-            md-menu-trigger
-          >
-            <md-icon style="font-size: 1.8em !important; color: white;"
-              >menu</md-icon
+    <sequential-entrance>
+      <md-card
+        md-with-hover
+        v-if="(showServices && isMember(topic)) || !showServices"
+        v-for="(topic, index) in topics"
+        :key="index"
+        class="md-layout-item"
+      >
+        <div class="md-card-banner">
+          <md-menu>
+            <md-button
+              style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
+              class="md-icon-button"
+              md-menu-trigger
             >
-          </md-button>
+              <md-icon style="font-size: 1.8em !important; color: white;"
+                >menu</md-icon
+              >
+            </md-button>
 
-          <md-menu-content class="md-card-menu">
-            <md-menu-item @click="editCard(topic, index);">
-              <md-icon>edit</md-icon>
-              <span>Edit</span>
-            </md-menu-item>
+            <md-menu-content class="md-card-menu">
+              <md-menu-item @click="editCard(topic, index);">
+                <md-icon>edit</md-icon>
+                <span>Edit</span>
+              </md-menu-item>
 
-            <md-menu-item @click="deleteCard(topic);">
-              <md-icon>archive</md-icon>
-              <span>Archive</span>
-            </md-menu-item>
-          </md-menu-content>
-        </md-menu>
+              <md-menu-item @click="deleteCard(topic);">
+                <md-icon>archive</md-icon>
+                <span>Archive</span>
+              </md-menu-item>
+            </md-menu-content>
+          </md-menu>
 
-        <div class="md-subhead"></div>
-        <img
-          style="width: 20px; position: absolute; top: 5px; right: 2px; "
-          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-        />
-      </div>
-
-      <div class="md-card-header">
-        <md-card-header-text>
-          <div class="md-title">
-            <md-icon
-              style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-              >{{ topic.purpose.icon }}</md-icon
-            >
-            {{ topic.display_name.replace("#", "") }}
-          </div>
-        </md-card-header-text>
-
-        <md-chip style="background-color: green" v-if="isMember(topic)"
-          >Joined</md-chip
-        >
-        <md-chip
-          style="background-color: orange"
-          v-if="isSuggested(topic) && !isMember(topic)"
-          >Suggested</md-chip
-        >
-        <md-chip
-          style="background-color: #ccc"
-          v-if="!isMember(topic) && !isSuggested(topic)"
-          >Not Joined</md-chip
-        >
-      </div>
-
-      <div class="md-card-mid">
-        <p class="info">
-          <vue-markdown>{{
-            topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
-          }}</vue-markdown>
-        </p>
-      </div>
-
-      <md-card-actions>
-        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
-          >Leave</md-button
-        >
-        <md-button
-          v-if="isMember(topic)"
-          style="background: #00B0A0; color: white;"
-          @click="cardAction('open', topic);"
-          >Open</md-button
-        >
-        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
-          >Ask</md-button
-        >
-        <md-button
-          v-if="!isMember(topic)"
-          style="background: #00B0A0; color: white;"
-          @click="cardAction('join', topic);"
-          >Join</md-button
-        >
-      </md-card-actions>
-
-      <div class="md-card-footer">
-        <div class="md-card-avatars md-scrollbar">
-          <md-avatar v-for="(member, index) in topic.members" :key="index">
-            <img v-bind:src="avatarLink(member)" alt="Avatar" />
-            <md-tooltip md-direction="top">{{ member }}</md-tooltip>
-          </md-avatar>
+          <div class="md-subhead"></div>
+          <img
+            style="width: 20px; position: absolute; top: 5px; right: 2px; "
+            src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
+          />
         </div>
-      </div>
-    </md-card>
+
+        <div class="md-card-header">
+          <md-card-header-text>
+            <div class="md-title">
+              <md-icon
+                style="line-height: 0.9; font-size: 1em !important; color: #404040;"
+                >{{ topic.purpose.icon }}</md-icon
+              >
+              {{ topic.display_name.replace("#", "") }}
+            </div>
+          </md-card-header-text>
+
+          <md-chip style="background-color: green" v-if="isMember(topic)"
+            >Joined</md-chip
+          >
+          <md-chip
+            style="background-color: orange"
+            v-if="isSuggested(topic) && !isMember(topic)"
+            >Suggested</md-chip
+          >
+          <md-chip
+            style="background-color: #ccc"
+            v-if="!isMember(topic) && !isSuggested(topic)"
+            >Not Joined</md-chip
+          >
+        </div>
+
+        <div class="md-card-mid">
+          <p class="info">
+            <vue-markdown>{{
+              topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
+            }}</vue-markdown>
+          </p>
+        </div>
+
+        <md-card-actions>
+          <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
+            >Leave</md-button
+          >
+          <md-button
+            v-if="isMember(topic)"
+            style="background: #00B0A0; color: white;"
+            @click="cardAction('open', topic);"
+            >Open</md-button
+          >
+          <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
+            >Ask</md-button
+          >
+          <md-button
+            v-if="!isMember(topic)"
+            style="background: #00B0A0; color: white;"
+            @click="cardAction('join', topic);"
+            >Join</md-button
+          >
+        </md-card-actions>
+
+        <div class="md-card-footer">
+          <div class="md-card-avatars md-scrollbar">
+            <md-avatar v-for="(member, index) in topic.members" :key="index">
+              <img v-bind:src="avatarLink(member)" alt="Avatar" />
+              <md-tooltip md-direction="top">{{ member }}</md-tooltip>
+            </md-avatar>
+          </div>
+        </div>
+      </md-card>
+    </sequential-entrance>
   </div>
 </template>
 

@@ -568,8 +568,18 @@
       <!--
         animation: https://vuejs.org/v2/guide/transitioning-state.html#Organizing-Transitions-into-Components
       -->
-      <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
+      <!--
+        p v-if="users && !service" class="counter odometer" id="odometer">
+          {{  }}
+        </p
+      -->
       <Particles v-if="!service" />
+      <Odometer
+        v-if="users && !service"
+        style="position: absolute; bottom: 30px; right 30px;"
+        :value="counter"
+        theme="car"
+      />
       <Cards v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
       <Holons v-if="service == 'Holonic Chart'" />
@@ -603,13 +613,14 @@ import Notes from "./Notes";
 import Holons from "./Holons";
 import Skills from "./Skills";
 import Slack from "node-slack";
+import Odometer from "vue-odometer";
 
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Cards, Notes, Holons, Skills },
+  components: { Particles, Odometer, Tags, Cards, Notes, Holons, Skills },
   data: () => ({
     // form: {
     //   username: null
@@ -655,35 +666,27 @@ export default {
 
     usersRef.on("child_added", user => {
       let data = user.val();
-
       profilesRef
         .child(data.username.replace(".", "%2E"))
         .once("value", profile => {
-          var snapshot = profile.val();
-          console.log(data.username, user.key, snapshot);
-          //if (profile.exists()) {
-          // update firebase
-          // if (snapshot.tags) {
-          //   if (snapshot.tags.length > 1) {
-          //     snapshot.tags = snapshot.tags.reduce(
-          //       (accumulator, currentValue) => {
-          //         return [...accumulator, currentValue.text];
-          //       }
-          //     );
-          //   } else {
-          //     snapshot.tags = [snapshot.tags[0].text];
-          //   }
-          // }
-          // change this to include ALL tags properties, incl freq
-          if (snapshot) {
-            usersRef
-              .child(user.key)
-              .update(_.merge(data, snapshot))
-              .catch(function(error) {
-                alert("Data could not be updated. " + error);
-              });
+          let snapshot = profile.val();
+          if (profile.exists()) {
+            // update firebase
+            // if (snapshot.tags) {
+            //   if (snapshot.tags.length > 1) {
+            //     snapshot.tags = snapshot.tags.reduce(
+            //       (accumulator, currentValue) => {
+            //         return [...accumulator, currentValue.text];
+            //       }
+            //     );
+            //   } else {
+            //     snapshot.tags = [snapshot.tags[0].text];
+            //   }
+            // }
+            // change this to include ALL tags properties, incl freq
+            // must be in a separate /profile path
+            usersRef.child(user.key + "/profile").update(snapshot);
           }
-          //}
           // add  data to users array
           this.users.push(data);
 
@@ -768,12 +771,29 @@ export default {
     // } else {
     //   this.showServices = false;
     // }
+    // window.odometerOptions = {
+    //   auto: false, // Don't automatically initialize everything with class 'odometer'
+    //   selector: '.my-numbers', // Change the selector used to automatically find things to be animated
+    //   format: '(,ddd).dd', // Change how digit groups are formatted, and how many digits are shown after the decimal point
+    //   duration: 3000, // Change how long the javascript expects the CSS animation to take
+    //   theme: 'car', // Specify the theme (if you have more than one theme css file on the page)
+    //   animation: 'count' // Count is a simpler animation method which just increments the value,
+    //                      // use it when you're looking for something more subtle.
+    // };
+
+    // For each odometer, initialize with the theme passed in:
+    // var odometer = new Odometer({ el: document.getElementsByClassName("odometer")[0], value: this.users, theme: 'car' });
+    // odometer.render();
   },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
+    // value for odometer
+    counter: function() {
+      return this.users.length - 1;
+    },
     // compute v-bind:src for img
     avatarLink: function() {
       return (
@@ -1278,4 +1298,13 @@ export default {
   }
 };
 </script>
-<style></style>
+<style>
+.odometer2 {
+  position: absolute;
+  bottom: 0px;
+  right: 30px;
+  font-size: 5em;
+  color: #ddd;
+  width: 400px;
+}
+</style>

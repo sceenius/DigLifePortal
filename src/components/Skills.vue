@@ -47,26 +47,42 @@ export default {
 
     usersRef.on("child_added", user => {
       var data = user.val();
-      if (data.tags && data.tags[0].text && data.tags.length > 1) {
-        data.tags = data.tags.reduce((accumulator, currentValue) => {
-          return [...accumulator, currentValue.text];
-        });
-      } else if (data.tags && data.tags[0].text && data.tags.length === 1) {
-        data.tags = [data.tags[0].text];
+
+      if (
+        data.profile &&
+        data.profile.tags &&
+        data.profile.tags[0].text &&
+        data.profile.tags.length > 1
+      ) {
+        data.profile.tags = data.profile.tags.reduce(
+          (accumulator, currentValue) => {
+            return [...accumulator, currentValue.text];
+          }
+        );
+      } else if (
+        data.profile &&
+        data.profile.tags &&
+        data.profile.tags[0].text &&
+        data.profile.tags.length === 1
+      ) {
+        data.profile.tags = [data.profile.tags[0].text];
       }
       //console.log(data.tags);
       this.users.push(data);
       this.nodes.push({
         id: data.username,
         group: 1,
-        tags: data.tags,
+        tags: data.profile ? data.profile.tags : null,
         fullname: data.first_name + " " + data.last_name
       });
-      //console.log(this.users);
+      //console.log(data.tags, data.username);
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
           //console.log(user.tags, data.tags);
-          let intersection = _.intersection(user.tags, data.tags);
+          let intersection = _.intersection(
+            user.profile ? user.profile.tags : null,
+            data.profile ? data.profile.tags : null
+          );
           if (intersection.length > 0) {
             this.links.push({
               source: user.username,

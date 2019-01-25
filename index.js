@@ -19,6 +19,15 @@ import { BASEURL, CHATURL } from "./src/constants.js";
 import db from "./src/firebase/init";
 //import Vuex from "vuex";
 
+// var allowCrossDomain = function (req, res, next) {
+//   res.header('Access-Control-Allow-Origin', "*");
+//   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+//   res.header('Access-Control-Allow-Headers', 'Content-Type');
+//   next();
+// };
+
+// Vue.use(allowCrossDomain);
+
 Vue.config.productionTip = false;
 //Vue.config.BASE = "https://diglife.com/webhooks";
 
@@ -58,7 +67,7 @@ new Vue({
           "webhooks/portal_channels2.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      .then(console.log(this.channels))
+      //.then(console.log(this.channels))
       .then(response =>
         db
           .database()

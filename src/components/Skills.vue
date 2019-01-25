@@ -62,7 +62,7 @@ export default {
         tags: data.tags,
         fullname: data.first_name + " " + data.last_name
       });
-      //console.log(data.tags, data.username);
+      //console.log(this.users);
       this.users.forEach((user, index, arr) => {
         if (user.username !== data.username) {
           //console.log(user.tags, data.tags);

@@ -655,26 +655,35 @@ export default {
 
     usersRef.on("child_added", user => {
       let data = user.val();
+
       profilesRef
         .child(data.username.replace(".", "%2E"))
         .once("value", profile => {
-          let snapshot = profile.val();
-          if (profile.exists()) {
-            // update firebase
-            if (snapshot.tags) {
-              if (snapshot.tags.length > 1) {
-                snapshot.tags = snapshot.tags.reduce(
-                  (accumulator, currentValue) => {
-                    return [...accumulator, currentValue.text];
-                  }
-                );
-              } else {
-                snapshot.tags = [snapshot.tags[0].text];
-              }
-            }
-            // change this to include ALL tags properties, incl freq
-            usersRef.child(user.key).update(snapshot);
+          var snapshot = profile.val();
+          console.log(data.username, user.key, snapshot);
+          //if (profile.exists()) {
+          // update firebase
+          // if (snapshot.tags) {
+          //   if (snapshot.tags.length > 1) {
+          //     snapshot.tags = snapshot.tags.reduce(
+          //       (accumulator, currentValue) => {
+          //         return [...accumulator, currentValue.text];
+          //       }
+          //     );
+          //   } else {
+          //     snapshot.tags = [snapshot.tags[0].text];
+          //   }
+          // }
+          // change this to include ALL tags properties, incl freq
+          if (snapshot) {
+            usersRef
+              .child(user.key)
+              .update(_.merge(data, snapshot))
+              .catch(function(error) {
+                alert("Data could not be updated. " + error);
+              });
           }
+          //}
           // add  data to users array
           this.users.push(data);
 

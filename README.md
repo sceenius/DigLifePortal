@@ -31,6 +31,18 @@ We are developing this portal with a [Vue JavaScript frontend](https://vuejs.org
 CodeSandBox can be forked to allow multiple parties to co-develop the application. As a developer, make sure to commit your work to GitHub before changing machines and refresh the code on new machines.
 There is also a live-coding feature to allow multiple parties edit the code concurrently in realtime.
 
+### Local Development
+
+1. Clone the project.
+2. Install dependencies by running `yarn install`.
+3. Start development server by running `yarn start`.
+
+### Build locally
+
+1. Clone the project.
+2. Install dependencies by running `yarn install`.
+3. Build the project by running `yarn build`.
+
 ## Resources
 
 ### Structure and guides

@@ -50,7 +50,7 @@ export default {
       users.forEach(user => {
         let data = user.val();
         data.moretags = [];
-        console.log(data);
+        //console.log(data);
 
         profilesRef
           .child(data.username.replace(".", "%2E"))
@@ -60,11 +60,28 @@ export default {
               if (snapshot.tags && snapshot.tags.length > 1) {
                 data.moretags = snapshot.tags.reduce(
                   (accumulator, currentValue) => {
-                    return [...accumulator, currentValue.text];
+                    if (
+                      !currentValue.frequency ||
+                      (currentValue.frequency > 0.3 &&
+                        currentValue.frequency < 50)
+                    ) {
+                      console.log(currentValue.frequency);
+                      return [...accumulator, currentValue.text];
+                    } else {
+                      return [...accumulator];
+                    }
                   }
                 );
               } else if (snapshot.tags) {
-                data.moretags = [snapshot.tags[0].text];
+                if (
+                  !snapshot.tags[0].frequency ||
+                  (snapshot.tags[0].frequency > 0.3 &&
+                    snapshot.tags[0].frequency < 50)
+                ) {
+                  data.moretags = [snapshot.tags[0].text];
+                } else {
+                  return [];
+                }
               }
 
               // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
@@ -294,7 +311,7 @@ export default {
       //invalidation.then(() => simulation.stop());
 
       return svg.node();
-    }, 50);
+    }, 150);
   },
 
   ///////////////////////////////////////////////////////////////////////////////

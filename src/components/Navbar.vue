@@ -676,7 +676,7 @@ export default {
             // change this to include ALL tags properties, incl freq
             // must be in a separate /profile path
             //usersRef.child(user.key + "/profile").set(snapshot);
-            user.ref.update(snapshot);
+            //user.ref.update(snapshot);
           }
           // add  data to users array
           this.users.push(data);

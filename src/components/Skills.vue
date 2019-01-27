@@ -44,55 +44,81 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
+    let profilesRef = db.database().ref("portal_profiles");
 
     usersRef.on("child_added", user => {
-      var data = user.val();
+      let data = user.val();
 
-      if (
-        data.profile &&
-        data.profile.tags &&
-        data.profile.tags[0].text &&
-        data.profile.tags.length > 1
-      ) {
-        data.profile.tags = data.profile.tags.reduce(
-          (accumulator, currentValue) => {
-            return [...accumulator, currentValue.text];
+      profilesRef
+        .child(data.username.replace(".", "%2E"))
+        .once("value", profile => {
+          let snapshot = profile.val();
+          if (snapshot) {
+            if (snapshot.tags && snapshot.tags.length > 1) {
+              data.moretags = snapshot.tags.reduce(
+                (accumulator, currentValue) => {
+                  return [...accumulator, currentValue.text];
+                }
+              );
+            } else if (snapshot.tags) {
+              data.moretags = [snapshot.tags[0].text];
+            }
+
+            // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
+            data = { ...data, ...snapshot }; //_.merge(data, snapshot);
           }
-        );
-      } else if (
-        data.profile &&
-        data.profile.tags &&
-        data.profile.tags[0].text &&
-        data.profile.tags.length === 1
-      ) {
-        data.profile.tags = [data.profile.tags[0].text];
-      }
-      //console.log(data.tags);
-      this.users.push(data);
-      this.nodes.push({
-        id: data.username,
-        group: 1,
-        tags: data.profile ? data.profile.tags : null,
-        fullname: data.first_name + " " + data.last_name
-      });
+        })
+        .then(profile => {
+          //console.log(data.moretags);
+          this.users.push(data);
+          this.nodes.push({
+            id: data.username,
+            group: 1,
+            tags: data.moretags,
+            fullname: data.first_name + " " + data.last_name
+          });
+          this.users.forEach((user, index, arr) => {
+            if (user.username !== data.username) {
+              //console.log(data.moretags);
+              //let intersection = [];
+              let intersection = _.intersection(user.moretags, data.moretags);
+
+              if (intersection.length > 0) {
+                //console.log(this.links);
+                this.links.push({
+                  source: user.username,
+                  target: data.username,
+                  value: intersection.length,
+                  tags: intersection
+                });
+              }
+            }
+          });
+        });
+
+      // console.log(this.users);
       //console.log(data.tags, data.username);
-      this.users.forEach((user, index, arr) => {
-        if (user.username !== data.username) {
-          //console.log(user.tags, data.tags);
-          let intersection = _.intersection(
-            user.profile ? user.profile.tags : null,
-            data.profile ? data.profile.tags : null
-          );
-          if (intersection.length > 0) {
-            this.links.push({
-              source: user.username,
-              target: data.username,
-              value: intersection.length,
-              tags: intersection
-            });
-          }
-        }
-      });
+
+      // if (
+      //   data.profile &&
+      //   data.profile.tags &&
+      //   data.profile.tags[0].text &&
+      //   data.profile.tags.length > 1
+      // ) {
+      //   data.profile.tags = data.profile.tags.reduce(
+      //     (accumulator, currentValue) => {
+      //       return [...accumulator, currentValue.text];
+      //     }
+      //   );
+      // } else if (
+      //   data.profile &&
+      //   data.profile.tags &&
+      //   data.profile.tags[0].text &&
+      //   data.profile.tags.length === 1
+      // ) {
+      //   data.profile.tags = [data.profile.tags[0].text];
+      // }
+      //console.log(data.tags);
     });
 
     // usersRef.on("child_changed", user => {
@@ -323,7 +349,7 @@ export default {
     }
 
     //invalidation.then(() => simulation.stop());
-    //console.log(this.graph);
+    console.log(this.graph);
     return svg.node();
   },
 

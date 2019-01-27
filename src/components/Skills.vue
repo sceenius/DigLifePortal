@@ -2,6 +2,21 @@
   <div>
     <!--
       ----------------------------------------------------------------------
+        SNACKBARS  - https://vuematerial.io/components/snackbar
+      ----------------------------------------------------------------------
+    -->
+    <md-snackbar
+      :md-duration="4000"
+      :md-active.sync="showSnackBar"
+      md-persistent
+    >
+      <span>{{ snack }}</span>
+      <md-button class="md-primary" @click="showSnackBar = false;"
+        >Dismiss</md-button
+      >
+    </md-snackbar>
+    <!--
+      ----------------------------------------------------------------------
         DIALOG BOXES - SETTINGS DIALOG
       ----------------------------------------------------------------------
     -->
@@ -19,6 +34,7 @@
 import * as d3 from "d3"; //all
 import db from "../firebase/init";
 import Tags from "./Tags";
+import Moment from "moment";
 import { BASEURL, CHATURL } from "../constants.js";
 import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 
@@ -33,10 +49,12 @@ export default {
       links: [],
       profiles: [],
       activeSettings: false,
+      showSnackBar: false,
       width: "",
       height: "",
       color: "",
-      drag: ""
+      drag: "",
+      snack: ""
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -52,17 +70,23 @@ export default {
         users.forEach(user => {
           let data = user.val();
           data.moretags = [];
-          //console.log(data);
+          data.fromTime = Moment(data.create_at).fromNow();
+          data.diffTime = new Date().getTime();
+          data.diffTime =
+            (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
+          //console.log(data.diffTime);
 
           profilesRef
             .child(data.username.replace(".", "%2E"))
             .once("value", profile => {
               let snapshot = profile.val();
               if (snapshot) {
-                console.log(snapshot);
+                //console.log(snapshot)
                 if (snapshot.tags) {
                   data.moretags = snapshot.tags.reduce(
                     (accumulator, currentValue) => {
+                      // possible insert to only show tags in range
+                      // if (currentValue.frequency > 0.3 && currentValue.frequency < 10)
                       return [...accumulator, currentValue.text];
                     }
                   );
@@ -79,6 +103,8 @@ export default {
                 id: data.username,
                 group: 1,
                 tags: data.moretags,
+                fromTime: data.fromTime,
+                diffTime: data.diffTime,
                 fullname: data.first_name + " " + data.last_name
               });
               this.users.forEach((user, index, arr) => {
@@ -106,7 +132,7 @@ export default {
       })
       // we need to wait for the data to become available
       // since SVG only draws the visual once
-      .then(() => new Promise(resolve => setTimeout(resolve, 50)))
+      .then(() => new Promise(resolve => setTimeout(resolve, 500)))
       //.then(users => console.log(this.users))
       .then(() => {
         this.$nextTick(() => {
@@ -191,7 +217,7 @@ export default {
         .data(links)
         .enter()
         .append("line")
-        .attr("stroke-width", d => Math.sqrt(d.value))
+        .attr("stroke-width", d => d.value)
         .on("mouseover.tooltip", d => {
           tooltip
             .transition()
@@ -225,13 +251,18 @@ export default {
 
       const node = svg
         .append("g")
-        .attr("stroke", "#eee")
-        .attr("stroke-width", 1.5)
         .selectAll("circle")
         .data(nodes)
         .enter()
         .append("circle")
         .attr("r", 20)
+        .attr("stroke", d => {
+          return d.diffTime > 30 ? "#eee" : "#000";
+        })
+        .attr("stroke-dasharray", d => {
+          return d.diffTime > 30 ? null : "3,3";
+        })
+        .attr("stroke-width", 1.5)
         .attr("id", d => {
           return d.id;
         })
@@ -247,8 +278,10 @@ export default {
             .html(
               "<p>" +
                 (d.fullname !== " " ? d.fullname : d.id) +
-                "</p><br>" +
-                (d.tags
+                "<br><i style='font-size: 0.8em;'>Joined " +
+                d.fromTime +
+                "</i></p><br>" +
+                (d.tags.length > 0
                   ? d.tags
                       .map(el => {
                         return el + "<br>";
@@ -315,7 +348,9 @@ export default {
       }
 
       //invalidation.then(() => simulation.stop());
-
+      this.snack =
+        "Click on your avatar to update your profile, then refresh the map.";
+      this.showSnackBar = true;
       return svg.node();
       // }, 500);
     }

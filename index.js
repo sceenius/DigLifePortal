@@ -4,7 +4,6 @@ import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
-import "odometer/themes/odometer-theme-default.css";
 import "./src/assets/styles/cards.css";
 import "./src/assets/styles/navbar.css";
 import "./src/assets/styles/particles.css";

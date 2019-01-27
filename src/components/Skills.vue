@@ -41,6 +41,7 @@ export default {
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  CREATED - https://vuejs.org/v2/guide/instance.html
+  //
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     let usersRef = db.database().ref("portal_users");
@@ -65,7 +66,7 @@ export default {
                       (currentValue.frequency > 0.3 &&
                         currentValue.frequency < 50)
                     ) {
-                      console.log(currentValue.frequency);
+                      //console.log(currentValue.frequency);
                       return [...accumulator, currentValue.text];
                     } else {
                       return [...accumulator];
@@ -311,7 +312,7 @@ export default {
       //invalidation.then(() => simulation.stop());
 
       return svg.node();
-    }, 150);
+    }, 500);
   },
 
   ///////////////////////////////////////////////////////////////////////////////

@@ -1121,12 +1121,16 @@ export default {
         case "holonLink":
           // Open dialoug to request access
           this.selected = "";
-          this.service = "Holonic Chart";
+          this.$nextTick(function() {
+            this.service = "Holonic Chart";
+          });
           break;
         case "graphLink":
           // Open dialoug to request access
           this.selected = "";
-          this.service = "Skills Map";
+          this.$nextTick(function() {
+            this.service = "Skills Map";
+          });
           break;
         case "holonRefresh":
           // Open dialoug to request access

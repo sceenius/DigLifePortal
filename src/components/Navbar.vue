@@ -1121,14 +1121,14 @@ export default {
         case "holonLink":
           // Open dialoug to request access
           this.selected = "";
-          this.$nextTick(function() {
+          this.$nextTick(() => {
             this.service = "Holonic Chart";
           });
           break;
         case "graphLink":
           // Open dialoug to request access
           this.selected = "";
-          this.$nextTick(function() {
+          this.$nextTick(() => {
             this.service = "Skills Map";
           });
           break;
@@ -1136,7 +1136,7 @@ export default {
           // Open dialoug to request access
           this.selected = "";
           this.service = "";
-          this.$nextTick(function() {
+          this.$nextTick(() => {
             this.service = "Holonic Chart";
           });
           break;
@@ -1144,7 +1144,7 @@ export default {
           // Open dialoug to request access
           this.selected = "";
           this.service = "";
-          this.$nextTick(function() {
+          this.$nextTick(() => {
             this.service = "Skills Map";
           });
           break;

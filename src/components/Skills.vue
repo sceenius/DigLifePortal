@@ -47,80 +47,85 @@ export default {
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");
 
-    usersRef.once("value", users => {
-      users.forEach(user => {
-        let data = user.val();
-        data.moretags = [];
-        //console.log(data);
+    usersRef
+      .once("value", users => {
+        users.forEach(user => {
+          let data = user.val();
+          data.moretags = [];
+          //console.log(data);
 
-        profilesRef
-          .child(data.username.replace(".", "%2E"))
-          .once("value", profile => {
-            let snapshot = profile.val();
-            if (snapshot) {
-              if (snapshot.tags && snapshot.tags.length > 1) {
-                data.moretags = snapshot.tags.reduce(
-                  (accumulator, currentValue) => {
-                    if (
-                      !currentValue.frequency ||
-                      (currentValue.frequency > 0.3 &&
-                        currentValue.frequency < 50)
-                    ) {
-                      //console.log(currentValue.frequency);
+          profilesRef
+            .child(data.username.replace(".", "%2E"))
+            .once("value", profile => {
+              let snapshot = profile.val();
+              if (snapshot) {
+                console.log(snapshot);
+                if (snapshot.tags) {
+                  data.moretags = snapshot.tags.reduce(
+                    (accumulator, currentValue) => {
                       return [...accumulator, currentValue.text];
-                    } else {
-                      return [...accumulator];
                     }
+                  );
+                }
+
+                // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
+                data = { ...data, ...snapshot }; //_.merge(data, snapshot);
+              }
+            })
+            .then(profile => {
+              //console.log(data.moretags);
+              this.users.push(data);
+              this.nodes.push({
+                id: data.username,
+                group: 1,
+                tags: data.moretags,
+                fullname: data.first_name + " " + data.last_name
+              });
+              this.users.forEach((user, index, arr) => {
+                if (user.username !== data.username) {
+                  //console.log(data.moretags);
+                  //let intersection = [];
+                  let intersection = _.intersection(
+                    user.moretags,
+                    data.moretags
+                  );
+
+                  if (intersection.length > 0) {
+                    //console.log(this.links);
+                    this.links.push({
+                      source: user.username,
+                      target: data.username,
+                      value: intersection.length,
+                      tags: intersection
+                    });
                   }
-                );
-              } else if (snapshot.tags) {
-                if (
-                  !snapshot.tags[0].frequency ||
-                  (snapshot.tags[0].frequency > 0.3 &&
-                    snapshot.tags[0].frequency < 50)
-                ) {
-                  data.moretags = [snapshot.tags[0].text];
-                } else {
-                  return [];
                 }
-              }
-
-              // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
-              data = { ...data, ...snapshot }; //_.merge(data, snapshot);
-            }
-          })
-          .then(profile => {
-            //console.log(data.moretags);
-            this.users.push(data);
-            this.nodes.push({
-              id: data.username,
-              group: 1,
-              tags: data.moretags,
-              fullname: data.first_name + " " + data.last_name
+              });
             });
-            this.users.forEach((user, index, arr) => {
-              if (user.username !== data.username) {
-                //console.log(data.moretags);
-                //let intersection = [];
-                let intersection = _.intersection(user.moretags, data.moretags);
-
-                if (intersection.length > 0) {
-                  //console.log(this.links);
-                  this.links.push({
-                    source: user.username,
-                    target: data.username,
-                    value: intersection.length,
-                    tags: intersection
-                  });
-                }
-              }
-            });
-          });
+        });
+      })
+      // we need to wait for the data to become available
+      // since SVG only draws the visual once
+      .then(() => new Promise(resolve => setTimeout(resolve, 50)))
+      //.then(users => console.log(this.users))
+      .then(() => {
+        this.$nextTick(() => {
+          this.draw();
+        });
       });
-    });
   },
-  mounted: function() {
-    setTimeout(() => {
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  MOUNTED - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
+  //methods: {}
+  mounted: function() {},
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  METHODS - https://vuejs.org/v2/guide/instance.html
+  ///////////////////////////////////////////////////////////////////////////////
+  methods: {
+    draw: function() {
       // https://beta.observablehq.com/@mbostock/d3-force-directed-graph
       // possible refinement of skills is a radar map with n corners (each corner is a skill)
       this.height = 932;
@@ -312,7 +317,8 @@ export default {
       //invalidation.then(() => simulation.stop());
 
       return svg.node();
-    }, 500);
+      // }, 500);
+    }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -326,10 +332,6 @@ export default {
       };
     }
   }
-  ///////////////////////////////////////////////////////////////////////////////
-  //  METHODS - https://vuejs.org/v2/guide/instance.html
-  ///////////////////////////////////////////////////////////////////////////////
-  //methods: {}
 };
 </script>
 

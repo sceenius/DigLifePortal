@@ -83,13 +83,13 @@ export default {
               if (snapshot) {
                 //console.log(snapshot)
                 if (snapshot.tags) {
-                  data.moretags = snapshot.tags.reduce(
-                    (accumulator, currentValue) => {
+                  data.moretags = snapshot.tags
+                    .reduce((accumulator, currentValue) => {
                       // possible insert to only show tags in range
                       // if (currentValue.frequency > 0.3 && currentValue.frequency < 10)
                       return [...accumulator, currentValue.text];
-                    }
-                  );
+                    })
+                    .sort();
                 }
 
                 // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
@@ -276,7 +276,7 @@ export default {
             .style("opacity", 0.8);
           tooltip
             .html(
-              "<p>" +
+              "<p style='line-height: 0.9em;'>" +
                 (d.fullname !== " " ? d.fullname : d.id) +
                 "<br><i style='font-size: 0.8em;'>Joined " +
                 d.fromTime +

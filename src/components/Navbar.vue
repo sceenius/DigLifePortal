@@ -571,7 +571,7 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service" />
 
-      <Cards v-if="service == 'Interest Groups'" />
+      <Interests v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
       <Holons v-if="service == 'Holonic Chart'" />
       <Skills v-if="service == 'Skills Map'" />
@@ -599,7 +599,7 @@
 import { BASEURL, CHATURL } from "../constants.js";
 import Particles from "./Particles";
 import Tags from "./Tags";
-import Cards from "./Cards";
+import Interests from "./Interests";
 import Notes from "./Notes";
 import Holons from "./Holons";
 import Skills from "./Skills";
@@ -610,7 +610,7 @@ import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Cards, Notes, Holons, Skills },
+  components: { Particles, Tags, Interests, Notes, Holons, Skills },
   data: () => ({
     // form: {
     //   username: null

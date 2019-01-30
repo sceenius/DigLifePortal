@@ -474,7 +474,6 @@
 
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
         <!-- new condition: joining domain via domain sudo group -->
-
         <md-list-item
           v-for="(channel, index) in channels"
           :key="channel.id"
@@ -651,9 +650,11 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log("Intializing app..");
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");
 
+    console.log("Loading users..");
     usersRef.on("child_added", user => {
       let data = user.val();
       profilesRef
@@ -680,6 +681,7 @@ export default {
           }
           // add  data to users array
           this.users.push(data);
+          console.log(data);
 
           if (data.username === this.$cookies.get("username")) {
             this.profile = user.val();
@@ -689,6 +691,7 @@ export default {
         });
     });
 
+    console.log("Loading channels..");
     let channelsRef = db.database().ref("portal_channels");
     // porta_extensions contains any channel info not stored in Mattermost
     let extensionsRef = db.database().ref("portal_extensions");
@@ -717,14 +720,18 @@ export default {
         : -1;
     }
 
+    console.log("Loading groups..");
     if (this.$cookies.get("username")) {
       let groupsRef = db
         .database()
         .ref("portal_profiles/" + this.$cookies.get("username"));
       groupsRef.on("child_added", group => {
         var data = group.val();
+        console.log(data);
+
         if (group.key === "channels") {
           this.groups = group.val();
+          //console.log(this.groups);
         }
       });
 

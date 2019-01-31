@@ -1,5 +1,5 @@
 import Vue from "vue";
-import App from "./src/App";
+import App from "./src/App.vue";
 import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import "vue-material/dist/vue-material.min.css";

@@ -83,13 +83,13 @@ export default {
               if (snapshot) {
                 //console.log(snapshot)
                 if (snapshot.tags) {
-                  data.moretags = snapshot.tags
-                    .reduce((accumulator, currentValue) => {
+                  data.moretags = snapshot.tags.reduce(
+                    (accumulator, currentValue) => {
                       // possible insert to only show tags in range
                       // if (currentValue.frequency > 0.3 && currentValue.frequency < 10)
                       return [...accumulator, currentValue.text];
-                    })
-                    .sort();
+                    }
+                  );
                 }
 
                 // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
@@ -102,7 +102,7 @@ export default {
               this.nodes.push({
                 id: data.username,
                 group: 1,
-                tags: data.moretags,
+                tags: data.moretags.sort(),
                 fromTime: data.fromTime,
                 diffTime: data.diffTime,
                 fullname: data.first_name + " " + data.last_name

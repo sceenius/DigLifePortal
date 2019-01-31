@@ -595,7 +595,7 @@
 </template>
 
 <script>
-import { BASEURL, CHATURL } from "../constants.js";
+import { BASEURL, CHATURL } from "../../index.js";
 import Particles from "./Particles";
 import Tags from "./Tags";
 import Interests from "./Interests";

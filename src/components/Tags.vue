@@ -44,7 +44,7 @@
 <script>
 // http://www.vue-tags-input.com/
 import VueTagsInput from "@johmun/vue-tags-input";
-import { BASEURL, CHATURL } from "../constants.js";
+import { BASEURL, CHATURL } from "../../index.js";
 import db from "../firebase/init";
 
 export default {

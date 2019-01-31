@@ -35,7 +35,7 @@ import * as d3 from "d3"; //all
 import db from "../firebase/init";
 import Tags from "./Tags";
 import Moment from "moment";
-import { BASEURL, CHATURL } from "../constants.js";
+import { BASEURL, CHATURL } from "../../index.js";
 import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 
 export default {

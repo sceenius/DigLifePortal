@@ -12,9 +12,12 @@ import "./src/assets/styles/notes.css";
 import Slack from "node-slack";
 import axios from "axios";
 import VueAxios from "vue-axios";
-import { BASEURL, CHATURL } from "./src/constants.js";
+//import { BASEURL, CHATURL } from "./src/constants.js";
 import db from "./src/firebase/init";
 //import Vuex from "vuex";
+
+export const BASEURL = "https://ledger.diglife.coop/";
+export const CHATURL = "https://chat.diglife.coop/";
 
 Vue.config.productionTip = false;
 //Vue.config.BASE = "https://diglife.com/webhooks";

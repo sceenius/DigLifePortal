@@ -596,12 +596,12 @@
 
 <script>
 import { BASEURL, CHATURL } from "../constants.js";
-import Particles from "./Particles";
-import Tags from "./Tags";
-import Interests from "./Interests";
-import Notes from "./Notes";
-import Holons from "./Holons";
-import Skills from "./Skills";
+import Particles from "./Particles.vue";
+import Tags from "./Tags.vue";
+import Interests from "./Interests.vue";
+import Notes from "./Notes.vue";
+import Holons from "./Holons.vue";
+import Skills from "./Skills.vue";
 import Slack from "node-slack";
 
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only

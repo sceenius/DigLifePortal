@@ -1,13 +1,3 @@
-.md-con tent ifra me {
-  min-width: 100vh;
-  max-width: 100vh;
-  height: 90vh;
-  min-height: 100vh;
-  max-height: 100vh;
-  padding: 0px;
-  overflow: auto;
-  display: inline-block;
-}
 #welcome {
   color: #aaa;
   text-align: right;
@@ -50,11 +40,18 @@
 .md-title {
   font-size: 24px !important;
   margin-left: 0px !important;
-  color: #white !important;
+  color: white !important;
   font-weight: bold !important;
 }
-.md-toolbar {
+.md-toolbar-home,
+.md-toolbar-operations,
+.md-toolbar-projects,
+.md-toolbar-friends {
   background-color: #00b0a0 !important;
+}
+
+.md-toolbar-ccmm {
+  background-color: #3c78d8 !important;
 }
 
 .md-tabs-container {

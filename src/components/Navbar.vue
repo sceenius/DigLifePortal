@@ -281,7 +281,10 @@
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
-    <md-toolbar class="md-primary" v-if="username">
+    <md-toolbar
+      :class="['md-primary', 'md-toolbar-' + domain.toLowerCase()]"
+      v-if="username"
+    >
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
@@ -295,6 +298,12 @@
       <div class="md-toolbar-section-end">
         <md-button
           @click="nav('Home');"
+          v-if="
+            domain == 'Home' ||
+              domain == 'Projects' ||
+              domain == 'Operations' ||
+              domain == 'Friends'
+          "
           v-bind:style="[
             domain == 'Home' ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -302,6 +311,12 @@
         >
         <md-button
           @click="nav('Projects');"
+          v-if="
+            domain == 'Home' ||
+              domain == 'Projects' ||
+              domain == 'Operations' ||
+              domain == 'Friends'
+          "
           v-bind:style="[
             domain == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -309,6 +324,12 @@
         >
         <md-button
           @click="nav('Operations');"
+          v-if="
+            domain == 'Home' ||
+              domain == 'Projects' ||
+              domain == 'Operations' ||
+              domain == 'Friends'
+          "
           v-bind:style="[
             domain == 'Operations' ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -316,6 +337,12 @@
         >
         <md-button
           @click="nav('Friends');"
+          v-if="
+            domain == 'Home' ||
+              domain == 'Projects' ||
+              domain == 'Operations' ||
+              domain == 'Friends'
+          "
           v-bind:style="[
             domain == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -558,18 +585,19 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <!--
-        p id="welcome" v-if="profile && service == ''">
-          Welcome, <a @click="onReopen();">{{ username }}</a>
-        </p
-      -->
-      <img v-if="!service" id="logo" v-bind:src="logoLink" />
-      <!--
-        animation: https://vuejs.org/v2/guide/transitioning-state.html#Organizing-Transitions-into-Components
-      -->
+      <img
+        v-if="
+          domain == 'Home' ||
+            domain == 'Projects' ||
+            domain == 'Operations' ||
+            domain == 'Friends'
+        "
+        id="logo"
+        v-bind:src="logoLink"
+      />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
-      <Particles v-if="!service" />
 
+      <Particles v-if="!service" />
       <Interests v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
       <Holons v-if="service == 'Holonic Chart'" />

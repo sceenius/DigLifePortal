@@ -288,7 +288,7 @@
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title"
-        >{{ service ? "" : "DigLife" }} {{ service ? "" : selected }}
+        >{{ service ? "" : "DigLife" }} {{ service ? "" : domain }}
         {{ service.replace(/[!#*@%/."'\\&]/, "") }}</span
       >
 
@@ -296,28 +296,28 @@
         <md-button
           @click="nav('Home');"
           v-bind:style="[
-            selected == 'Home' ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'Home' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >Home</md-button
         >
         <md-button
           @click="nav('Projects');"
           v-bind:style="[
-            selected == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >proj</md-button
         >
         <md-button
           @click="nav('Operations');"
           v-bind:style="[
-            selected == 'Operations' ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'Operations' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >ops</md-button
         >
         <md-button
           @click="nav('Friends');"
           v-bind:style="[
-            selected == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >friends</md-button
         >
@@ -391,7 +391,7 @@
     </div>
     <div
       v-else-if="
-        selected && service != 'Holonic Chart' && service != 'Skills Map'
+        domain && service != 'Holonic Chart' && service != 'Skills Map'
       "
       id="actions"
     >
@@ -445,7 +445,7 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
-        <span class="md-title" style="color: white;">{{ selected }}</span>
+        <span class="md-title" style="color: white;">{{ domain }}</span>
       </md-toolbar>
 
       <!--
@@ -624,7 +624,7 @@ export default {
     activeInfo: false,
     activeSettings: false,
     activeMenu: false,
-    selected: "Home",
+    domain: "Home",
     service: "",
     username: "",
     snack: "",
@@ -786,7 +786,7 @@ export default {
       return (
         BASEURL +
         "images/brand/logo_secondary_" +
-        this.selected.toLowerCase() +
+        this.domain.toLowerCase() +
         ".svg"
       );
     },
@@ -834,7 +834,7 @@ export default {
     showDomain: function(index) {
       //check if current domain is listed in channel
       return this.channels[index].purpose.domain
-        ? this.channels[index].purpose.domain.includes(this.selected)
+        ? this.channels[index].purpose.domain.includes(this.domain)
         : false;
     },
     showGroup: function(index) {
@@ -1111,7 +1111,7 @@ export default {
     },
 
     nav: function(menu) {
-      this.selected = menu;
+      this.domain = menu;
       this.showNavigation = true;
       this.service = "";
       var element = document.getElementById("theApp");
@@ -1127,21 +1127,21 @@ export default {
       switch (menu) {
         case "holonLink":
           // Open dialoug to request access
-          this.selected = "";
+          this.domain = "";
           this.$nextTick(() => {
             this.service = "Holonic Chart";
           });
           break;
         case "graphLink":
           // Open dialoug to request access
-          this.selected = "";
+          this.domain = "";
           this.$nextTick(() => {
             this.service = "Skills Map";
           });
           break;
         case "holonRefresh":
           // Open dialoug to request access
-          this.selected = "";
+          this.domain = "";
           this.service = "";
           this.$nextTick(() => {
             this.service = "Holonic Chart";
@@ -1149,7 +1149,7 @@ export default {
           break;
         case "graphRefresh":
           // Open dialoug to request access
-          this.selected = "";
+          this.domain = "";
           this.service = "";
           this.$nextTick(() => {
             this.service = "Skills Map";

@@ -15,7 +15,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 //import { BASEURL, CHATURL } from "./src/constants.js";
 import db from "./src/firebase/init";
-//import Vuex from "vuex";
+import router from "./src/router";
 
 export const BASEURL = "https://ledger.diglife.coop/";
 export const CHATURL = "https://chat.diglife.coop/";
@@ -32,6 +32,7 @@ Vue.use(VueAddToCalendar);
 
 new Vue({
   el: "#app",
+  router,
   components: { App },
   template: "<App/>",
   data: () => ({

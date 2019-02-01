@@ -652,7 +652,7 @@ export default {
     activeInfo: false,
     activeSettings: false,
     activeMenu: false,
-    domain: "Home",
+    domain: "",
     service: "",
     username: "",
     snack: "",
@@ -678,6 +678,10 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    // domain coming from router
+    let domain = this.$route.params.domain || "Home";
+    this.domain = domain.charAt(0).toUpperCase() + domain.slice(1);
+
     console.log("Intializing app..");
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");

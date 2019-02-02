@@ -591,10 +591,11 @@
     <md-content class="md-scrollbar">
       <img
         v-if="
-          domain == 'Home' ||
-            domain == 'Projects' ||
-            domain == 'Operations' ||
-            domain == 'Friends'
+          !service &&
+            (domain == 'Home' ||
+              domain == 'Projects' ||
+              domain == 'Operations' ||
+              domain == 'Friends')
         "
         id="logo"
         v-bind:src="logoLink"

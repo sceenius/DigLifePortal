@@ -43,6 +43,9 @@
   color: white !important;
   font-weight: bold !important;
 }
+.md-card .md-title {
+  color: #404040 !important;
+}
 .md-toolbar-home,
 .md-toolbar-operations,
 .md-toolbar-projects,

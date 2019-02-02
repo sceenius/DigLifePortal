@@ -46,7 +46,8 @@
 .md-toolbar-home,
 .md-toolbar-operations,
 .md-toolbar-projects,
-.md-toolbar-friends {
+.md-toolbar-friends,
+.md-toolbar- {
   background-color: #00b0a0 !important;
 }
 
@@ -64,16 +65,17 @@
   padding: 30px 0 0 10px;
 }
 
-.md-too lbar img {
-  height: 55px !important;
-}
-
 .md-switch {
   margin: 0px 5px;
 }
 
 .md-checked .md-switch-container {
-  background-color: #6dcec5 !important; /* not selected switch color */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.5
+  ) !important; /* not selected switch color */
 }
 
 .md-checked .md-switch-thumb {
@@ -81,7 +83,7 @@
 }
 
 .md-switch-thumb {
-  background-color: #6dcec5 !important; /* 00E4CF */
+  background-color: #404040 !important; /* 00E4CF */
 }
 
 .md-fab {

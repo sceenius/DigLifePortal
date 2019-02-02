@@ -464,7 +464,11 @@
       ----------------------------------------------------------------------
     -->
     <md-drawer :md-active.sync="showNavigation" id="drawer">
-      <md-toolbar class="md-transparent" md-elevation="0">
+      <md-toolbar
+        class="md-transparent"
+        md-elevation="0"
+        :class="['md-primary', 'md-toolbar-' + domain.toLowerCase()]"
+      >
         <md-switch
           id="switch"
           class="md-toolbar-section-end"

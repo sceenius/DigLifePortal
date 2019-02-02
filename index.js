@@ -3,6 +3,8 @@ import App from "./src/App";
 import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import VueAddToCalendar from "vue-add-to-calendar";
+import SequentialEntrance from "vue-sequential-entrance";
+import "vue-sequential-entrance/vue-sequential-entrance.css";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import "./src/assets/styles/cards.css";
@@ -27,6 +29,7 @@ Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.use(VueMaterial);
 Vue.use(VueAddToCalendar);
+Vue.use(SequentialEntrance);
 
 //Vue.use(Vuex);
 

@@ -385,7 +385,7 @@
         service &&
           service != 'Interest Groups' &&
           service != 'Zettelkasten' &&
-          service != 'Holonic Chart' &&
+          service != 'Holonic Map' &&
           service != 'Skills Map'
       "
       id="actions"
@@ -417,13 +417,11 @@
       </md-button>
     </div>
     <div
-      v-else-if="
-        domain && service != 'Holonic Chart' && service != 'Skills Map'
-      "
+      v-else-if="domain && service != 'Holonic Map' && service != 'Skills Map'"
       id="actions"
     >
       <md-button
-        title="Show Holonic Chart"
+        title="Show Holonic Map"
         @click="sub('holonLink');"
         class="md-fab md-mini md-plain"
       >
@@ -438,7 +436,7 @@
       </md-button>
     </div>
     <div
-      v-else-if="service === 'Holonic Chart' || service === 'Skills Map'"
+      v-else-if="service === 'Holonic Map' || service === 'Skills Map'"
       id="actions"
     >
       <md-button
@@ -450,7 +448,7 @@
         <md-icon>refresh</md-icon>
       </md-button>
       <md-button
-        v-if="service === 'Holonic Chart'"
+        v-if="service === 'Holonic Map'"
         title="Refresh Map"
         @click="sub('holonRefresh');"
         class="md-fab md-mini md-plain"
@@ -605,7 +603,7 @@
       <Particles v-if="!service" />
       <Interests v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
-      <Holons v-if="service == 'Holonic Chart'" />
+      <Holons v-if="service == 'Holonic Map'" />
       <Skills v-if="service == 'Skills Map'" />
       <iframe
         v-if="
@@ -613,7 +611,7 @@
             (service &&
               service !== 'Interest Groups' &&
               service !== 'Zettelkasten' &&
-              service !== 'Holonic Chart' &&
+              service !== 'Holonic Map' &&
               service !== 'Skills Map')
         "
         name="theApp"
@@ -1166,7 +1164,7 @@ export default {
           // Open dialoug to request access
           this.domain = "";
           this.$nextTick(() => {
-            this.service = "Holonic Chart";
+            this.service = "Holonic Map";
           });
           break;
         case "graphLink":
@@ -1181,7 +1179,7 @@ export default {
           this.domain = "";
           this.service = "";
           this.$nextTick(() => {
-            this.service = "Holonic Chart";
+            this.service = "Holonic Map";
           });
           break;
         case "graphRefresh":

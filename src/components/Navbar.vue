@@ -301,7 +301,7 @@
           v-if="
             domain == 'Home' ||
               domain == 'Projects' ||
-              domain == 'Operations' ||
+              domain == 'Ops' ||
               domain == 'Friends'
           "
           v-bind:style="[
@@ -314,7 +314,7 @@
           v-if="
             domain == 'Home' ||
               domain == 'Projects' ||
-              domain == 'Operations' ||
+              domain == 'Ops' ||
               domain == 'Friends'
           "
           v-bind:style="[
@@ -323,15 +323,15 @@
           >proj</md-button
         >
         <md-button
-          @click="nav('Operations');"
+          @click="nav('Ops');"
           v-if="
             domain == 'Home' ||
               domain == 'Projects' ||
-              domain == 'Operations' ||
+              domain == 'Ops' ||
               domain == 'Friends'
           "
           v-bind:style="[
-            domain == 'Operations' ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'Ops' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >ops</md-button
         >
@@ -340,7 +340,7 @@
           v-if="
             domain == 'Home' ||
               domain == 'Projects' ||
-              domain == 'Operations' ||
+              domain == 'Ops' ||
               domain == 'Friends'
           "
           v-bind:style="[
@@ -592,7 +592,7 @@
           !service &&
             (domain == 'Home' ||
               domain == 'Projects' ||
-              domain == 'Operations' ||
+              domain == 'Ops' ||
               domain == 'Friends')
         "
         id="logo"
@@ -716,7 +716,7 @@ export default {
           }
           // add  data to users array
           this.users.push(data);
-          console.log(data);
+          //console.log(data);
 
           if (data.username === this.$cookies.get("username")) {
             this.profile = user.val();
@@ -762,7 +762,7 @@ export default {
         .ref("portal_profiles/" + this.$cookies.get("username"));
       groupsRef.on("child_added", group => {
         var data = group.val();
-        console.log(data);
+        //console.log(data);
 
         if (group.key === "channels") {
           this.groups = group.val();

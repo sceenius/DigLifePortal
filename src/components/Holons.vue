@@ -43,19 +43,20 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    console.log(this.domain);
+    let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
     this.holons.projects = []; // { name:"projects", children :
     this.holons.diglife = [];
     this.holons.operations = [];
     this.holons.friends = [];
-    this.holons.topics = [];
+    this.holons.diglife.topics = [];
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
       this.channels.push(data);
-      if (data.team === "projects") {
-        this.holons.projects.push({
+
+      if (data.team === domain && data.display_name.charAt(0) !== "#") {
+        this.holons[domain].push({
           id: data.channel_id,
           name: data.display_name,
           image: data.image,
@@ -64,44 +65,8 @@ export default {
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
-      } else if (
-        data.team === "diglife" &&
-        data.display_name.charAt(0) !== "#"
-      ) {
-        this.holons.diglife.push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      } else if (
-        data.team === "diglife" &&
-        data.display_name.charAt(0) === "#"
-      ) {
-        this.holons.topics.push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      } else if (data.team === "ops") {
-        this.holons.operations.push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      } else if (data.team === "friends") {
-        this.holons.friends.push({
+      } else if (data.team === domain && data.display_name.charAt(0) === "#") {
+        this.holons[domain].topics.push({
           id: data.channel_id,
           name: data.display_name,
           image: data.image,
@@ -111,6 +76,64 @@ export default {
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
       }
+
+      // if (data.team === "projects") {
+      //   this.holons.projects.push({
+      //     id: data.channel_id,
+      //     name: data.display_name,
+      //     image: data.image,
+      //     members: data.members,
+      //     size: data.total_msg_count,
+      //     link: CHATURL + data.team + "/channels/" + data.name,
+      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+      //   });
+      // } else if (
+      //   data.team === "diglife" &&
+      //   data.display_name.charAt(0) !== "#"
+      // ) {
+      //   this.holons.diglife.push({
+      //     id: data.channel_id,
+      //     name: data.display_name,
+      //     image: data.image,
+      //     members: data.members,
+      //     size: data.total_msg_count,
+      //     link: CHATURL + data.team + "/channels/" + data.name,
+      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+      //   });
+      // } else if (
+      //   data.team === "diglife" &&
+      //   data.display_name.charAt(0) === "#"
+      // ) {
+      //   this.holons.topics.push({
+      //     id: data.channel_id,
+      //     name: data.display_name,
+      //     image: data.image,
+      //     members: data.members,
+      //     size: data.total_msg_count,
+      //     link: CHATURL + data.team + "/channels/" + data.name,
+      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+      //   });
+      // } else if (data.team === "ops") {
+      //   this.holons.operations.push({
+      //     id: data.channel_id,
+      //     name: data.display_name,
+      //     image: data.image,
+      //     members: data.members,
+      //     size: data.total_msg_count,
+      //     link: CHATURL + data.team + "/channels/" + data.name,
+      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+      //   });
+      // } else if (data.team === "friends") {
+      //   this.holons.friends.push({
+      //     id: data.channel_id,
+      //     name: data.display_name,
+      //     image: data.image,
+      //     members: data.members,
+      //     size: data.total_msg_count,
+      //     link: CHATURL + data.team + "/channels/" + data.name,
+      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+      //   });
+      // }
     });
   },
 
@@ -396,20 +419,37 @@ export default {
     // this is the data structure that is loaded into the graph
     // in the future, would be good to store the revision history
     // https://bl.ocks.org/feifang/664c0f16adfcb4dea31b923f74e897a0
+    // flare: function() {
+    //   return {
+    //     name: "Digital Life Collective",
+    //     children: [
+    //       {
+    //         name: "Home",
+    //         children: this.holons.diglife.concat({
+    //           name: "Interest Groups",
+    //           children: this.holons.topics
+    //         })
+    //       },
+    //       { name: "Projects", children: this.holons.projects },
+    //       { name: "Operations", children: this.holons.operations },
+    //       { name: "Friends", children: this.holons.friends }
+    //     ]
+    //   };
+    // }
+
     flare: function() {
+      let domain =
+        this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
       return {
         name: "Digital Life Collective",
         children: [
           {
-            name: "Home",
-            children: this.holons.diglife.concat({
+            name: this.domain,
+            children: this.holons[domain].concat({
               name: "Interest Groups",
-              children: this.holons.topics
+              children: this.holons[domain].topics
             })
-          },
-          { name: "Projects", children: this.holons.projects },
-          { name: "Operations", children: this.holons.operations },
-          { name: "Friends", children: this.holons.friends }
+          }
         ]
       };
     }

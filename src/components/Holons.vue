@@ -26,6 +26,7 @@ export default {
   name: "Holons",
   color: "",
   components: {},
+  props: ["domain"],
   data() {
     return {
       service: "Holons",
@@ -34,6 +35,7 @@ export default {
       width: "",
       height: "",
       element: ""
+      //domain: this.domain
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -41,6 +43,7 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log(this.domain);
     let utime = new Date().getTime();
     this.holons.projects = []; // { name:"projects", children :
     this.holons.diglife = [];

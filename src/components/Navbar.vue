@@ -603,8 +603,8 @@
       <Particles v-if="!service" />
       <Interests v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
-      <Holons v-if="service == 'Holonic Map'" />
-      <Skills v-if="service == 'Skills Map'" />
+      <Holons v-if="service == 'Holonic Map'" :domain="domain" />
+      <Skills v-if="service == 'Skills Map'" :domain="domain" />
       <iframe
         v-if="
           true ||
@@ -1162,14 +1162,14 @@ export default {
       switch (menu) {
         case "holonLink":
           // Open dialoug to request access
-          this.domain = "";
+          //this.domain = "";
           this.$nextTick(() => {
             this.service = "Holonic Map";
           });
           break;
         case "graphLink":
           // Open dialoug to request access
-          this.domain = "";
+          //this.domain = "";
           this.$nextTick(() => {
             this.service = "Skills Map";
           });

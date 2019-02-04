@@ -41,6 +41,7 @@ import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 export default {
   name: "Skills",
   components: { Tags },
+  props: ["domain"],
   data() {
     return {
       service: "Skills",
@@ -62,6 +63,9 @@ export default {
   //
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log(this.domain);
+    let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
+
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");
 
@@ -102,7 +106,7 @@ export default {
               this.nodes.push({
                 id: data.username,
                 group: 1,
-                tags: data.moretags.sort(),
+                tags: data.moretags.length > 0 ? data.moretags.sort() : [],
                 fromTime: data.fromTime,
                 diffTime: data.diffTime,
                 fullname: data.first_name + " " + data.last_name
@@ -361,6 +365,8 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
     graph: function() {
+      let domain =
+        this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
       return {
         nodes: this.nodes,
         links: this.links

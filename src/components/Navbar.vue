@@ -1176,7 +1176,7 @@ export default {
           break;
         case "holonRefresh":
           // Open dialoug to request access
-          this.domain = "";
+          //this.domain = "";
           this.service = "";
           this.$nextTick(() => {
             this.service = "Holonic Map";
@@ -1184,7 +1184,7 @@ export default {
           break;
         case "graphRefresh":
           // Open dialoug to request access
-          this.domain = "";
+          //this.domain = "";
           this.service = "";
           this.$nextTick(() => {
             this.service = "Skills Map";

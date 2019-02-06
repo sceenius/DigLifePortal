@@ -43,20 +43,23 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
+    //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
-    this.holons.projects = []; // { name:"projects", children :
     this.holons.diglife = [];
-    this.holons.operations = [];
+    this.holons.projects = [];
+    this.holons.ops = [];
     this.holons.friends = [];
     this.holons.diglife.topics = [];
+    this.holons.projects.topics = [];
+    this.holons.ops.topics = [];
+    this.holons.friends.topics = [];
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
       this.channels.push(data);
-
-      if (data.team === domain && data.display_name.charAt(0) !== "#") {
-        this.holons[domain].push({
+      if (data.display_name.charAt(0) !== "#") {
+        //console.log("--------", data);
+        this.holons[data.team].push({
           id: data.channel_id,
           name: data.display_name,
           image: data.image,
@@ -65,8 +68,8 @@ export default {
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
-      } else if (data.team === domain && data.display_name.charAt(0) === "#") {
-        this.holons[domain].topics.push({
+      } else if (data.display_name.charAt(0) === "#") {
+        this.holons[data.team].topics.push({
           id: data.channel_id,
           name: data.display_name,
           image: data.image,
@@ -139,6 +142,7 @@ export default {
 
   mounted: function() {
     // https://beta.observablehq.com/@mbostock/d3-zoomable-circle-packing
+
     this.color = d3
       .scaleLinear()
       .domain([0, 5])
@@ -440,18 +444,46 @@ export default {
     flare: function() {
       let domain =
         this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
-      return {
-        name: "Digital Life Collective",
-        children: [
-          {
-            name: this.domain,
-            children: this.holons[domain].concat({
-              name: "Interest Groups",
-              children: this.holons[domain].topics
-            })
-          }
-        ]
-      };
+      console.log(this.holons.ops);
+      if (domain === "diglife") {
+        return {
+          name: "Digital Life Collective",
+          children: [
+            {
+              name: "Home",
+              children: this.holons.diglife.concat({
+                name: "Interest Groups",
+                children: this.holons.diglife.topics
+              })
+            },
+            {
+              name: "Projects",
+              children: this.holons.projects
+            },
+            {
+              name: "Ops",
+              children: this.holons.ops
+            },
+            {
+              name: "Friends",
+              children: this.holons.friends
+            }
+          ]
+        };
+      } else {
+        return {
+          name: "Digital Life Collective",
+          children: [
+            {
+              name: this.domain,
+              children: this.holons[domain].concat({
+                name: "Interest Groups",
+                children: this.holons[domain].topics
+              })
+            }
+          ]
+        };
+      }
     }
   },
   ///////////////////////////////////////////////////////////////////////////////

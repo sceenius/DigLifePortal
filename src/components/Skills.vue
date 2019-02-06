@@ -73,6 +73,8 @@ export default {
       .once("value", users => {
         users.forEach(user => {
           let data = user.val();
+          //console.log(JSON.stringify(data.channels));
+          data.domains = data.domains;
           data.moretags = [];
           data.fromTime = Moment(data.create_at).fromNow();
           data.diffTime = new Date().getTime();
@@ -103,6 +105,7 @@ export default {
             .then(profile => {
               //console.log(data.moretags);
               this.users.push(data);
+              //if (data.domains.includes(domain)) { //requires updated profile
               this.nodes.push({
                 id: data.username,
                 group: 1,
@@ -131,6 +134,7 @@ export default {
                   }
                 }
               });
+              //}
             });
         });
       })

@@ -49,14 +49,17 @@ export default {
     this.holons.projects = [];
     this.holons.ops = [];
     this.holons.friends = [];
+    this.holons["ecosystem-maps"] = [];
     this.holons.diglife.topics = [];
     this.holons.projects.topics = [];
     this.holons.ops.topics = [];
     this.holons.friends.topics = [];
+    this.holons["ecosystem-maps"].topics = [];
     let channelsRef = db.database().ref("portal_channels");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
       this.channels.push(data);
+      //console.log(data.team, this.holons[data.team])
       if (data.display_name.charAt(0) !== "#") {
         //console.log("--------", data);
         this.holons[data.team].push({
@@ -443,8 +446,10 @@ export default {
 
     flare: function() {
       let domain =
-        this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
-      console.log(this.holons.ops);
+        !this.domain || this.domain === "Home"
+          ? "diglife"
+          : this.domain.toLowerCase();
+      //console.log(this.holons.ops);
       if (domain === "diglife") {
         return {
           name: "Digital Life Collective",
@@ -458,15 +463,31 @@ export default {
             },
             {
               name: "Projects",
-              children: this.holons.projects
+              children: this.holons.projects.concat({
+                name: "",
+                children: this.holons.projects.topics
+              })
             },
             {
               name: "Ops",
-              children: this.holons.ops
+              children: this.holons.ops.concat({
+                name: "",
+                children: this.holons.ops.topics
+              })
             },
             {
               name: "Friends",
-              children: this.holons.friends
+              children: this.holons.friends.concat({
+                name: "",
+                children: this.holons.friends.topics
+              })
+            },
+            {
+              name: "Ecosystem-Maps",
+              children: this.holons["ecosystem-maps"].concat({
+                name: "",
+                children: this.holons["ecosystem-maps"].topics
+              })
             }
           ]
         };

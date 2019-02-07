@@ -83,7 +83,10 @@ new Vue({
         .then(response =>
           db
             .database()
-            .ref("portal_profiles/" + this.$cookies.get("username"))
+            .ref(
+              "portal_profiles/" +
+                this.$cookies.get("username").replace(".", "%2E")
+            )
             .update(this.groups)
         );
 

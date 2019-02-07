@@ -759,7 +759,9 @@ export default {
     if (this.$cookies.get("username")) {
       let groupsRef = db
         .database()
-        .ref("portal_profiles/" + this.$cookies.get("username"));
+        .ref(
+          "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
+        );
       groupsRef.on("child_added", group => {
         var data = group.val();
         //console.log(data);
@@ -854,7 +856,11 @@ export default {
     switchService: function() {
       //this.$cookies.set("showServices", this.showServices);
       db.database()
-        .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs")
+        .ref(
+          "portal_profiles/" +
+            this.$cookies.get("username").replace(".", "%2E") +
+            "/prefs"
+        )
         .update({ showServices: this.showServices });
     },
     avatarLink2: function(index) {
@@ -1093,7 +1099,11 @@ export default {
               // update channels and grouptags for this user
               // note: SET  WILL  overwrite other data of this user profile
               .set(this.groups.channels)
-              .ref("portal_profiles/" + this.username + "/grouptags")
+              .ref(
+                "portal_profiles/" +
+                  this.username.replace(".", "%2E") +
+                  "/grouptags"
+              )
               .set(this.groups.grouptags)
           )
           .then(

@@ -85,7 +85,7 @@
         <md-field id="username">
           <label>Username</label>
           <md-input
-            v-model.lazy="username"
+            v-model="username"
             @keyup.prevent.esc="onConfirm();"
             @keyup.enter="onConfirm();"
             required
@@ -1085,7 +1085,11 @@ export default {
           .then(response =>
             db
               .database()
-              .ref("portal_profiles/" + this.username + "/channels")
+              .ref(
+                "portal_profiles/" +
+                  this.username.replace(".", "%2E") +
+                  "/channels"
+              )
               // update channels and grouptags for this user
               // note: SET  WILL  overwrite other data of this user profile
               .set(this.groups.channels)
@@ -1096,7 +1100,7 @@ export default {
             // load personal channels and tags from group membership
             db
               .database()
-              .ref("portal_profiles/" + this.username)
+              .ref("portal_profiles/" + this.username.replace(".", "%2E"))
               .once("value")
               .then(group => {
                 let data = group.val();

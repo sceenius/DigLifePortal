@@ -63,7 +63,6 @@ export default {
   //
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    console.log(this.domain);
     let domain =
       !this.domain || this.domain === "Home"
         ? "diglife"

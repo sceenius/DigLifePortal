@@ -71,7 +71,9 @@ export default {
     // load personal channels and tags from group membership
     let groupsRef = db
       .database()
-      .ref("portal_profiles/" + this.$cookies.get("username"));
+      .ref(
+        "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
+      );
     groupsRef
       .once("value")
       .then(group => {
@@ -104,7 +106,7 @@ export default {
                 db.database()
                   .ref(
                     "portal_profiles/" +
-                      this.$cookies.get("username") +
+                      this.$cookies.get("username").replace(".", "%2E") +
                       "/tags/" +
                       index
                   )
@@ -182,7 +184,11 @@ export default {
         this.tags.push(this.autocompleteItems[index]);
         // add tags to Firebase for both profiles and users
         db.database()
-          .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+          .ref(
+            "portal_profiles/" +
+              this.$cookies.get("username").replace(".", "%2E") +
+              "/tags"
+          )
           .set(this.tags);
         db.database()
           .ref("portal_users/" + this.profile.id + "/tags")
@@ -223,7 +229,11 @@ export default {
       this.tags = arr;
       // add tags to Firebase
       db.database()
-        .ref("portal_profiles/" + this.$cookies.get("username") + "/tags")
+        .ref(
+          "portal_profiles/" +
+            this.$cookies.get("username").replace(".", "%2E") +
+            "/tags"
+        )
         .update(this.tags);
     }
   }

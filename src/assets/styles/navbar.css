@@ -15,6 +15,14 @@
   margin-left: -225px; /* Half the width */
 }
 
+.md-dialog,
+.md-tab {
+  width: 480px !important;
+  height: 640px !important;
+  max-width: 480px !important;
+  max-height: 640px !important;
+}
+
 @media only screen and (max-width: 600px) {
   #logo {
     width: 250px;

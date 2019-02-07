@@ -1,6 +1,8 @@
 <template>
   <div>
-    <p style="margin-top:-20px">Your skillsets & expertise (not interests):</p>
+    <p st yle="margin-top:-20px">
+      Your skillsets & expertise (don't list interests):
+    </p>
     <vue-tags-input
       v-model="tag"
       :tags="tags"

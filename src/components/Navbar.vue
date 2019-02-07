@@ -37,33 +37,11 @@
         DIALOG BOXES - SETTINGS DIALOG
       ----------------------------------------------------------------------
     -->
-    <md-dialog :md-active.sync="activeSettings" style="width:650px;">
-      <md-dialog-title>My Settings</md-dialog-title>
-      <md-tabs md-dynamic-height>
-        <md-tab md-label="Tags">
-          <div
-            style="margin: 20px 0 0 10px; width: 95%; overflow: auto; height: 55vh !important;"
-          >
-            <Tags />
-          </div>
-        </md-tab>
-        <md-tab md-label="Groups">
-          <md-list
-            style="margin: 20px 0 0 10px; width: 90%; overflow: auto; height: 55vh !important;"
-          >
-            <md-list-item v-for="(group, index) in groups" :key="index">
-              <span class="md-list-item-text">{{ group }}</span>
-              <md-button
-                @click="directMessage(index);"
-                class="md-icon-button md-list-action"
-              >
-                <!-- Create a direct message channel -->
-                <md-icon class="md-primary">chat_bubble</md-icon>
-              </md-button>
-            </md-list-item>
-          </md-list>
-        </md-tab>
-      </md-tabs>
+    <md-dialog :md-active.sync="activeSettings" style="padding: 20px;">
+      <md-dialog-title style="padding: 0px; color: #404040 !important;"
+        >My Profile</md-dialog-title
+      >
+      <Tags />
     </md-dialog>
 
     <!--
@@ -75,9 +53,11 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
-      style="width: 400px; height: 350px;"
+      style="max-width: 400px; max-height: 350px !important;"
     >
-      <md-dialog-title>Welcome to DigLife!</md-dialog-title>
+      <md-dialog-title style="color: #404040 !important;"
+        >Welcome to DigLife!</md-dialog-title
+      >
       <div style="padding: 0 25px ;">
         If you are a member of the Digital Life Collective, please use your
         Mattermost username to log into the portal. If you are not a member yet,
@@ -362,8 +342,8 @@
               <span>Logout</span>
             </md-menu-item>
             <md-menu-item @click="openSettings();">
-              <md-icon>settings</md-icon>
-              <span>Settings</span>
+              <md-icon>person</md-icon>
+              <span>Profile</span>
             </md-menu-item>
           </md-menu-content>
         </md-menu>

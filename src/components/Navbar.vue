@@ -831,7 +831,7 @@ export default {
       //console.log("-----",this.channels[index].team, this.domain);
       return this.channels[index].purpose.domain &&
         (this.channels[index].team === this.domain ||
-          ["Project", "Ops", "Friends"].includes(this.subdomain))
+          ["Home", "Project", "Ops", "Friends"].includes(this.subdomain))
         ? this.channels[index].purpose.domain.includes(this.subdomain)
         : false;
     },

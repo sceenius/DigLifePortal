@@ -54,15 +54,13 @@
 .md-card .md-title {
   color: #404040 !important;
 }
-.md-toolbar-home,
-.md-toolbar-ops,
-.md-toolbar-projects,
-.md-toolbar-friends,
-.md-toolbar- {
+.md-toolbar-diglife {
   background-color: #00b0a0 !important;
 }
 
-.md-toolbar-ccmm {
+.md-toolbar-ccmm,
+.md-toolbar-openlearning,
+.md-toolbar-ecosystem-maps {
   background-color: #3c78d8 !important;
 }
 

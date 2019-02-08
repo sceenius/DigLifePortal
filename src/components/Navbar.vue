@@ -261,70 +261,49 @@
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
-    <md-toolbar
-      :class="['md-primary', 'md-toolbar-' + domain.toLowerCase()]"
-      v-if="profile"
-    >
+    <md-toolbar :class="['md-primary', 'md-toolbar-' + domain]" v-if="profile">
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title"
-        >{{ service ? "" : "DigLife" }} {{ service ? "" : domain }}
-        {{ service.replace(/[!#*@%/."'\\&]/, "") }}</span
-      >
+        >{{
+          !service
+            ? domain.toUpperCase()
+            : service.replace(/[!#*@%/."'\\&]/, "")
+        }}
+      </span>
 
       <div class="md-toolbar-section-end">
         <md-button
-          @click="nav('Home');"
-          v-if="
-            domain == 'Home' ||
-              domain == 'Projects' ||
-              domain == 'Ops' ||
-              domain == 'Friends'
-          "
+          @click="nav(domain, 'Home');"
           v-bind:style="[
-            domain == 'Home' ? { color: '#fec019' } : { color: '#fff' }
+            subdomain == 'Home' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >Home</md-button
         >
         <md-button
-          @click="nav('Projects');"
-          v-if="
-            domain == 'Home' ||
-              domain == 'Projects' ||
-              domain == 'Ops' ||
-              domain == 'Friends'
-          "
+          @click="nav(domain, 'Projects');"
+          v-if="domain == 'diglife'"
           v-bind:style="[
-            domain == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
+            subdomain == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >proj</md-button
         >
         <md-button
-          @click="nav('Ops');"
-          v-if="
-            domain == 'Home' ||
-              domain == 'Projects' ||
-              domain == 'Ops' ||
-              domain == 'Friends'
-          "
+          @click="nav(domain, 'Ops');"
+          v-if="domain == 'diglife'"
           v-bind:style="[
-            domain == 'Ops' ? { color: '#fec019' } : { color: '#fff' }
+            subdomain == 'Ops' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >ops</md-button
         >
         <md-button
-          @click="nav('Friends');"
-          v-if="
-            domain == 'Home' ||
-              domain == 'Projects' ||
-              domain == 'Ops' ||
-              domain == 'Friends'
-          "
+          @click="nav(domain, 'Friends');"
+          v-if="domain == 'diglife'"
           v-bind:style="[
-            domain == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
+            subdomain == 'Friends' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >friends</md-button
         >
@@ -636,6 +615,7 @@ export default {
     activeSettings: false,
     activeMenu: false,
     domain: "",
+    subdomain: "",
     service: "",
     username: "",
     snack: "",
@@ -662,8 +642,8 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     // domain coming from router
-    let domain = this.$route.params.domain || "Home";
-    this.domain = domain.charAt(0).toUpperCase() + domain.slice(1);
+    this.domain = this.$route.params.domain || "diglife";
+    //this.domain = domain.toUpperCase(); //charAt(0).toUpperCase() + domain.slice(1);
 
     console.log("Intializing app..");
     let usersRef = db.database().ref("portal_users");
@@ -803,7 +783,7 @@ export default {
       return (
         BASEURL +
         "images/brand/logo_secondary_" +
-        this.domain.toLowerCase() +
+        this.subdomain.toLowerCase() +
         ".svg"
       );
     },
@@ -854,8 +834,9 @@ export default {
 
     showDomain: function(index) {
       //check if current domain is listed in channel
-      return this.channels[index].purpose.domain
-        ? this.channels[index].purpose.domain.includes(this.domain)
+      return this.channels[index].purpose.domain &&
+        this.channels[index].team === this.domain
+        ? this.channels[index].purpose.domain.includes(this.subdomain)
         : false;
     },
     showGroup: function(index) {
@@ -1139,16 +1120,13 @@ export default {
       this.activeUser = true;
     },
 
-    nav: function(menu) {
-      this.domain = menu;
+    nav: function(domain, subdomain) {
+      this.domain = domain;
+      this.subdomain = subdomain;
       this.showNavigation = true;
       this.service = "";
       var element = document.getElementById("theApp");
       element.style.display = "none";
-      //element = document.getElementById("particles-js");
-      //element.style.display = "block";
-      //element = document.getElementById("logo");
-      //element.style.display = "block";
     },
 
     sub: function(menu) {

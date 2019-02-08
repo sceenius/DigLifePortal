@@ -263,7 +263,7 @@
     -->
     <md-toolbar
       :class="['md-primary', 'md-toolbar-' + domain.toLowerCase()]"
-      v-if="username"
+      v-if="profile"
     >
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>

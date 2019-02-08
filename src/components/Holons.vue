@@ -45,24 +45,32 @@ export default {
   created: function() {
     //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
-    this.holons.diglife = [];
-    this.holons.projects = [];
-    this.holons.ops = [];
-    this.holons.friends = [];
-    this.holons["ecosystem-maps"] = [];
-    this.holons.diglife.topics = [];
-    this.holons.projects.topics = [];
-    this.holons.ops.topics = [];
-    this.holons.friends.topics = [];
-    this.holons["ecosystem-maps"].topics = [];
+
+    let domainsRef = db.database().ref("portal_profiles/ledgerbot/domains");
     let channelsRef = db.database().ref("portal_channels");
+
+    let domains = [
+      "diglife",
+      "projects",
+      "friends",
+      "ops",
+      "openlearning",
+      "ecosystem-maps"
+    ];
+    for (var i in domains) {
+      console.log(domains[i]);
+      this.holons[domains[i]] = [];
+      this.holons[domains[i]].topics = [];
+      this.holons[domains[i]].important = [];
+    }
+
     channelsRef.on("child_added", channel => {
       var data = channel.val();
       this.channels.push(data);
       //console.log(data.team, this.holons[data.team]);
-      if (data.display_name.charAt(0) !== "#") {
+      if (data.display_name.charAt(0) === "!") {
         //console.log("--------", data);
-        this.holons[data.team].push({
+        this.holons[data.team].important.push({
           id: data.channel_id,
           name: data.display_name,
           image: data.image,
@@ -81,65 +89,17 @@ export default {
           link: CHATURL + data.team + "/channels/" + data.name,
           opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
         });
+      } else if (data.display_name.charAt(0) !== "#") {
+        this.holons[data.team].push({
+          id: data.channel_id,
+          name: data.display_name,
+          image: data.image,
+          members: data.members,
+          size: data.total_msg_count,
+          link: CHATURL + data.team + "/channels/" + data.name,
+          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+        });
       }
-
-      // if (data.team === "projects") {
-      //   this.holons.projects.push({
-      //     id: data.channel_id,
-      //     name: data.display_name,
-      //     image: data.image,
-      //     members: data.members,
-      //     size: data.total_msg_count,
-      //     link: CHATURL + data.team + "/channels/" + data.name,
-      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-      //   });
-      // } else if (
-      //   data.team === "diglife" &&
-      //   data.display_name.charAt(0) !== "#"
-      // ) {
-      //   this.holons.diglife.push({
-      //     id: data.channel_id,
-      //     name: data.display_name,
-      //     image: data.image,
-      //     members: data.members,
-      //     size: data.total_msg_count,
-      //     link: CHATURL + data.team + "/channels/" + data.name,
-      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-      //   });
-      // } else if (
-      //   data.team === "diglife" &&
-      //   data.display_name.charAt(0) === "#"
-      // ) {
-      //   this.holons.topics.push({
-      //     id: data.channel_id,
-      //     name: data.display_name,
-      //     image: data.image,
-      //     members: data.members,
-      //     size: data.total_msg_count,
-      //     link: CHATURL + data.team + "/channels/" + data.name,
-      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-      //   });
-      // } else if (data.team === "ops") {
-      //   this.holons.operations.push({
-      //     id: data.channel_id,
-      //     name: data.display_name,
-      //     image: data.image,
-      //     members: data.members,
-      //     size: data.total_msg_count,
-      //     link: CHATURL + data.team + "/channels/" + data.name,
-      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-      //   });
-      // } else if (data.team === "friends") {
-      //   this.holons.friends.push({
-      //     id: data.channel_id,
-      //     name: data.display_name,
-      //     image: data.image,
-      //     members: data.members,
-      //     size: data.total_msg_count,
-      //     link: CHATURL + data.team + "/channels/" + data.name,
-      //     opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-      //   });
-      // }
     });
   },
 
@@ -457,38 +417,81 @@ export default {
           children: [
             {
               name: "Home",
-              children: this.holons.diglife.concat({
-                name: "Interest Groups",
-                children: this.holons.diglife.topics
-              })
-            },
-            {
-              name: "Projects",
-              children: this.holons.projects.concat({
-                name: "",
-                children: this.holons.projects.topics
-              })
+              children: this.holons.diglife.concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons.diglife.topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons.diglife.important
+                }
+              )
             },
             {
               name: "Ops",
-              children: this.holons.ops.concat({
-                name: "",
-                children: this.holons.ops.topics
-              })
+              children: this.holons.ops.concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons.ops.topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons.ops.important
+                }
+              )
+            },
+            {
+              name: "Projects",
+              children: this.holons.projects.concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons.projects.topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons.projects.important
+                }
+              )
             },
             {
               name: "Friends",
-              children: this.holons.friends.concat({
-                name: "",
-                children: this.holons.friends.topics
-              })
+              children: this.holons.friends.concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons.friends.topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons.friends.important
+                }
+              )
             },
             {
               name: "Ecosystem-Maps",
-              children: this.holons["ecosystem-maps"].concat({
-                name: "",
-                children: this.holons["ecosystem-maps"].topics
-              })
+              children: this.holons["ecosystem-maps"].concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons["ecosystem-maps"].topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons["ecosystem-maps"].important
+                }
+              )
+            },
+            {
+              name: "Open Learning",
+              children: this.holons["openlearning"].concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons["openlearning"].topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons.openlearning.important
+                }
+              )
             }
           ]
         };
@@ -498,10 +501,16 @@ export default {
           children: [
             {
               name: this.domain,
-              children: this.holons[domain].concat({
-                name: "Interest Groups",
-                children: this.holons[domain].topics
-              })
+              children: this.holons[domain].concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons[domain].topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons[domain].important
+                }
+              )
             }
           ]
         };

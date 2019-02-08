@@ -433,7 +433,7 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
-        <span class="md-title" style="color: white;">{{ domain }}</span>
+        <span class="md-title" style="color: white;">{{ subdomain }}</span>
       </md-toolbar>
 
       <!--
@@ -547,13 +547,7 @@
     -->
     <md-content class="md-scrollbar">
       <img
-        v-if="
-          !service &&
-            (domain == 'Home' ||
-              domain == 'Projects' ||
-              domain == 'Ops' ||
-              domain == 'Friends')
-        "
+        v-if="!service && domain == 'diglife'"
         id="logo"
         v-bind:src="logoLink"
       />
@@ -614,8 +608,8 @@ export default {
     activeInfo: false,
     activeSettings: false,
     activeMenu: false,
-    domain: "",
-    subdomain: "",
+    domain: "diglife",
+    subdomain: "Home",
     service: "",
     username: "",
     snack: "",
@@ -834,8 +828,10 @@ export default {
 
     showDomain: function(index) {
       //check if current domain is listed in channel
+      //console.log("-----",this.channels[index].team, this.domain);
       return this.channels[index].purpose.domain &&
-        this.channels[index].team === this.domain
+        (this.channels[index].team === this.domain ||
+          ["Project", "Ops", "Friends"].includes(this.subdomain))
         ? this.channels[index].purpose.domain.includes(this.subdomain)
         : false;
     },

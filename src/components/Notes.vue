@@ -224,11 +224,7 @@
       id="noteCards"
     >
       <div class="md-card-banner">
-        <md-icon
-          class="md-size-1x"
-          style="cursor: pointer; color: #FEC019; z-index: 99;position: absolute; top:-5px; right: 20px;"
-          >bookmark</md-icon
-        >
+        <md-icon class="md-size-1x">bookmark</md-icon>
         <md-menu>
           <md-button
             style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
@@ -255,7 +251,6 @@
 
         <div class="md-subhead">Zettelkasten Note</div>
         <img
-          style="width: 20px; position: absolute; top: 5px; right: 2px; "
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
         />
       </div>

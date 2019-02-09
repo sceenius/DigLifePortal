@@ -1,3 +1,7 @@
+.md-layout.md-gutter {
+  margin-left: 0px;
+}
+
 .md-dialog {
   width: 400px;
   height: 680px;
@@ -23,9 +27,23 @@
   padding: 5px;
   width: 100%;
   color: white;
-  max-height: 30px;
+  height: 50px;
   background-color: #00b0a0; /* DigLife:00B0A0 Xmas:00B0A0*/
   overflow: hide;
+}
+
+.md-card-banner .md-button {
+  font-size: 1em;
+  position: absolute;
+  top: 5px;
+  left: 5px;
+}
+
+.md-card-banner img {
+  width: 30px;
+  position: absolute;
+  top: 10px;
+  right: 5px;
 }
 
 .md-card-header {
@@ -33,7 +51,7 @@
   height: 86px;
   width: 100%;
   background-color: #e2e2e2;
-  top: 30px;
+  top: 50px;
   left: 0px;
   padding: 10px;
 }

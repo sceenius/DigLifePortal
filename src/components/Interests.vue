@@ -147,11 +147,7 @@
       >
         <div class="md-card-banner">
           <md-menu>
-            <md-button
-              style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
-              class="md-icon-button"
-              md-menu-trigger
-            >
+            <md-button class="md-icon-button" md-menu-trigger>
               <md-icon style="font-size: 1.8em !important; color: white;"
                 >menu</md-icon
               >
@@ -172,7 +168,6 @@
 
           <div class="md-subhead"></div>
           <img
-            style="width: 20px; position: absolute; top: 5px; right: 2px; "
             src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
           />
         </div>

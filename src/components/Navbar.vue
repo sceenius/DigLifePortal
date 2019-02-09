@@ -345,7 +345,8 @@
           service != 'Interest Groups' &&
           service != 'Zettelkasten' &&
           service != 'Holonic Map' &&
-          service != 'Skills Map'
+          service != 'Skills Map' &&
+          service != 'help Desk'
       "
       id="actions"
     >
@@ -556,6 +557,7 @@
       <Particles v-if="!service" />
       <Interests v-if="service == 'Interest Groups'" />
       <Notes v-if="service == 'Zettelkasten'" />
+      <Meetings v-if="service == '!Help Desk'" />
       <Holons v-if="service == 'Holonic Map'" :domain="domain" />
       <Skills v-if="service == 'Skills Map'" :domain="domain" />
       <iframe
@@ -584,6 +586,7 @@ import Particles from "./Particles";
 import Tags from "./Tags";
 import Interests from "./Interests";
 import Notes from "./Notes";
+import Meetings from "./Meetings";
 import Holons from "./Holons";
 import Skills from "./Skills";
 import Slack from "node-slack";
@@ -593,7 +596,7 @@ import db from "../firebase/init";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Interests, Notes, Holons, Skills },
+  components: { Particles, Tags, Interests, Notes, Holons, Skills, Meetings },
   data: () => ({
     // form: {
     //   username: null
@@ -646,38 +649,38 @@ export default {
     console.log("Loading users..");
     usersRef.on("child_added", user => {
       let data = user.val();
-      profilesRef
-        .child(data.username.replace(".", "%2E"))
-        .once("value", profile => {
-          let snapshot = profile.val();
-          if (profile.exists()) {
-            // update firebase
-            // if (snapshot.tags) {
-            //   if (snapshot.tags.length > 1) {
-            //     snapshot.tags = snapshot.tags.reduce(
-            //       (accumulator, currentValue) => {
-            //         return [...accumulator, currentValue.text];
-            //       }
-            //     );
-            //   } else {
-            //     snapshot.tags = [snapshot.tags[0].text];
-            //   }
-            // }
-            // change this to include ALL tags properties, incl freq
-            // must be in a separate /profile path
-            //usersRef.child(user.key + "/profile").set(snapshot);
-            //user.ref.update(snapshot);
-          }
-          // add  data to users array
-          this.users.push(data);
-          //console.log(data);
+      //console.log(data.username);
+      let path = data.username.replace(".", "%2E");
+      profilesRef.child(path).once("value", profile => {
+        let snapshot = profile.val();
+        if (profile.exists()) {
+          // update firebase
+          // if (snapshot.tags) {
+          //   if (snapshot.tags.length > 1) {
+          //     snapshot.tags = snapshot.tags.reduce(
+          //       (accumulator, currentValue) => {
+          //         return [...accumulator, currentValue.text];
+          //       }
+          //     );
+          //   } else {
+          //     snapshot.tags = [snapshot.tags[0].text];
+          //   }
+          // }
+          // change this to include ALL tags properties, incl freq
+          // must be in a separate /profile path
+          //usersRef.child(user.key + "/profile").set(snapshot);
+          //user.ref.update(snapshot);
+        }
+        // add  data to users array
+        this.users.push(data);
+        //console.log(data);
 
-          if (data.username === this.$cookies.get("username")) {
-            this.profile = user.val();
-            this.username = this.$cookies.get("username");
-            this.activeUser = false;
-          }
-        });
+        if (data.username === this.$cookies.get("username")) {
+          this.profile = user.val();
+          this.username = this.$cookies.get("username");
+          this.activeUser = false;
+        }
+      });
     });
 
     console.log("Loading channels..");
@@ -1232,11 +1235,12 @@ export default {
       } else {
         this.service = this.channels[index].display_name;
       }
-
+      console.log("----", this.service);
       var element = document.getElementById("theApp");
       if (
         this.service === "Zettelkasten" ||
-        this.service === "Interest Groups"
+        this.service === "Interest Groups" ||
+        this.service === "Help Desk"
       ) {
         element.style.display = "none";
       } else {

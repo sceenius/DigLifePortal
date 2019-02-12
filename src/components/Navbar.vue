@@ -12,8 +12,8 @@
     >
       <span>{{ snack }}</span>
       <md-button class="md-primary" @click="showSnackBar = false;"
-        >Dismiss</md-button
-      >
+        >Dismiss
+      </md-button>
     </md-snackbar>
 
     <md-snackbar

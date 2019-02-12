@@ -1,8 +1,8 @@
 import Vue from "vue";
 import Router from "vue-router";
-import Navbar from "../components/Navbar";
-import Holons from "../components/Holons";
-import Skills from "../components/Skills";
+import Navbar from "../components/Navbar.vue";
+import Holons from "../components/Holons.vue";
+import Skills from "../components/Skills.vue";
 
 Vue.use(Router);
 

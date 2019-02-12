@@ -328,7 +328,7 @@ import Moment from "moment";
 import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL } from "../../index.js";
-import db from "../firebase/init";
+import db from "../firebase/init.js";
 
 export default {
   name: "Notes",

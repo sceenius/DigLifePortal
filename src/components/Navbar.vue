@@ -12,8 +12,8 @@
     >
       <span>{{ snack }}</span>
       <md-button class="md-primary" @click="showSnackBar = false;"
-        >Dismiss</md-button
-      >
+        >Dismiss
+      </md-button>
     </md-snackbar>
 
     <md-snackbar
@@ -271,7 +271,7 @@
         >{{
           !service
             ? domain.toUpperCase()
-            : service.replace(/[!#*@%/."'\\&]/, "")
+            : service.replace(/[!#*@%/."'\\&:]/, "")
         }}
       </span>
 
@@ -339,18 +339,9 @@
           <md-icon>folder_shared</md-icon>
       ----------------------------------------------------------------------
     -->
-    <div
-      v-if="
-        service &&
-          service != 'Interest Groups' &&
-          service != 'Zettelkasten' &&
-          service != 'Holonic Map' &&
-          service != 'Skills Map' &&
-          service != 'help Desk'
-      "
-      id="actions"
-    >
+    <div id="actions">
       <md-button
+        v-if="service && service.charAt(0) !== ':'"
         title="Open app in new window"
         @click="sub('appLink');"
         class="md-fab md-mini md-plain"
@@ -358,6 +349,7 @@
         <md-icon>fullscreen</md-icon>
       </md-button>
       <md-button
+        v-if="service && service.charAt(0) !== ':'"
         v-for="(menu, index) in channel.menu"
         :key="index"
         v-bind:title="menu.title"
@@ -369,51 +361,68 @@
       </md-button>
 
       <md-button
+        v-if="service && service.charAt(0) !== ':'"
         title="Add Menu Entry"
         @click="addMenu();"
         class="md-fab md-mini md-plain"
       >
         <md-icon>add</md-icon>
       </md-button>
-    </div>
-    <div
-      v-else-if="domain && service != 'Holonic Map' && service != 'Skills Map'"
-      id="actions"
-    >
       <md-button
-        title="Show Holonic Map"
-        @click="sub('holonLink');"
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Holons"
+        @click="sub(':Holons');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>blur_circular</md-icon>
       </md-button>
       <md-button
-        title="Show Skills Map"
-        @click="sub('graphLink');"
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Skills"
+        @click="sub(':Skills');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>people_outline</md-icon>
       </md-button>
-    </div>
-    <div
-      v-else-if="service === 'Holonic Map' || service === 'Skills Map'"
-      id="actions"
-    >
       <md-button
-        v-if="service === 'Skills Map'"
-        title="Refresh Map"
-        @click="sub('graphRefresh');"
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Folders"
+        @click="sub(':Folders');"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>refresh</md-icon>
+        <md-icon>folder_shared</md-icon>
       </md-button>
       <md-button
-        v-if="service === 'Holonic Map'"
-        title="Refresh Map"
-        @click="sub('holonRefresh');"
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Conversations"
+        @click="sub(':Conversations');"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>refresh</md-icon>
+        <md-icon>announcement</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Conversations"
+        @click="sub(':Conversations');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>chat</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Meetings"
+        @click="sub(':Meetings');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>videocam</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Notes"
+        @click="sub(':Notes');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>description</md-icon>
       </md-button>
     </div>
     <!--
@@ -555,20 +564,12 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
 
       <Particles v-if="!service" />
-      <Interests v-if="service == 'Interest Groups'" />
-      <Notes v-if="service == 'Zettelkasten'" />
-      <Meetings v-if="service == '!Help Desk'" />
-      <Holons v-if="service == 'Holonic Map'" :domain="domain" />
-      <Skills v-if="service == 'Skills Map'" :domain="domain" />
+      <Interests v-if="service == ':Conversations'" :domain="domain" />
+      <Notes v-if="service == ':Notes'" :domain="domain" />
+      <Meetings v-if="service == ':Meetings'" :domain="domain" />
+      <Holons v-if="service == ':Holons'" :domain="domain" />
+      <Skills v-if="service == ':Skills'" :domain="domain" />
       <iframe
-        v-if="
-          true ||
-            (service &&
-              service !== 'Interest Groups' &&
-              service !== 'Zettelkasten' &&
-              service !== 'Holonic Map' &&
-              service !== 'Skills Map')
-        "
         name="theApp"
         id="theApp"
         style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto; display: none"
@@ -1129,36 +1130,74 @@ export default {
     },
 
     sub: function(menu) {
+      let element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "none";
       // Open the contextual action button
       switch (menu) {
-        case "holonLink":
-          // Open dialoug to request access
-          //this.domain = "";
-          this.$nextTick(() => {
-            this.service = "Holonic Map";
-          });
+        case ":Folders":
+          element.src = "about:blank";
+          element.style.display = "block";
+          this.service = ":Folders";
+          let drive = "";
+          switch (this.subdomain) {
+            case "Home":
+              drive = "1pfEKM3g_gUbHosuwzbc-ea29gjwGAmVZ";
+              break;
+            case "Projects":
+              drive = "1m2EkiK57l0kOjaK3oXzBGvoOYxU_7sme";
+              break;
+            case "Ops":
+              drive = "1fZ5-UEJlnD5_N_YGtP0BNckuxP7TvRJR";
+              break;
+            case "Friends":
+              drive = "1e2-z9FTqOMJXUc0JRMAEm7XynpkSRy60";
+              break;
+            case "Openlearning":
+              drive = "";
+              break;
+            case "Ecosystem-maps":
+              drive = "";
+              break;
+            default:
+              drive = "0B_zdMVo5TxZQS0dmYlhXaUJIams";
+              break;
+          }
+
+          window.open(
+            "https://drive.google.com/embeddedfolderview?id=" + drive + "#grid",
+            "theApp"
+          );
+
           break;
-        case "graphLink":
-          // Open dialoug to request access
-          //this.domain = "";
-          this.$nextTick(() => {
-            this.service = "Skills Map";
-          });
-          break;
-        case "holonRefresh":
-          // Open dialoug to request access
-          //this.domain = "";
+        case ":Holons":
           this.service = "";
           this.$nextTick(() => {
-            this.service = "Holonic Map";
+            this.service = ":Holons";
           });
           break;
-        case "graphRefresh":
-          // Open dialoug to request access
-          //this.domain = "";
+        case ":Skills":
           this.service = "";
           this.$nextTick(() => {
-            this.service = "Skills Map";
+            this.service = ":Skills";
+          });
+          break;
+        case ":Notes":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Notes";
+          });
+          break;
+        case ":Conversations":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Conversations";
+          });
+          break;
+        case ":Meetings":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Meetings";
           });
           break;
         case "infoLink":
@@ -1237,16 +1276,16 @@ export default {
       }
       console.log("----", this.service);
       var element = document.getElementById("theApp");
-      if (
-        this.service === "Zettelkasten" ||
-        this.service === "Interest Groups" ||
-        this.service === "Help Desk"
-      ) {
-        element.style.display = "none";
-      } else {
-        element.src = "about:blank";
-        element.style.display = "block";
-      }
+      // if (
+      //   this.service === "Zettelkasten" ||
+      //   this.service === "Conversations" ||
+      //   this.service === "Help Desk"
+      // ) {
+      //   element.style.display = "none";
+      // } else {
+      element.src = "about:blank";
+      element.style.display = "block";
+      // }
 
       // Need to change title to Mattermost for all non-service channels
       this.channel = this.channels[index];

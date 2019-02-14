@@ -370,35 +370,51 @@
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Holonic Map"
-        @click="sub(':Holonic Map');"
+        title="Show Holons"
+        @click="sub(':Holons');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>blur_circular</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Skills Map"
-        @click="sub(':Skills Map');"
+        title="Show Skills"
+        @click="sub(':Skills');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>people_outline</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Shared Folders"
-        @click="sub(':Shared Folders');"
+        title="Show Folders"
+        @click="sub(':Folders');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>folder_shared</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Interest Groups"
-        @click="sub(':Interest Groups');"
+        title="Show Conversations"
+        @click="sub(':Conversations');"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>group_work</md-icon>
+        <md-icon>announcement</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Conversations"
+        @click="sub(':Conversations');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>chat</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Meetings"
+        @click="sub(':Meetings');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>videocam</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
@@ -406,7 +422,7 @@
         @click="sub(':Notes');"
         class="md-fab md-mini md-plain"
       >
-        <md-icon>note</md-icon>
+        <md-icon>description</md-icon>
       </md-button>
     </div>
     <!--
@@ -548,11 +564,11 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
 
       <Particles v-if="!service" />
-      <Interests v-if="service == ':Interest Groups'" />
-      <Notes v-if="service == ':Notes'" />
-      <Meetings v-if="service == '!Help Desk'" />
-      <Holons v-if="service == ':Holonic Map'" :domain="domain" />
-      <Skills v-if="service == ':Skills Map'" :domain="domain" />
+      <Interests v-if="service == ':Conversations'" :domain="domain" />
+      <Notes v-if="service == ':Notes'" :domain="domain" />
+      <Meetings v-if="service == ':Meetings'" :domain="domain" />
+      <Holons v-if="service == ':Holons'" :domain="domain" />
+      <Skills v-if="service == ':Skills'" :domain="domain" />
       <iframe
         name="theApp"
         id="theApp"
@@ -1119,10 +1135,10 @@ export default {
       element.style.display = "none";
       // Open the contextual action button
       switch (menu) {
-        case ":Shared Folders":
+        case ":Folders":
           element.src = "about:blank";
           element.style.display = "block";
-          this.service = ":Shared Folders";
+          this.service = ":Folders";
           let drive = "";
           switch (this.subdomain) {
             case "Home":
@@ -1154,16 +1170,16 @@ export default {
           );
 
           break;
-        case ":Holonic Map":
+        case ":Holons":
           this.service = "";
           this.$nextTick(() => {
-            this.service = ":Holonic Map";
+            this.service = ":Holons";
           });
           break;
-        case ":Skills Map":
+        case ":Skills":
           this.service = "";
           this.$nextTick(() => {
-            this.service = ":Skills Map";
+            this.service = ":Skills";
           });
           break;
         case ":Notes":
@@ -1172,10 +1188,16 @@ export default {
             this.service = ":Notes";
           });
           break;
-        case ":Interest Groups":
+        case ":Conversations":
           this.service = "";
           this.$nextTick(() => {
-            this.service = ":Interest Groups";
+            this.service = ":Conversations";
+          });
+          break;
+        case ":Meetings":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Meetings";
           });
           break;
         case "infoLink":
@@ -1256,7 +1278,7 @@ export default {
       var element = document.getElementById("theApp");
       // if (
       //   this.service === "Zettelkasten" ||
-      //   this.service === "Interest Groups" ||
+      //   this.service === "Conversations" ||
       //   this.service === "Help Desk"
       // ) {
       //   element.style.display = "none";

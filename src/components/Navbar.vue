@@ -272,7 +272,7 @@
           !service
             ? domain.toUpperCase()
             : service.replace(/[!#*@%/."'\\&:]/, "")
-        }} TESTING
+        }}
       </span>
 
       <div class="md-toolbar-section-end">

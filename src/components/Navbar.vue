@@ -17,13 +17,26 @@
     </md-snackbar>
 
     <md-snackbar
-      :md-duration="6000"
+      v-if="profile.diffTime < 30 && Math.random() > 0.5"
+      :md-duration="10000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
-      <span>Please update your personal profile!</span>
+      <span>First Time Here?</span>
+      <md-button class="md-primary" @click="openNote('PbVC_S9CQFW6seW_nkATSg');"
+        >Please read this</md-button
+      >
+    </md-snackbar>
+
+    <md-snackbar
+      v-if="profile.diffTime > 30 && Math.random() > 0.8"
+      :md-duration="10000"
+      :md-active.sync="showProfileReminder"
+      md-persistent
+    >
+      <span>Did you update your personal profile?</span>
       <md-button class="md-primary" @click="activeSettings = true;"
-        >Do now</md-button
+        >Please click here</md-button
       >
     </md-snackbar>
 
@@ -606,7 +619,7 @@ export default {
     showSidepanel: false,
     showServices: false,
     showSnackBar: false,
-    showProfileReminder: false,
+    showProfileReminder: true,
     activeUser: true,
     activeAccess: false,
     activeInfo: false,
@@ -650,34 +663,22 @@ export default {
     console.log("Loading users..");
     usersRef.on("child_added", user => {
       let data = user.val();
-      //console.log(data.username);
+
       let path = data.username.replace(".", "%2E");
       profilesRef.child(path).once("value", profile => {
         let snapshot = profile.val();
-        if (profile.exists()) {
-          // update firebase
-          // if (snapshot.tags) {
-          //   if (snapshot.tags.length > 1) {
-          //     snapshot.tags = snapshot.tags.reduce(
-          //       (accumulator, currentValue) => {
-          //         return [...accumulator, currentValue.text];
-          //       }
-          //     );
-          //   } else {
-          //     snapshot.tags = [snapshot.tags[0].text];
-          //   }
-          // }
-          // change this to include ALL tags properties, incl freq
-          // must be in a separate /profile path
-          //usersRef.child(user.key + "/profile").set(snapshot);
-          //user.ref.update(snapshot);
-        }
+
         // add  data to users array
         this.users.push(data);
         //console.log(data);
 
         if (data.username === this.$cookies.get("username")) {
-          this.profile = user.val();
+          // calculate days since joined
+          data.diffTime = new Date().getTime();
+          data.diffTime =
+            (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
+
+          this.profile = data;
           this.username = this.$cookies.get("username");
           this.activeUser = false;
         }
@@ -756,14 +757,6 @@ export default {
 
     // update cookies
     this.$cookies.config("365d");
-    // Cookies are strings, so need to convert to boolean!
-    // they are saved by the @change event
-    // this.showServices = this.$cookies.get("showServices");
-    // if (this.showServices === "true") {
-    //   this.showServices = true;
-    // } else {
-    //   this.showServices = false;
-    // }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -811,6 +804,14 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    openNote: function(note) {
+      this.service = "Onboarding";
+      var element = document.getElementById("theApp");
+      element.src = "about:blank";
+      element.style.display = "block";
+      // window.onload = function() {
+      window.open("https://notepad.diglife.coop/" + note, "theApp");
+    },
     switchService: function() {
       //this.$cookies.set("showServices", this.showServices);
       db.database()
@@ -1103,9 +1104,9 @@ export default {
         //     console.log("Error getting document:", error);
         //   });
 
-        this.showProfileReminder = true;
         this.$nextTick(function() {
           this.activeUser = false;
+          this.showProfileReminder = true;
         });
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();
@@ -1274,7 +1275,6 @@ export default {
       } else {
         this.service = this.channels[index].display_name;
       }
-      console.log("----", this.service);
       var element = document.getElementById("theApp");
       // if (
       //   this.service === "Zettelkasten" ||

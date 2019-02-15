@@ -1,3 +1,38 @@
+#noteCards.md-card .md-title {
+  font-size: 1.4em !important;
+  line-height: 1.2em;
+  font-weight: normal !important;
+}
+
+#noteCards.md-card .info {
+  color: #404040;
+  padding: 10px;
+  line-height: 1.2em;
+  font-size: 0.9em;
+}
+
+#noteCards.md-card .info .md-icon {
+  font-size: 1.4em !important;
+}
+#noteCards.md-card .md-chip {
+  margin: 3px;
+  position: relative;
+  top: 0;
+  right: 0;
+  display: inline-block;
+  padding: 6px;
+  line-height: 15px;
+  height: 26px;
+  background-color: #aaa;
+}
+
+.md-speed-dial {
+  position: absolute !important;
+  bottom: 20px;
+  right: 20px;
+  z-index: 299;
+}
+
 .md-layout.md-gutter {
   margin-left: 0px;
 }
@@ -33,10 +68,19 @@
 }
 
 .md-card-banner .md-button {
-  font-size: 1em;
+  font-size: 1em !important;
   position: absolute;
-  top: 5px;
-  left: 5px;
+  top: 5px !important;
+  left: 5px !important;
+}
+
+.md-card-banner .md-subhead {
+  font-size: 1.2em !important;
+}
+
+.md-card-banner .md-button .md-icon {
+  font-size: 1.8em !important;
+  color: white;
 }
 
 .md-card-banner img {

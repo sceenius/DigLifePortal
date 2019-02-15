@@ -231,9 +231,7 @@
             class="md-icon-button"
             md-menu-trigger
           >
-            <md-icon style="font-size: 1.8em !important; color: white;"
-              >menu</md-icon
-            >
+            <md-icon>menu</md-icon>
           </md-button>
 
           <md-menu-content class="md-card-menu">

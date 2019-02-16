@@ -407,14 +407,7 @@
       >
         <md-icon>people_outline</md-icon>
       </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Folders"
-        @click="sub(':Folders');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>folder_shared</md-icon>
-      </md-button>
+
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Conversations"
@@ -433,11 +426,27 @@
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
+        title="Show Calendar"
+        @click="sub(':Calendar');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>event</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
         title="Show Meetings"
         @click="sub(':Meetings');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>videocam</md-icon>
+      </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Folders"
+        @click="sub(':Folders');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>folder_shared</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
@@ -1142,15 +1151,51 @@ export default {
 
     sub: function(menu) {
       let element = document.getElementById("theApp");
+      let drive = "";
       element.src = "about:blank";
       element.style.display = "none";
       // Open the contextual action button
       switch (menu) {
+        case ":Calendar":
+          element.src = "about:blank";
+          element.style.display = "block";
+          this.service = ":Calendar";
+
+          switch (this.subdomain) {
+            case "Home":
+              drive = "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com";
+              break;
+            case "Projects":
+              drive =
+                "classroom109491638889680858364@group.calendar.google.com";
+              break;
+            case "Ops":
+              drive = "0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com";
+              break;
+            case "Friends":
+              drive = "";
+              break;
+            case "Openlearning":
+              drive = "";
+              break;
+            case "Ecosystem-maps":
+              drive = "";
+              break;
+            default:
+              drive = "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com";
+              break;
+          }
+
+          window.open(
+            "https://calendar.google.com/calendar/embed?src=" + drive,
+            "theApp"
+          );
+
+          break;
         case ":Folders":
           element.src = "about:blank";
           element.style.display = "block";
           this.service = ":Folders";
-          let drive = "";
           switch (this.subdomain) {
             case "Home":
               drive = "1pfEKM3g_gUbHosuwzbc-ea29gjwGAmVZ";

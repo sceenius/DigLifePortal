@@ -17,13 +17,13 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="profile.diffTime < 30 && Math.random() > 0.5"
+      v-if="true ||profile.diffTime < 30 && Math.random() > 0.5"
       :md-duration="10000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
       <span>First Time Here?</span>
-      <md-button class="md-primary" @click="openNote('PbVC_S9CQFW6seW_nkATSg');"
+      <md-button class="md-primary" @click="openNote('https://notepad.diglife.coop/s/B1PgFFi4E');"
         >Please read this</md-button
       >
     </md-snackbar>
@@ -810,7 +810,7 @@ export default {
       element.src = "about:blank";
       element.style.display = "block";
       // window.onload = function() {
-      window.open("https://notepad.diglife.coop/" + note, "theApp");
+      window.open(note, "theApp");
     },
     switchService: function() {
       //this.$cookies.set("showServices", this.showServices);

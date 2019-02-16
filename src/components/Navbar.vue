@@ -17,13 +17,18 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="true ||profile.diffTime < 30 && Math.random() > 0.5"
+      v-if="profile.diffTime < 30 && Math.random() > 0.5"
       :md-duration="10000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
       <span>First Time Here?</span>
-      <md-button class="md-primary" @click="openNote('https://notepad.diglife.coop/s/B1PgFFi4E');"
+      <md-button
+        class="md-primary"
+        @click="
+          showProfileReminder = false;
+          openNote('https://notepad.diglife.coop/s/B1PgFFi4E');
+        "
         >Please read this</md-button
       >
     </md-snackbar>
@@ -34,9 +39,14 @@
       :md-active.sync="showProfileReminder"
       md-persistent
     >
-      <span>Did you update your personal profile?</span>
-      <md-button class="md-primary" @click="activeSettings = true;"
-        >Please click here</md-button
+      <span>Have you seen your profile lately?</span>
+      <md-button
+        class="md-primary"
+        @click="
+          showProfileReminder = false;
+          activeSettings = true;
+        "
+        >Update it now</md-button
       >
     </md-snackbar>
 

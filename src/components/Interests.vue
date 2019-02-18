@@ -166,7 +166,7 @@
             </md-menu-content>
           </md-menu>
 
-          <div class="md-subhead"></div>
+          <div class="md-subhead">Conversation</div>
           <img
             src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
           />

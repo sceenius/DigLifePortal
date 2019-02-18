@@ -75,7 +75,17 @@
 }
 
 .md-card-banner .md-subhead {
-  font-size: 1.2em !important;
+  font-size: 1.4em !important;
+  color: white;
+}
+
+.md-card-banner .md-subhead {
+  position: absolute;
+  top: 15px;
+  left: 40px;
+  margin: 0;
+  padding: 0;
+  opacity: 1;
 }
 
 .md-card-banner .md-button .md-icon {
@@ -124,15 +134,6 @@
   color: #404040;
   line-height: 0.9em;
   width: 100% !important;
-}
-
-.md-card .md-subhead {
-  position: absolute;
-  top: 6px;
-  left: 35px;
-  margin: 0;
-  padding: 0;
-  opacity: 1;
 }
 
 .md-card-footer {

@@ -101,7 +101,7 @@
     >
       <md-dialog-title
         ><md-icon style="color: black;">how_to_vote </md-icon>
-        {{ mode }} Zetttelkasten Note</md-dialog-title
+        {{ mode }} Note</md-dialog-title
       >
 
       <div style="padding: 0 25px ;">
@@ -224,7 +224,6 @@
       id="noteCards"
     >
       <div class="md-card-banner">
-        <md-icon class="md-size-1x">bookmark</md-icon>
         <md-menu>
           <md-button
             style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
@@ -247,7 +246,7 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">Zettelkasten Note</div>
+        <div class="md-subhead">Note</div>
         <img
           src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
         />

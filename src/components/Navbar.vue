@@ -1202,6 +1202,8 @@ export default {
           element.style.display = "block";
           this.service = ":Calendar";
           let timezone = Moment.tz.guess();
+          this.snack = "Showing calendar in local timezone for " + timezone;
+          this.showSnackBar = true;
           switch (this.subdomain) {
             case "Home":
               drive =

@@ -17,8 +17,8 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="profile.diffTime < 30 && Math.random() > 0.5"
-      :md-duration="10000"
+      v-if="profile.diffTime < 31 && Math.random() > 0.5"
+      :md-duration="4000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
@@ -34,8 +34,8 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="profile.diffTime > 30 && Math.random() > 0.8"
-      :md-duration="10000"
+      v-if="profile.diffTime > 31 && Math.random() > 0.8"
+      :md-duration="4000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
@@ -407,23 +407,32 @@
       >
         <md-icon>people_outline</md-icon>
       </md-button>
-
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Conversations"
-        @click="sub(':Conversations');"
+        title="Show Important Conversations"
+        @click="sub(':Important Conversations');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>announcement</md-icon>
       </md-button>
+
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Conversations"
-        @click="sub(':Conversations');"
+        title="Show Affinity Conversations"
+        @click="sub(':Affinity Conversations');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>chat</md-icon>
       </md-button>
+      <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Workteam Conversations"
+        @click="sub(':Workteam Conversations');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>mms</md-icon>
+      </md-button>
+
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Calendar"
@@ -432,14 +441,16 @@
       >
         <md-icon>event</md-icon>
       </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Meetings"
-        @click="sub(':Meetings');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>videocam</md-icon>
-      </md-button>
+      <!--
+        md-button
+          v-if="!service || service.charAt(0) === ':'"
+          title="Show Meetings"
+          @click="sub(':Meetings');"
+          class="md-fab md-mini md-plain"
+        >
+          <md-icon>videocam</md-icon>
+        </md-button
+      -->
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Folders"
@@ -456,6 +467,35 @@
       >
         <md-icon>description</md-icon>
       </md-button>
+
+      <!--
+        md-speed-dial>
+              <md-speed-dial-target>
+
+                <md-icon>announcement</md-icon>
+              </md-speed-dial-target>
+
+              <md-speed-dial-content>
+
+                <md-button
+                  class="md-icon-button"
+                  @click="createNote('plain');"
+                  title="Create plain note"
+                >
+                  <md-icon>assignment</md-icon>
+                </md-button>
+
+                <md-button
+                  class="md-icon-button"
+                  @click="createNote('meeting');"
+                  title="Create meeting note"
+                >
+                  <md-icon>videocam</md-icon>
+                </md-button>
+
+              </md-speed-dial-content>
+        </md-speed-dial
+      -->
     </div>
     <!--
       ----------------------------------------------------------------------
@@ -623,6 +663,7 @@ import Meetings from "./Meetings.vue";
 import Holons from "./Holons.vue";
 import Skills from "./Skills.vue";
 import Slack from "node-slack";
+import Moment from "moment-timezone";
 
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init.js";
@@ -1160,17 +1201,22 @@ export default {
           element.src = "about:blank";
           element.style.display = "block";
           this.service = ":Calendar";
-
+          let timezone = Moment.tz.guess();
           switch (this.subdomain) {
             case "Home":
-              drive = "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com";
+              drive =
+                "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com&ctz=" +
+                timezone;
               break;
             case "Projects":
               drive =
-                "classroom109491638889680858364@group.calendar.google.com";
+                "classroom109491638889680858364@group.calendar.google.com&ctz=" +
+                timezone;
               break;
             case "Ops":
-              drive = "0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com";
+              drive =
+                "0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com&ctz=" +
+                timezone;
               break;
             case "Friends":
               drive = "";
@@ -1182,7 +1228,9 @@ export default {
               drive = "";
               break;
             default:
-              drive = "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com";
+              drive =
+                "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com&ctz=" +
+                timezone;
               break;
           }
 

@@ -179,7 +179,7 @@
                 style="line-height: 0.9; font-size: 1em !important; color: #404040;"
                 >{{ topic.purpose.icon }}</md-icon
               >
-              {{ topic.display_name.replace("#", "") }}
+              {{ topic.display_name.replace(/[!#*@%/."'\\&]/, "") }}
             </div>
           </md-card-header-text>
 

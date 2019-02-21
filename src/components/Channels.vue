@@ -137,106 +137,104 @@
         CARDS
       ----------------------------------------------------------------------
     -->
-    <sequential-entrance>
-      <md-card
-        md-with-hover
-        v-if="(showServices && isMember(topic)) || !showServices"
-        v-for="(topic, index) in topics"
-        :key="index"
-        class="md-layout-item"
-      >
-        <div class="md-card-banner">
-          <md-menu>
-            <md-button class="md-icon-button" md-menu-trigger>
-              <md-icon style="font-size: 1.8em !important; color: white;"
-                >menu</md-icon
-              >
-            </md-button>
+    <md-card
+      md-with-hover
+      v-if="(showServices && isMember(topic)) || !showServices"
+      v-for="(topic, index) in topics"
+      :key="index"
+      class="md-layout-item"
+    >
+      <div class="md-card-banner">
+        <md-menu>
+          <md-button class="md-icon-button" md-menu-trigger>
+            <md-icon style="font-size: 1.8em !important; color: white;"
+              >menu</md-icon
+            >
+          </md-button>
 
-            <md-menu-content class="md-card-menu">
-              <md-menu-item @click="editCard(topic, index);">
-                <md-icon>edit</md-icon>
-                <span>Edit</span>
-              </md-menu-item>
+          <md-menu-content class="md-card-menu">
+            <md-menu-item @click="editCard(topic, index);">
+              <md-icon>edit</md-icon>
+              <span>Edit</span>
+            </md-menu-item>
 
-              <md-menu-item @click="deleteCard(topic);">
-                <md-icon>archive</md-icon>
-                <span>Archive</span>
-              </md-menu-item>
-            </md-menu-content>
-          </md-menu>
+            <md-menu-item @click="deleteCard(topic);">
+              <md-icon>archive</md-icon>
+              <span>Archive</span>
+            </md-menu-item>
+          </md-menu-content>
+        </md-menu>
 
-          <div class="md-subhead">Conversation</div>
-          <img
-            src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-          />
-        </div>
+        <div class="md-subhead">Channel</div>
+        <img
+          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
+        />
+      </div>
 
-        <div class="md-card-header">
-          <md-card-header-text>
-            <div class="md-title">
-              <md-icon
-                style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-                >{{ topic.purpose.icon }}</md-icon
-              >
-              {{ topic.display_name.replace(/[!#*@%/."'\\&]/, "") }}
-            </div>
-          </md-card-header-text>
-
-          <md-chip style="background-color: green" v-if="isMember(topic)"
-            >Joined</md-chip
-          >
-          <md-chip
-            style="background-color: orange"
-            v-if="isSuggested(topic) && !isMember(topic)"
-            >Suggested</md-chip
-          >
-          <md-chip
-            style="background-color: #ccc"
-            v-if="!isMember(topic) && !isSuggested(topic)"
-            >Not Joined</md-chip
-          >
-        </div>
-
-        <div class="md-card-mid">
-          <p class="info">
-            <vue-markdown>{{
-              topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
-            }}</vue-markdown>
-          </p>
-        </div>
-
-        <md-card-actions>
-          <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
-            >Leave</md-button
-          >
-          <md-button
-            v-if="isMember(topic)"
-            style="background: #00B0A0; color: white;"
-            @click="cardAction('open', topic);"
-            >Open</md-button
-          >
-          <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
-            >Ask</md-button
-          >
-          <md-button
-            v-if="!isMember(topic)"
-            style="background: #00B0A0; color: white;"
-            @click="cardAction('join', topic);"
-            >Join</md-button
-          >
-        </md-card-actions>
-
-        <div class="md-card-footer">
-          <div class="md-card-avatars md-scrollbar">
-            <md-avatar v-for="(member, index) in topic.members" :key="index">
-              <img v-bind:src="avatarLink(member)" alt="Avatar" />
-              <md-tooltip md-direction="top">{{ member }}</md-tooltip>
-            </md-avatar>
+      <div class="md-card-header">
+        <md-card-header-text>
+          <div class="md-title">
+            <md-icon
+              style="line-height: 0.9; font-size: 1em !important; color: #404040;"
+              >{{ topic.purpose.icon }}</md-icon
+            >
+            {{ topic.display_name.replace(/[!#*@%/."'\\&]/, "") }}
           </div>
+        </md-card-header-text>
+
+        <md-chip style="background-color: green" v-if="isMember(topic)"
+          >Joined</md-chip
+        >
+        <md-chip
+          style="background-color: orange"
+          v-if="isSuggested(topic) && !isMember(topic)"
+          >Suggested</md-chip
+        >
+        <md-chip
+          style="background-color: #ccc"
+          v-if="!isMember(topic) && !isSuggested(topic)"
+          >Not Joined</md-chip
+        >
+      </div>
+
+      <div class="md-card-mid">
+        <p class="info">
+          <vue-markdown>{{
+            topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
+          }}</vue-markdown>
+        </p>
+      </div>
+
+      <md-card-actions>
+        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
+          >Leave</md-button
+        >
+        <md-button
+          v-if="isMember(topic)"
+          style="background: #00B0A0; color: white;"
+          @click="cardAction('open', topic);"
+          >Open</md-button
+        >
+        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
+          >Ask</md-button
+        >
+        <md-button
+          v-if="!isMember(topic)"
+          style="background: #00B0A0; color: white;"
+          @click="cardAction('join', topic);"
+          >Join</md-button
+        >
+      </md-card-actions>
+
+      <div class="md-card-footer">
+        <div class="md-card-avatars md-scrollbar">
+          <md-avatar v-for="(member, index) in topic.members" :key="index">
+            <img v-bind:src="avatarLink(member)" alt="Avatar" />
+            <md-tooltip md-direction="top">{{ member }}</md-tooltip>
+          </md-avatar>
         </div>
-      </md-card>
-    </sequential-entrance>
+      </div>
+    </md-card>
   </div>
 </template>
 
@@ -252,7 +250,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain", "type"],
+  props: ["domain", "subdomain", "type"],
   data() {
     return {
       service: "",
@@ -315,7 +313,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.username = this.$cookies.get("username");
-
+    //console.log(this.subdomain);
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
       let groupsRef = db.database().ref("portal_profiles/" + this.username);
@@ -352,13 +350,21 @@ export default {
     // porta_extensions contains any channel info not stored in Mattermost
     let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
-      var data = channel.val();
-      //console.log(channel.key, data.name);
+      let data = channel.val();
+      let team =
+        this.subdomain === "Home" ? "diglife" : this.subdomain.toLowerCase();
+      console.log(this.type);
       // only load topic channels into the card component
       if (
-        (this.type === "Imp" && data.display_name.charAt(0) === "!") ||
-        (this.type === "Aff" && data.display_name.charAt(0) === "#") ||
-        (this.type === "Wor" && data.display_name.charAt(0) === "/")
+        (team === data.team &&
+          this.type === "Imp" &&
+          data.display_name.charAt(0) === "!") ||
+        (team === data.team &&
+          this.type === "Aff" &&
+          data.display_name.charAt(0) === "#") ||
+        (team === data.team &&
+          this.type === "Wor" &&
+          data.display_name.charAt(0) === "/")
       ) {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {

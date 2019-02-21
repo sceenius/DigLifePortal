@@ -639,6 +639,7 @@
       <Channels
         v-if="service.split(' ').splice(-1)[0] == 'Channels'"
         :domain="domain"
+        :subdomain="subdomain"
         :type="service.substring(1, 4)"
       />
       <Notes v-if="service == ':Notes'" :domain="domain" />
@@ -1307,7 +1308,7 @@ export default {
         case ":Affinity Channels":
           this.service = "";
           this.$nextTick(() => {
-            this.service = ":Affiliate Channels";
+            this.service = ":Affinity Channels";
           });
           break;
         case ":Workteam Channels":

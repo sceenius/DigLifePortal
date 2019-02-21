@@ -409,8 +409,8 @@
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Important Conversations"
-        @click="sub(':Important Conversations');"
+        title="Show Important Channels"
+        @click="sub(':Important Channels');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>announcement</md-icon>
@@ -418,16 +418,16 @@
 
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Affinity Conversations"
-        @click="sub(':Affinity Conversations');"
+        title="Show Affinity Channels"
+        @click="sub(':Affinity Channels');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>chat</md-icon>
       </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
-        title="Show Workteam Conversations"
-        @click="sub(':Workteam Conversations');"
+        title="Show Workteam Channels"
+        @click="sub(':Workteam Channels');"
         class="md-fab md-mini md-plain"
       >
         <md-icon>mms</md-icon>
@@ -636,7 +636,11 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
 
       <Particles v-if="!service" />
-      <Interests v-if="service == ':Conversations'" :domain="domain" />
+      <Channels
+        v-if="service.split(' ').splice(-1)[0] == 'Channels'"
+        :domain="domain"
+        :type="service.substring(1, 4)"
+      />
       <Notes v-if="service == ':Notes'" :domain="domain" />
       <Meetings v-if="service == ':Meetings'" :domain="domain" />
       <Holons v-if="service == ':Holons'" :domain="domain" />
@@ -657,7 +661,7 @@
 import { BASEURL, CHATURL } from "../../index.js";
 import Particles from "./Particles.vue";
 import Tags from "./Tags.vue";
-import Interests from "./Interests.vue";
+import Channels from "./Channels.vue";
 import Notes from "./Notes.vue";
 import Meetings from "./Meetings.vue";
 import Holons from "./Holons.vue";
@@ -670,7 +674,7 @@ import db from "../firebase/init.js";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Interests, Notes, Holons, Skills, Meetings },
+  components: { Particles, Tags, Channels, Notes, Holons, Skills, Meetings },
   data: () => ({
     // form: {
     //   username: null
@@ -1294,10 +1298,22 @@ export default {
             this.service = ":Notes";
           });
           break;
-        case ":Conversations":
+        case ":Important Channels":
           this.service = "";
           this.$nextTick(() => {
-            this.service = ":Conversations";
+            this.service = ":Important Channels";
+          });
+          break;
+        case ":Affinity Channels":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Affiliate Channels";
+          });
+          break;
+        case ":Workteam Channels":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Workteam Channels";
           });
           break;
         case ":Meetings":
@@ -1383,7 +1399,7 @@ export default {
       var element = document.getElementById("theApp");
       // if (
       //   this.service === "Zettelkasten" ||
-      //   this.service === "Conversations" ||
+      //   this.service === "Channels" ||
       //   this.service === "Help Desk"
       // ) {
       //   element.style.display = "none";

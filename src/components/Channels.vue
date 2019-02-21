@@ -252,6 +252,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
+  props: ["domain", "type"],
   data() {
     return {
       service: "",
@@ -354,7 +355,11 @@ export default {
       var data = channel.val();
       //console.log(channel.key, data.name);
       // only load topic channels into the card component
-      if (channel.val().display_name.charAt(0) === "#") {
+      if (
+        (this.type === "Imp" && data.display_name.charAt(0) === "!") ||
+        (this.type === "Aff" && data.display_name.charAt(0) === "#") ||
+        (this.type === "Wor" && data.display_name.charAt(0) === "/")
+      ) {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());

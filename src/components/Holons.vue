@@ -173,13 +173,17 @@ export default {
         )
         .style("opacity", d => (d.data.image ? d.data.opacity : 1))
         .attr("pointer-events", d => (!d.children ? null : null)) // "none" to turn off
-        // .on("mouseover", function() {
-        //   d3.select(this).attr("stroke", "#fff");
-        // })
-        // .on("mouseout", function() {
-        //   d3.select(this).attr("stroke", null);
-        // })
-        .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()))
+
+        // Can only click on holons that have children
+        .on(
+          "click",
+          d =>
+            (d.children &&
+              focus !== d &&
+              (zoom(d), d3.event.stopPropagation())) ||
+            (!d.children && window.open(d.data.link, d.data.name))
+        )
+        // .on("click", d => !d.children && window.open(d.data.link, d.data.name))
         .on("mouseover.tooltip", d => {
           if (!d.children) {
             tooltip
@@ -222,8 +226,18 @@ export default {
         .enter()
         .append("text")
         .attr("class", "label")
-        .attr("pointer-events", d => (d.children ? "none" : null))
-        .attr("cursor", "alias")
+        .attr("pointer-events", d => (d.children ? null : null))
+        // Click event on labels is the same as on nodes
+        .on(
+          "click",
+          d =>
+            (d.children &&
+              focus !== d &&
+              (zoom(d), d3.event.stopPropagation())) ||
+            (!d.children && window.open(d.data.link, d.data.name))
+        )
+
+        // .attr("cursor", "alias")
         .style("fill-opacity", d => (d.parent === root ? 1 : 0))
         .style("display", d => (d.parent === root ? "inline" : "none"))
         //.style("font", d => 40 - d.depth*5 + "px Roboto")
@@ -231,12 +245,12 @@ export default {
           "font",
           d => (d.depth === 1 ? 40 : d.depth > 1 ? 24 : null) + "px Roboto"
         )
-        .text(d => d.data.name)
+        .text(d => d.data.name);
 
-        // note: you cannot change the bg color in SVG
-        .on("click", d =>
-          !d.children ? window.open(d.data.link, d.data.name) : null
-        );
+      // note: you cannot change the bg color in SVG
+      // .on("click", d =>
+      //   !d.children ? window.open(d.data.link, d.data.name) : null
+      // );
 
       // animation when loading map
       d3.selectAll("text")

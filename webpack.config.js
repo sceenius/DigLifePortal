@@ -1,8 +1,9 @@
 const path = require('path')
 const { VueLoaderPlugin } = require('vue-loader')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 
 module.exports = {
-  entry: path.join(__dirname, 'index.js'),
+ // entry: path.join(__dirname, 'index.js'),
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
@@ -16,7 +17,10 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+	  MiniCssExtractPlugin.loader,
+	  "css-loader"
+         ]
       }
     ]
   },
@@ -26,7 +30,6 @@ module.exports = {
     tls: 'empty'
   },
   plugins: [
-    //new VueLoaderPlugin()
   ],
   output: {
     filename: 'bundle.js',

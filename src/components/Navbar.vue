@@ -659,7 +659,7 @@
 </template>
 
 <script>
-import { BASEURL, CHATURL } from "../../index.js";
+import { BASEURL, CHATURL } from "../main.js";
 import Particles from "./Particles.vue";
 import Tags from "./Tags.vue";
 import Channels from "./Channels.vue";

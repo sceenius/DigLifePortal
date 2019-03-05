@@ -20,7 +20,7 @@
 import * as d3 from "d3"; //all
 //REMOVE DEPENDCY LATER  -- import hierachy from "d3-hierarchy";
 import db from "../firebase/init.js";
-import { BASEURL, CHATURL } from "../../index.js";
+import { BASEURL, CHATURL } from "../main.js";
 
 export default {
   name: "Holons",

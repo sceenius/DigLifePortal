@@ -229,7 +229,7 @@ import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
 import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
-import { BASEURL, CHATURL } from "../../index.js";
+import { BASEURL, CHATURL } from "../main.js";
 import db from "../firebase/init.js";
 
 export default {

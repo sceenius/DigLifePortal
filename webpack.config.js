@@ -1,48 +1,45 @@
-const path = require('path')
-const { VueLoaderPlugin } = require('vue-loader')
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const path = require("path");
+const { VueLoaderPlugin } = require("vue-loader");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
- // entry: path.join(__dirname, 'index.js'),
+  // entry: path.join(__dirname, 'index.js'),
   resolve: {
     alias: {
-      'vue$': 'vue/dist/vue.esm.js'
+      vue$: "vue/dist/vue.esm.js"
     }
   },
   module: {
     rules: [
-       {
-       test: /\.(js|jsx)$/,
-       exclude: /node_modules/,
-       use: {
-       loader: "babel-loader"
-          },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: "babel-loader"
+        }
+      },
       {
         test: /\.vue$/,
-        use: 'vue-loader'
+        use: "vue-loader"
       },
       {
         test: /\.css$/,
-        use: [
-	  MiniCssExtractPlugin.loader,
-	  "css-loader"
-         ]
+        use: [MiniCssExtractPlugin.loader, "css-loader"]
       }
     ]
   },
   node: {
-    fs: 'empty',
-    net: 'empty',
-    tls: 'empty'
+    fs: "empty",
+    net: "empty",
+    tls: "empty"
   },
-  plugins: [
-  ],
+  plugins: [],
   output: {
-    filename: 'bundle.js',
+    filename: "bundle.js",
     path: __dirname
   },
   devServer: {
-	  compress: true,
-	  disableHostCheck: true
+    compress: true,
+    disableHostCheck: true
   }
 };

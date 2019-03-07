@@ -3,7 +3,6 @@ const { VueLoaderPlugin } = require("vue-loader");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  // entry: path.join(__dirname, 'index.js'),
   resolve: {
     alias: {
       vue$: "vue/dist/vue.esm.js"

@@ -77,10 +77,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         ignore: ['.*']
       }
     ]),
-   // new CompressionWebpackPlugin ()
   ],
 
   optimization: {
+    concatenateModules: true,
+    minimize: true,
     minimizer: [
       new UglifyJsPlugin ({
 	uglifyOptions: {

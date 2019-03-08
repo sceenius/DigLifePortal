@@ -661,3 +661,20 @@ export default {
   }
 };
 </script>
+<style>
+.md-card {
+  transition: transform 0.3s ease-in-out;
+  transform: scale(0.5);
+  -moz-transform: scale(0.5);
+  -webkit-transform: scale(0.5);
+  margin: calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5))
+    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5));
+}
+
+.md-card:hover {
+  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1);
+  transform: scale(1) rotate(5deg);
+  -moz-transform: scale(1) rotate(5deg);
+  -webkit-transform: scale(1) rotate(5deg);
+}
+</style>

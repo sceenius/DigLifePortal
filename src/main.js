@@ -34,10 +34,8 @@ Vue.use(SequentialEntrance);
 //Vue.use(Vuex);
 
 new Vue({
-  el: "#app",
+  render: h => h(App),
   router,
-  components: { App },
-  template: "<App/>",
   data: () => ({
     users: [],
     channels: [],
@@ -123,4 +121,4 @@ new Vue({
           .update(this.groups)
       );
   }
-});
+}).$mount("#app");

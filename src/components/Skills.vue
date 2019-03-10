@@ -63,11 +63,6 @@ export default {
   //
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    let domain =
-      !this.domain || this.domain === "Home"
-        ? "diglife"
-        : this.domain.toLowerCase();
-
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");
 
@@ -88,15 +83,11 @@ export default {
           .once("value", profile => {
             let snapshot = profile.val();
             if (snapshot) {
-              //console.log(snapshot)
               if (snapshot.tags) {
-                data.moretags = snapshot.tags.reduce(
-                  (accumulator, currentValue) => {
-                    // possible insert to only show tags in range
-                    // if (currentValue.frequency > 0.3 && currentValue.frequency < 10)
-                    return [...accumulator, currentValue.text];
-                  }
-                );
+                data.moretags = [];
+                for (let i = 0; i < snapshot.tags.length; i++) {
+                  data.moretags.push(snapshot.tags[i].text);
+                }
               }
 
               // lodash merge crashes, so use https://github.com/tc39/proposal-object-rest-spread
@@ -136,15 +127,6 @@ export default {
           });
       });
     });
-    // we need to wait for the data to become available
-    // since SVG only draws the visual once
-    // .then(() => new Promise(resolve => setTimeout(resolve, 500)))
-    // //.then(users => console.log(this.users))
-    // .then(() => {
-    //   this.$nextTick(() => {
-    //     this.draw();
-    //   });
-    // });
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -152,7 +134,8 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //methods: {}
   mounted: function() {
-    new Promise(resolve => setTimeout(resolve, 1500)).then(resolve => {
+    new Promise(resolve => setTimeout(resolve, 1000)).then(resolve => {
+      console.log("Continuing...");
       this.height = 932;
       this.width = this.height;
 

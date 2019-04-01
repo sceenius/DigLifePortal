@@ -3,12 +3,12 @@ import App from "./App.vue";
 import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import VueAddToCalendar from "vue-add-to-calendar";
-import SequentialEntrance from "vue-sequential-entrance";
-import "vue-sequential-entrance/vue-sequential-entrance.css";
+//import SequentialEntrance from "vue-sequential-entrance";
+//import "vue-sequential-entrance/vue-sequential-entrance.css";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import "./assets/styles/cards.css";
-import "./assets/styles/navbar.css"; 
+import "./assets/styles/navbar.css";
 import "./assets/styles/particles.css";
 import "./assets/styles/tags.css";
 import "./assets/styles/notes.css";
@@ -29,12 +29,12 @@ Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.use(VueMaterial);
 Vue.use(VueAddToCalendar);
-Vue.use(SequentialEntrance);
+//Vue.use(SequentialEntrance);
 
 //Vue.use(Vuex);
 
 new Vue({
-  el: "#app",
+  render: h => h(App),
   router,
   components: { App },
   template: "<App/>",
@@ -123,4 +123,4 @@ new Vue({
           .update(this.groups)
       );
   }
-});
+}).$mount("#app");

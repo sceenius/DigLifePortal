@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter" v-if="service == ''">
+  <div class="md-layout md-gutter" v-if="service == ''" style="padding: 30px;">
     <!--
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar
@@ -683,3 +683,20 @@ export default {
   }
 };
 </script>
+<style>
+.md-card {
+  transition: transform 0.3s ease-in-out;
+  transform: scale(0.5) !important;
+  -moz-transform: scale(0.5);
+  -webkit-transform: scale(0.5) !important;
+  margin: calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5))
+    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5));
+}
+
+.md-card:hover {
+  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1);
+  transform: scale(1) rotate(5deg) !important;
+  -moz-transform: scale(1) rotate(5deg);
+  -webkit-transform: scale(1) rotate(5deg);
+}
+</style>

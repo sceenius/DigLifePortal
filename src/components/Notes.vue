@@ -36,7 +36,8 @@
           <span class="md-helper-text">Paste your notes from below</span>
           <span class="md-error">The history does not exist</span>
         </md-field>
-        <iframe
+        <iframe 
+        style="padding: 0px;"
           name="theApp2"
           src="https://notepad.diglife.coop/history"
           width="100%"
@@ -668,11 +669,11 @@ export default {
   -moz-transform: scale(0.5);
   -webkit-transform: scale(0.5)  !important;
   margin: calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5))
-    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5));
+    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5)) !important;
 }
 
 #noteCards.md-card:hover {
-  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1);
+  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1) !important;
   transform: scale(1) rotate(5deg)  !important;
   -moz-transform: scale(1) rotate(5deg);
   -webkit-transform: scale(1) rotate(5deg);

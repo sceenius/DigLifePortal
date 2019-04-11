@@ -5,15 +5,9 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar
-      :md-duration="4000"
-      :md-active.sync="showSnackBar"
-      md-persistent
-    >
+    <md-snackbar :md-duration="4000" :md-active.sync="showSnackBar" md-persistent>
       <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackbar = false;"
-        >Dismiss</md-button
-      >
+      <md-button class="md-primary" @click="showSnackbar = false;">Dismiss</md-button>
     </md-snackbar>
 
     <!--
@@ -35,60 +29,46 @@
       :md-click-outside-to-close="false"
       :md-active.sync="activeDialogTopic"
     >
-      <md-dialog-title
-        ><md-icon style="color: black;">group_work</md-icon> {{ mode }} Interest
-        Group</md-dialog-title
-      >
+      <md-dialog-title>
+        <md-icon style="color: black;">group_work</md-icon>
+        {{ mode }} Interest
+        Group
+      </md-dialog-title>
 
       <!-- https://vuematerial.io/components/form name="dialog.cardForm" -->
       <div style="padding: 0 25px ;">
         <md-field id="display_name">
           <label>Title</label>
-          <md-input
-            v-on:keyup="slug"
-            v-model="display_name"
-            required
-          ></md-input>
-          <span class="md-helper-text"
-            >Enter the name of this Interest Group</span
-          >
+          <md-input v-on:keyup="slug" v-model="display_name" required></md-input>
+          <span class="md-helper-text">Enter the name of this Interest Group</span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-field id="name">
           <label>Slug</label>
           <md-input v-model="name" required></md-input>
-          <span class="md-helper-text"
-            >Unique name as it appears in the URL</span
-          >
+          <span class="md-helper-text">Unique name as it appears in the URL</span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-field>
           <label>Icon</label>
           <md-input v-model="icon" required></md-input>
-          <span class="md-helper-text"
-            >Pick an icon
+          <span class="md-helper-text">
+            Pick an icon
             <a
               href="https://material.io/tools/icons/?style=baseline"
               target="icons"
-              >from this list</a
-            ></span
-          >
+            >from this list</a>
+          </span>
           <span class="md-error"></span>
           <md-icon>{{ icon }}</md-icon>
         </md-field>
 
         <md-field>
           <label>Description</label>
-          <md-textarea
-            style="font-size: 0.9em;"
-            v-model="header"
-            required
-          ></md-textarea>
-          <span class="md-helper-text"
-            >Enter a short description for this Interest Group</span
-          >
+          <md-textarea style="font-size: 0.9em;" v-model="header" required></md-textarea>
+          <span class="md-helper-text">Enter a short description for this Interest Group</span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
@@ -102,32 +82,25 @@
             :tags="formtags"
             :allow-edit-tags="true"
             :autocomplete-items="autocompleteItems"
-          >
-          </vue-tags-input>
+          ></vue-tags-input>
           <span class="md-helper-text">Enter one or more tags</span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button
-            class="md-success md-raised"
-            @click="activeDialogTopic = false;"
-            >Cancel</md-button
-          >
+          <md-button class="md-success md-raised" @click="activeDialogTopic = false;">Cancel</md-button>
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirm(formindex);"
             style="background: #00B0A0; color: white;"
-            >Update</md-button
-          >
+          >Update</md-button>
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirm();"
             style="background: #00B0A0; color: white;"
-            >Create</md-button
-          >
+          >Create</md-button>
         </md-dialog-actions>
       </div>
     </md-dialog>
@@ -147,9 +120,7 @@
       <div class="md-card-banner">
         <md-menu>
           <md-button class="md-icon-button" md-menu-trigger>
-            <md-icon style="font-size: 1.8em !important; color: white;"
-              >menu</md-icon
-            >
+            <md-icon style="font-size: 1.8em !important; color: white;">menu</md-icon>
           </md-button>
 
           <md-menu-content class="md-card-menu">
@@ -166,9 +137,7 @@
         </md-menu>
 
         <div class="md-subhead">Channel</div>
-        <img
-          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-        />
+        <img src="https://ledger.diglife.coop/images/brand/logo_secondary.svg">
       </div>
 
       <div class="md-card-header">
@@ -176,60 +145,47 @@
           <div class="md-title">
             <md-icon
               style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-              >{{ topic.purpose.icon }}</md-icon
-            >
+            >{{ topic.purpose.icon }}</md-icon>
             {{ topic.display_name.replace(/[!#*@%/."'\\&]/, "") }}
           </div>
         </md-card-header-text>
 
-        <md-chip style="background-color: green" v-if="isMember(topic)"
-          >Joined</md-chip
-        >
+        <md-chip style="background-color: green" v-if="isMember(topic)">Joined</md-chip>
         <md-chip
           style="background-color: orange"
           v-if="isSuggested(topic) && !isMember(topic)"
-          >Suggested</md-chip
-        >
+        >Suggested</md-chip>
         <md-chip
           style="background-color: #ccc"
           v-if="!isMember(topic) && !isSuggested(topic)"
-          >Not Joined</md-chip
-        >
+        >Not Joined</md-chip>
       </div>
 
       <div class="md-card-mid">
         <p class="info">
-          <vue-markdown>{{
-            topic.header.replace(/^(.{280}[^\s]*).*/, "$1...")
-          }}</vue-markdown>
+          <vue-markdown>{{topic.header}}</vue-markdown>
         </p>
       </div>
 
       <md-card-actions>
-        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);"
-          >Leave</md-button
-        >
+        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);">Leave</md-button>
         <md-button
           v-if="isMember(topic)"
           style="background: #00B0A0; color: white;"
           @click="cardAction('open', topic);"
-          >Open</md-button
-        >
-        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);"
-          >Ask</md-button
-        >
+        >Open</md-button>
+        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);">Ask</md-button>
         <md-button
           v-if="!isMember(topic)"
           style="background: #00B0A0; color: white;"
           @click="cardAction('join', topic);"
-          >Join</md-button
-        >
+        >Join</md-button>
       </md-card-actions>
 
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
           <md-avatar v-for="(member, index) in topic.members" :key="index">
-            <img v-bind:src="avatarLink(member)" alt="Avatar" />
+            <img v-bind:src="avatarLink(member)" alt="Avatar">
             <md-tooltip md-direction="top">{{ member }}</md-tooltip>
           </md-avatar>
         </div>
@@ -356,15 +312,16 @@ export default {
       console.log(this.type);
       // only load topic channels into the card component
       if (
-        (team === data.team &&
-          this.type === "Imp" &&
-          data.display_name.charAt(0) === "!") ||
-        (team === data.team &&
-          this.type === "Aff" &&
-          data.display_name.charAt(0) === "#") ||
-        (team === data.team &&
-          this.type === "Wor" &&
-          data.display_name.charAt(0) === "/")
+        team === data.team
+        // (team === data.team &&
+        //   this.type === "Imp" &&
+        //   data.display_name.charAt(0) === "!") ||
+        // (team === data.team &&
+        //   this.type === "Aff" &&
+        //   data.display_name.charAt(0) === "#") ||
+        // (team === data.team &&
+        //   this.type === "Wor" &&
+        //   data.display_name.charAt(0) === "/")
       ) {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
@@ -684,19 +641,4 @@ export default {
 };
 </script>
 <style>
-.md-card {
-  transition: transform 0.3s ease-in-out;
-  transform: scale(0.5) !important;
-  -moz-transform: scale(0.5);
-  -webkit-transform: scale(0.5) !important;
-  margin: calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5))
-    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5)) !important;
-}
-
-.md-card:hover {
-  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1);
-  transform: scale(1) rotate(5deg) !important;
-  -moz-transform: scale(1) rotate(5deg) !important;
-  -webkit-transform: scale(1) rotate(5deg) !important;
-}
 </style>

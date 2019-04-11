@@ -384,6 +384,14 @@
       >
         <md-icon>people_outline</md-icon>
       </md-button>
+            <md-button
+        v-if="!service || service.charAt(0) === ':'"
+        title="Show Channels"
+        @click="sub(':Channels');"
+        class="md-fab md-mini md-plain"
+      >
+        <md-icon>chat</md-icon>
+      </md-button>
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Important Channels"
@@ -613,10 +621,10 @@
 
       <Particles v-if="!service"/>
       <Channels
-        v-if="service.split(' ').splice(-1)[0] == 'Channels'"
+        v-if="service.substring(1) == 'Channels'"
         :domain="domain"
         :subdomain="subdomain"
-        :type="service.substring(1, 4)"
+        :type="service.substring(1)"
       />
       <Notes v-if="service == ':Notes'" :domain="domain"/>
       <Meetings v-if="service == ':Meetings'" :domain="domain"/>
@@ -1280,6 +1288,12 @@ export default {
           this.service = "";
           this.$nextTick(() => {
             this.service = ":Notes";
+          });
+          break;
+                  case ":Channels":
+          this.service = "";
+          this.$nextTick(() => {
+            this.service = ":Channels";
           });
           break;
         case ":Important Channels":

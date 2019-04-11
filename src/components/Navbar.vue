@@ -384,7 +384,8 @@
       >
         <md-icon>people_outline</md-icon>
       </md-button>
-            <md-button
+
+      <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Channels"
         @click="sub(':Channels');"
@@ -392,7 +393,8 @@
       >
         <md-icon>chat</md-icon>
       </md-button>
-      <md-button
+
+      <!--md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Important Channels"
         @click="sub(':Important Channels');"
@@ -416,8 +418,7 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>mms</md-icon>
-      </md-button>
-
+      </md-button-->
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Calendar"
@@ -1290,7 +1291,7 @@ export default {
             this.service = ":Notes";
           });
           break;
-                  case ":Channels":
+        case ":Channels":
           this.service = "";
           this.$nextTick(() => {
             this.service = ":Channels";

@@ -15,12 +15,6 @@
   -webkit-transform: scale(1) rotate(5deg);
 }
 
-#noteCards.md-card .md-title {
-  font-size: 1.4em !important;
-  line-height: 1.2em;
-  font-weight: normal !important;
-}
-
 #noteCards.md-card .md-chip {
   margin: 3px;
   position: relative;

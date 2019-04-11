@@ -136,7 +136,7 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">Channel</div>
+        <div class="md-subhead">{{ topic.display_name[0] }}Channel</div>
         <img src="https://ledger.diglife.coop/images/brand/logo_secondary.svg">
       </div>
 
@@ -162,7 +162,7 @@
       </div>
 
       <div class="md-card-mid">
-        <p class="info">
+        <p class="info md-scrollbar">
           <vue-markdown>{{topic.header}}</vue-markdown>
         </p>
       </div>

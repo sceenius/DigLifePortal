@@ -5,15 +5,9 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar
-      :md-duration="4000"
-      :md-active.sync="showSnackBar"
-      md-persistent
-    >
+    <md-snackbar :md-duration="4000" :md-active.sync="showSnackBar" md-persistent>
       <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackBar = false;"
-        >Dismiss</md-button
-      >
+      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
     </md-snackbar>
 
     <!--
@@ -28,16 +22,14 @@
       style="width: 400px;"
     >
       <md-dialog-title>Update Notes</md-dialog-title>
-      <div style="padding: 0 25px ;">
-        text goes here
+      <div style="padding: 0 25px ;">text goes here
         <md-field id="history">
           <label>History</label>
           <md-textarea v-model="history"></md-textarea>
           <span class="md-helper-text">Paste your notes from below</span>
           <span class="md-error">The history does not exist</span>
         </md-field>
-        <iframe 
-        style="padding: 0px;"
+        <iframe
           name="theApp2"
           src="https://notepad.diglife.coop/history"
           width="100%"
@@ -45,18 +37,14 @@
           scrolling="yes"
         ></iframe>
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button
-            class="md-success md-raised"
-            @click="activeDialogHistory = false;"
-            >Cancel</md-button
-          >
+          <md-button class="md-success md-raised" @click="activeDialogHistory = false;">Cancel</md-button>
           <md-button
             class="md-success md-raised"
             @click="onConfirmHistory();"
             style="background: #00B0A0; color: white;"
-            ><md-icon style="color: white;">exit_to_app</md-icon>
-            Update</md-button
           >
+            <md-icon style="color: white;">exit_to_app</md-icon>Update
+          </md-button>
         </md-dialog-actions>
       </div>
     </md-dialog>
@@ -100,10 +88,10 @@
       :md-click-outside-to-close="false"
       :md-active.sync="activeDialogNote"
     >
-      <md-dialog-title
-        ><md-icon style="color: black;">how_to_vote </md-icon>
-        {{ mode }} Note</md-dialog-title
-      >
+      <md-dialog-title>
+        <md-icon style="color: black;">how_to_vote</md-icon>
+        {{ mode }} Note
+      </md-dialog-title>
 
       <div style="padding: 0 25px ;">
         <md-field id="display_name">
@@ -122,8 +110,7 @@
             :tags="formtags"
             :allow-edit-tags="true"
             :autocomplete-items="autocompleteItems"
-          >
-          </vue-tags-input>
+          ></vue-tags-input>
           <span class="md-helper-text">Enter one or more tags</span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
@@ -134,39 +121,32 @@
             <md-option value="plain">Plain</md-option>
             <md-option value="meeting">Meeting</md-option>
           </md-select>
-          <span class="md-helper-text"
-            >Select your template. The text will be copied to your clipboard, so
-            you can paste it into the document.</span
-          >
+          <span class="md-helper-text">
+            Select your template. The text will be copied to your clipboard, so
+            you can paste it into the document.
+          </span>
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
         <textarea
           id="templatetext"
           style="width: 0%; height: 0px; background-color:#ddd; padding: 5px; font-size: 0.9em;"
-        >
-        </textarea>
+        ></textarea>
 
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button
-            class="md-success md-raised"
-            @click="activeDialogNote = false;"
-            >Cancel</md-button
-          >
+          <md-button class="md-success md-raised" @click="activeDialogNote = false;">Cancel</md-button>
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmNote(formindex);"
             style="background: #00B0A0; color: white;"
-            >Update</md-button
-          >
+          >Update</md-button>
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirmNote();"
             style="background: #00B0A0; color: white;"
-            >Create</md-button
-          >
+          >Create</md-button>
         </md-dialog-actions>
       </div>
     </md-dialog>
@@ -183,17 +163,9 @@
       </md-speed-dial-target>
 
       <md-speed-dial-content>
-        <textarea
-          id="Clipboard"
-          style="position: absolute; opacity: 0; width: 0%; height: 0px;"
-        >
-        </textarea>
+        <textarea id="Clipboard" style="position: absolute; opacity: 0; width: 0%; height: 0px;"></textarea>
 
-        <md-button
-          class="md-icon-button"
-          @click="createNote('plain');"
-          title="Create plain note"
-        >
+        <md-button class="md-icon-button" @click="createNote('plain');" title="Create plain note">
           <md-icon>assignment</md-icon>
         </md-button>
 
@@ -205,11 +177,7 @@
           <md-icon>videocam</md-icon>
         </md-button>
 
-        <md-button
-          class="md-icon-button"
-          @click="createNote('news');"
-          title="Create news note"
-        >
+        <md-button class="md-icon-button" @click="createNote('news');" title="Create news note">
           <md-icon>date_range</md-icon>
         </md-button>
       </md-speed-dial-content>
@@ -248,9 +216,7 @@
         </md-menu>
 
         <div class="md-subhead">Note</div>
-        <img
-          src="https://ledger.diglife.coop/images/brand/logo_secondary.svg"
-        />
+        <img src="https://ledger.diglife.coop/images/brand/logo_secondary.svg">
       </div>
 
       <div class="md-card-header">
@@ -273,9 +239,7 @@
           Changed {{ note.fromTime }}
         </p>
         <p class="info" style="width: 250px; height: 90px; overflow: auto;">
-          <md-chip v-for="(tag, index) in note.tags" :key="tag.id">
-            {{ tag }}
-          </md-chip>
+          <md-chip v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
         </p>
       </div>
 
@@ -284,18 +248,14 @@
         <md-button
           style="background: #00B0A0; color: white;"
           @click="cardAction('open', note);"
-          >Open</md-button
-        >
+        >Open</md-button>
       </md-card-actions>
 
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
           <md-menu v-for="(member, index2) in note.members" :key="index2">
-            <md-avatar
-              style="cursor: pointer; border: 2px solid transparent;"
-              md-menu-trigger
-            >
-              <img v-bind:src="avatarLink(member)" alt="Avatar" />
+            <md-avatar style="cursor: pointer; border: 2px solid transparent;" md-menu-trigger>
+              <img v-bind:src="avatarLink(member)" alt="Avatar">
               <!-- md-tooltip md-direction="top">{{ member }}</md-tooltip -->
             </md-avatar>
 
@@ -663,19 +623,5 @@ export default {
 };
 </script>
 <style>
-#noteCards.md-card {
-  transition: transform 0.3s ease-in-out;
-  transform: scale(0.5) !important;
-  -moz-transform: scale(0.5);
-  -webkit-transform: scale(0.5)  !important;
-  margin: calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5))
-    calc(-160px * (1 - 0.5)) calc(-110px * (1 - 0.5)) !important;
-}
 
-#noteCards.md-card:hover {
-  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.525, 1) !important;
-  transform: scale(1) rotate(5deg)  !important;
-  -moz-transform: scale(1) rotate(5deg);
-  -webkit-transform: scale(1) rotate(5deg);
-}
 </style>

@@ -1,3 +1,20 @@
+.md-card {
+  border-radius: 1rem;
+  transition: transform 0.3s ease-in-out;
+  transform: scale(0.6) !important;
+  -moz-transform: scale(0.6);
+  -webkit-transform: scale(0.6) !important;
+  margin: calc(-160px * (1 - 0.6)) calc(-110px * (1 - 0.6))
+    calc(-160px * (1 - 0.6)) calc(-110px * (1 - 0.6)) !important;
+}
+
+.md-card:hover {
+  transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.325, 1) !important;
+  transform: scale(1) rotate(5deg) translate(50px, 50px) !important;
+  -moz-transform: scale(1) rotate(5deg);
+  -webkit-transform: scale(1) rotate(5deg);
+}
+
 #noteCards.md-card .md-title {
   font-size: 1.4em !important;
   line-height: 1.2em;
@@ -56,6 +73,8 @@
 }
 
 .md-card-banner {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
   position: absolute;
   left: 0;
   top: 0;
@@ -137,6 +156,8 @@
 }
 
 .md-card-footer {
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
   position: absolute;
   left: 0;
   bottom: 0;

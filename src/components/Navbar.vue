@@ -717,13 +717,15 @@ export default {
   created: function() {
     // domain coming from router
     this.domain = this.$route.params.domain || "diglife";
-    console.log(this.domain);
     // username coming from cookie
     if (this.$cookies.get("username")) {
       this.username = this.$cookies.get("username");
     } else {
       this.activeUser = true;
     }
+
+    //showServices cookie
+    this.showServices = this.$cookies.get("showServices");
     console.log("Intializing app..");
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");
@@ -797,7 +799,6 @@ export default {
           this.groups = group.val();
         } else if (group.key === "domains") {
           this.domains = group.val();
-          console.log(this.domains);
         }
       });
 
@@ -893,6 +894,7 @@ export default {
             "/prefs"
         )
         .update({ showServices: this.showServices });
+      this.$cookies.set("showServices", this.showServices);
     },
     avatarLink2: function(index) {
       return (
@@ -1114,6 +1116,7 @@ export default {
             this.$cookies.get("username")
         );
 
+        //update groups
         this.axios
           .get(
             BASEURL +
@@ -1133,6 +1136,10 @@ export default {
               // update channels and grouptags for this user
               // note: SET  WILL  overwrite other data of this user profile
               .set(this.groups.channels)
+          )
+          .then(response =>
+            db
+              .database()
               .ref(
                 "portal_profiles/" +
                   this.username.replace(".", "%2E") +
@@ -1140,7 +1147,7 @@ export default {
               )
               .set(this.groups.grouptags)
           )
-          .then(
+          .then(response =>
             // load personal channels and tags from group membership
             db
               .database()

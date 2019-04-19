@@ -324,6 +324,10 @@
               <md-icon>person</md-icon>
               <span>Profile</span>
             </md-menu-item>
+            <md-menu-item @click="openNote('https://notepad.diglife.coop/s/B1PgFFi4E');">
+              <md-icon>help</md-icon>
+              <span>Help</span>
+            </md-menu-item>
           </md-menu-content>
         </md-menu>
       </div>
@@ -878,7 +882,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     openNote: function(note) {
-      this.service = "Onboarding";
+      this.service = "Help";
       var element = document.getElementById("theApp");
       element.src = "about:blank";
       element.style.display = "block";

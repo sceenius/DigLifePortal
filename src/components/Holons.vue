@@ -1,24 +1,14 @@
 <template>
   <svg width="100%" height="100%">
-    <defs>
-      <filter id="gooey">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
-        <feColorMatrix
-          in="blur"
-          mode="matrix"
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7"
-          result="gooey"
-        />
-        <feComposite in="SourceGraphic" in2="gooey" operator="atop" />
-      </filter>
-    </defs>
+    <defs></defs>
   </svg>
 </template>
 
 <script>
 //import {scaleLinear} from "d3-scale";
+//import hierachy from "d3-hierarchy";
+//import d3 from '../assets/d3';
 import * as d3 from "d3"; //all
-//REMOVE DEPENDCY LATER  -- import hierachy from "d3-hierarchy";
 import db from "../firebase/init.js";
 import { BASEURL, CHATURL } from "../main.js";
 
@@ -26,11 +16,12 @@ export default {
   name: "Holons",
   color: "",
   components: {},
-  props: ["domain"],
+  props: ["domain", "mydomains"],
   data() {
     return {
       service: "Holons",
       channels: [],
+      //domains: [],
       holons: [],
       width: "",
       height: "",
@@ -46,60 +37,55 @@ export default {
     //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
 
-    let domainsRef = db.database().ref("portal_profiles/ledgerbot/domains");
+    //let domainsRef = db.database().ref("portal_profiles/daviding/domains");
     let channelsRef = db.database().ref("portal_channels");
 
-    let domains = [
-      "diglife",
-      "projects",
-      "friends",
-      "ops",
-      "openlearning",
-      "ecosystem-maps"
-    ];
-    for (var i in domains) {
-      console.log(domains[i]);
-      this.holons[domains[i]] = [];
-      this.holons[domains[i]].topics = [];
-      this.holons[domains[i]].important = [];
+    for (var dom in this.mydomains) {
+      // IN vs OF UNCLEAR
+      this.holons[this.mydomains[dom]] = [];
+      this.holons[this.mydomains[dom]].topics = [];
+      this.holons[this.mydomains[dom]].important = [];
     }
 
     channelsRef.on("child_added", channel => {
       var data = channel.val();
-      this.channels.push(data);
-      //console.log(data.team, this.holons[data.team]);
-      if (data.display_name.charAt(0) === "!") {
-        //console.log("--------", data);
-        this.holons[data.team].important.push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      } else if (data.display_name.charAt(0) === "#") {
-        this.holons[data.team].topics.push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      } else if (data.display_name.charAt(0) !== "#") {
-        this.holons[data.team].push({
-          id: data.channel_id,
-          name: data.display_name,
-          image: data.image,
-          members: data.members,
-          size: data.total_msg_count,
-          link: CHATURL + data.team + "/channels/" + data.name,
-          opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
-        });
-      }
+
+      if (this.mydomains.includes(data.team)) {
+        this.channels.push(data);
+        //console.log(data.team, this.holons[data.team]);
+        if (data.display_name.charAt(0) === "!") {
+          //console.log("--------", data);
+          this.holons[data.team].important.push({
+            id: data.channel_id,
+            name: data.display_name,
+            image: data.image,
+            members: data.members,
+            size: data.total_msg_count,
+            link: CHATURL + data.team + "/channels/" + data.name,
+            opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+          });
+        } else if (data.display_name.charAt(0) === "#") {
+          this.holons[data.team].topics.push({
+            id: data.channel_id,
+            name: data.display_name,
+            image: data.image,
+            members: data.members,
+            size: data.total_msg_count,
+            link: CHATURL + data.team + "/channels/" + data.name,
+            opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+          });
+        } else if (data.display_name.charAt(0) !== "#") {
+          this.holons[data.team].push({
+            id: data.channel_id,
+            name: data.display_name,
+            image: data.image,
+            members: data.members,
+            size: data.total_msg_count,
+            link: CHATURL + data.team + "/channels/" + data.name,
+            opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
+          });
+        }
+      } // IF INCLUDES
     });
   },
 
@@ -424,90 +410,108 @@ export default {
         !this.domain || this.domain === "Home"
           ? "diglife"
           : this.domain.toLowerCase();
-      //console.log(this.holons.ops);
+
+      var flares = [];
+      for (var dom of this.mydomains) {
+        flares.push({
+          name: dom.replace("friends", "partners").toUpperCase(),
+          children: this.holons[dom].concat(
+            {
+              name: "Interest Groups",
+              children: this.holons[dom].topics
+            },
+            {
+              name: "Important Channels",
+              children: this.holons[dom].important
+            }
+          )
+        });
+      }
+      //console.log(flares)
+
       if (domain === "diglife") {
         return {
           name: "Digital Life Collective",
-          children: [
-            {
-              name: "Home",
-              children: this.holons.diglife.concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons.diglife.topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons.diglife.important
-                }
-              )
-            },
-            {
-              name: "Ops",
-              children: this.holons.ops.concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons.ops.topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons.ops.important
-                }
-              )
-            },
-            {
-              name: "Projects",
-              children: this.holons.projects.concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons.projects.topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons.projects.important
-                }
-              )
-            },
-            {
-              name: "Friends",
-              children: this.holons.friends.concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons.friends.topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons.friends.important
-                }
-              )
-            },
-            {
-              name: "Ecosystem-Maps",
-              children: this.holons["ecosystem-maps"].concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons["ecosystem-maps"].topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons["ecosystem-maps"].important
-                }
-              )
-            },
-            {
-              name: "Open Learning",
-              children: this.holons["openlearning"].concat(
-                {
-                  name: "Interest Groups",
-                  children: this.holons["openlearning"].topics
-                },
-                {
-                  name: "Important Channels",
-                  children: this.holons.openlearning.important
-                }
-              )
-            }
-          ]
+          children: flares
+          //       {
+          //         name: "Home",
+          //         children: this.holons.diglife.concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons.diglife.topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons.diglife.important
+          //           }
+          //         )
+          //       },
+          //       {
+          //         name: "Ops",
+          //         children: this.holons.ops.concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons.ops.topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons.ops.important
+          //           }
+          //         )
+          //       },
+          //       {
+          //         name: "Projects",
+          //         children: this.holons.projects.concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons.projects.topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons.projects.important
+          //           }
+          //         )
+          //       },
+          //       {
+          //         name: "Friends",
+          //         children: this.holons.friends.concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons.friends.topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons.friends.important
+          //           }
+          //         )
+          //       },
+          //       {
+          //         name: "Ecosystem-Maps",
+          //         children: this.holons["ecosystem-maps"].concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons["ecosystem-maps"].topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons["ecosystem-maps"].important
+          //           }
+          //         )
+          //       },
+          //       {
+          //         name: "Open Learning",
+          //         children: this.holons["openlearning"].concat(
+          //           {
+          //             name: "Interest Groups",
+          //             children: this.holons["openlearning"].topics
+          //           },
+          //           {
+          //             name: "Important Channels",
+          //             children: this.holons.openlearning.important
+          //           }
+          //         )
+          //       }
+          // ]
         };
       } else {
         return {

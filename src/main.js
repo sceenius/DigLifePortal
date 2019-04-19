@@ -75,7 +75,9 @@ new Vue({
           "webhooks/portal_channels2.php?file=base-diglife-coop.php&username=ledgerbot"
       )
       .then(response => (this.channels = response.data))
-      //.then(console.log(this.channels))
+      //.then(response => console.log(this.channels))
+      // note: if channels are NOT loading, we have a problem with the JSON file
+      // copy the file from above link and see where the issue is (e.g. purpose)
       .then(response =>
         db
           .database()

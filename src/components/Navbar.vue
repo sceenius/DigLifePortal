@@ -629,7 +629,18 @@
       />
       <Notes v-if="service == ':Notes'" :domain="domain"/>
       <Meetings v-if="service == ':Meetings'" :domain="domain"/>
-      <Holons v-if="service == ':Holons'" :domain="domain"/>
+      <Holons
+        v-if="service == ':Holons'"
+        :domain="domain"
+        :mydomains="showServices ? domains : [
+      'diglife',
+      'projects',
+      'friends',
+      'ops',
+      'openlearning',
+      'ecosystem-maps'
+    ]"
+      />
       <Skills v-if="service == ':Skills'" :domain="domain"/>
       <iframe
         name="theApp"
@@ -681,6 +692,8 @@ export default {
     username: "",
     snack: "",
     users: [],
+    domains: [],
+    mydomains: [],
     channels: [],
     profile: [],
     groups: [],
@@ -704,7 +717,7 @@ export default {
   created: function() {
     // domain coming from router
     this.domain = this.$route.params.domain || "diglife";
-
+    console.log(this.domain);
     // username coming from cookie
     if (this.$cookies.get("username")) {
       this.username = this.$cookies.get("username");
@@ -782,7 +795,9 @@ export default {
 
         if (group.key === "channels") {
           this.groups = group.val();
-          //console.log(this.groups);
+        } else if (group.key === "domains") {
+          this.domains = group.val();
+          console.log(this.domains);
         }
       });
 

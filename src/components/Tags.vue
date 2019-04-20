@@ -1,8 +1,6 @@
 <template>
   <div>
-    <p st yle="margin-top:-20px">
-      Your skillsets & expertise (don't list interests):
-    </p>
+    <p st yle="margin-top:-20px">Your skillsets & expertise (don't list interests):</p>
     <vue-tags-input
       v-model="tag"
       :tags="tags"
@@ -22,8 +20,7 @@
         <md-icon
           v-if="grouptags && JSON.stringify(grouptags).includes(props.tag.text)"
           style="color: white; margin: -2px 3px 0 0; font-size: 20px !important;"
-          >verified_user</md-icon
-        >
+        >verified_user</md-icon>
       </div>
     </vue-tags-input>
 
@@ -36,9 +33,7 @@
         v-for="(tag, index) in autocompleteItems"
         :key="tag.id"
         @click="addTag(index);"
-      >
-        {{ tag.text }}
-      </md-chip>
+      >{{ tag.text }}</md-chip>
     </div>
   </div>
 </template>
@@ -100,7 +95,7 @@ export default {
                 );
                 let color =
                   frequency > 0.3 && frequency < 50
-                    ? "background-color: #00b0a0 !important;"
+                    ? "background-color: #0DC9C9 !important;"
                     : "background-color: red !important;";
                 this.tags[index].style = color;
                 this.tags[index].frequency = frequency;

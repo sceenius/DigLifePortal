@@ -66,7 +66,7 @@
   width: 100%;
   color: white;
   height: 50px;
-  background-color: #00b0a0; /* DigLife:00B0A0 Xmas:00B0A0*/
+  background-color: #0dc9c9; /* DigLife:0DC9C9 Xmas:0DC9C9*/
   overflow: hide;
 }
 
@@ -217,7 +217,7 @@
 li.tag {
   height: 34px !important;
   padding: 0 10px !important;
-  background-color: #00b0a0 !important;
+  background-color: #0dc9c9 !important;
   border-radius: 40px !important;
   font-size: 15px !important;
   line-height: 34px !important;

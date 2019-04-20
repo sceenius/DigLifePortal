@@ -93,13 +93,13 @@
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirm(formindex);"
-            style="background: #00B0A0; color: white;"
+            style="background: #0DC9C9; color: white;"
           >Update</md-button>
           <md-button
             v-if="mode == 'Create'"
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #00B0A0; color: white;"
+            style="background: #0DC9C9; color: white;"
           >Create</md-button>
         </md-dialog-actions>
       </div>
@@ -171,13 +171,13 @@
         <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);">Leave</md-button>
         <md-button
           v-if="isMember(topic)"
-          style="background: #00B0A0; color: white;"
+          style="background: #0DC9C9; color: white;"
           @click="cardAction('open', topic);"
         >Open</md-button>
         <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);">Ask</md-button>
         <md-button
           v-if="!isMember(topic)"
-          style="background: #00B0A0; color: white;"
+          style="background: #0DC9C9; color: white;"
           @click="cardAction('join', topic);"
         >Join</md-button>
       </md-card-actions>
@@ -206,7 +206,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain", "subdomain", "type"],
+  props: ["domain", "type"],
   data() {
     return {
       service: "",
@@ -269,7 +269,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.username = this.$cookies.get("username");
-    //console.log(this.subdomain);
+
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
       let groupsRef = db.database().ref("portal_profiles/" + this.username);
@@ -307,28 +307,13 @@ export default {
     let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       let data = channel.val();
-      let team =
-        this.subdomain === "Home" ? "diglife" : this.subdomain.toLowerCase();
-      console.log(this.type);
-      // only load topic channels into the card component
-      if (
-        team === data.team
-        // (team === data.team &&
-        //   this.type === "Imp" &&
-        //   data.display_name.charAt(0) === "!") ||
-        // (team === data.team &&
-        //   this.type === "Aff" &&
-        //   data.display_name.charAt(0) === "#") ||
-        // (team === data.team &&
-        //   this.type === "Wor" &&
-        //   data.display_name.charAt(0) === "/")
-      ) {
+
+      if (this.domain === data.team) {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
           this.topics.push(data);
-          //console.log(channel.key, data.name, extension.val());
           //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
         });
       }

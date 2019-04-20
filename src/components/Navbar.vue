@@ -95,7 +95,7 @@
           <md-button
             class="md-success md-raised"
             @click="onConfirm();"
-            style="background: #00B0A0; color: white;"
+            style="background: #0DC9C9; color: white;"
           >
             <md-icon style="color: white;">exit_to_app</md-icon>Enter
           </md-button>
@@ -186,7 +186,7 @@
         <md-button
           class="md-success md-raised"
           @click="requestAccess();"
-          style="background: #00B0A0; color: white;"
+          style="background: #0DC9C9; color: white;"
         >
           <md-icon style="color: white;">lock_open</md-icon>Request
           Access
@@ -243,20 +243,20 @@
             v-if="mode == 'Add'"
             class="md-success md-raised"
             @click="onConfirmAddMenu();"
-            style="background: #00B0A0; color: white;"
+            style="background: #0DC9C9; color: white;"
           >Save</md-button>
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmDeleteMenu(menuindex);"
             sty
-            le="background: #00B0A0; color: white;"
+            le="background: #0DC9C9; color: white;"
           >Remove</md-button>
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmEditMenu(menuindex);"
-            style="background: #00B0A0; color: white;"
+            style="background: #0DC9C9; color: white;"
           >Save</md-button>
         </md-dialog-actions>
       </div>
@@ -267,7 +267,7 @@
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
-    <md-toolbar :class="['md-primary', 'md-toolbar-' + domain]" v-if="profile">
+    <md-toolbar :class="['md-primary', 'md-toolbar']" v-if="profile">
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
@@ -283,36 +283,17 @@
 
       <div class="md-toolbar-section-end">
         <md-button
-          @click="nav(domain, 'Home');"
+          v-for="(dom, index) in domains"
+          :key="index"
+          @click="nav(dom);"
           v-bind:style="[
-            subdomain == 'Home' ? { color: '#fec019' } : { color: '#fff' }
+            domain == dom ? { color: '#fec019' } : { color: '#fff' }
           ]"
-        >Home</md-button>
-        <md-button
-          @click="nav(domain, 'Projects');"
-          v-if="domain == 'diglife'"
-          v-bind:style="[
-            subdomain == 'Projects' ? { color: '#fec019' } : { color: '#fff' }
-          ]"
-        >proj</md-button>
-        <md-button
-          @click="nav(domain, 'Ops');"
-          v-if="domain == 'diglife'"
-          v-bind:style="[
-            subdomain == 'Ops' ? { color: '#fec019' } : { color: '#fff' }
-          ]"
-        >ops</md-button>
-        <md-button
-          @click="nav(domain, 'Partners');"
-          v-if="domain == 'diglife'"
-          v-bind:style="[
-            subdomain == 'Partners' ? { color: '#fec019' } : { color: '#fff' }
-          ]"
-        >Partners</md-button>
+        >{{dom.replace("friends","partners").substring(0,4)}}</md-button>
 
         <md-menu>
-          <md-avatar style="cursor: pointer; border: 2px solid transparent;" md-menu-trigger>
-            <img v-bind:src="avatarLink">
+          <md-avatar  style="cursor: pointer; border: 2px solid transparent;" md-menu-trigger>
+            <div class="pulsating-circle"></div><img v-bind:src="avatarLink">
           </md-avatar>
 
           <md-menu-content class="md-card-menu">
@@ -505,7 +486,7 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
-        <span class="md-title" style="color: white;">{{ subdomain }}</span>
+        <span class="md-title" style="color: white;">{{ domain.toUpperCase() }}</span>
       </md-toolbar>
 
       <!--
@@ -621,14 +602,13 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <img v-if="!service && domain == 'diglife'" id="logo" v-bind:src="logoLink">
+      <img v-if="!service" id="logo" v-bind:src="logoLink">
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
 
       <Particles v-if="!service"/>
       <Channels
         v-if="service.substring(1) == 'Channels'"
         :domain="domain"
-        :subdomain="subdomain"
         :type="service.substring(1)"
       />
       <Notes v-if="service == ':Notes'" :domain="domain"/>
@@ -636,14 +616,6 @@
       <Holons
         v-if="service == ':Holons'"
         :domain="domain"
-        :mydomains="showServices ? domains : [
-      'diglife',
-      'projects',
-      'friends',
-      'ops',
-      'openlearning',
-      'ecosystem-maps'
-    ]"
       />
       <Skills v-if="service == ':Skills'" :domain="domain"/>
       <iframe
@@ -682,7 +654,7 @@ export default {
     // },
     showNavigation: false,
     showSidepanel: false,
-    showServices: false,
+    showServices: true,
     showSnackBar: false,
     showProfileReminder: true,
     activeUser: false,
@@ -691,13 +663,11 @@ export default {
     activeSettings: false,
     activeMenu: false,
     domain: "diglife",
-    subdomain: "Home",
     service: "",
     username: "",
     snack: "",
     users: [],
     domains: [],
-    mydomains: [],
     channels: [],
     profile: [],
     groups: [],
@@ -803,31 +773,9 @@ export default {
           this.groups = group.val();
         } else if (group.key === "domains") {
           this.domains = group.val();
+          this.domain = this.domains[0];
         }
       });
-
-      // let prefsRef = db
-      //   .database()
-      //   .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
-      // prefsRef.on("child_added", pref => {
-      //   if (pref.key === "showServices") {
-      //     this.showServices = pref.val();
-      //   } else if (pref.key === "service") {
-      //     this.service = pref.val();
-      //   } else if (pref.key === "link") {
-      //     window.open(pref.val(), "theApp");
-      //     console.log(pref.val());
-      //   }
-      // });
-      // prefsRef.on("child_changed", pref => {
-      //   if (pref.key === "showServices") {
-      //     this.showServices = pref.val();
-      //   } else if (pref.key === "service") {
-      //     this.service = pref.val();
-      //   } else if (pref.key === "link") {
-      //     window.open(pref.val(), "theApp");
-      //   }
-      // });
     }
 
     // update cookies
@@ -849,7 +797,7 @@ export default {
       return (
         BASEURL +
         "images/brand/logo_secondary_" +
-        this.subdomain.toLowerCase() +
+        this.domain.toLowerCase() +
         ".svg"
       );
     },
@@ -872,10 +820,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   //  BEFORE DESTROY - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
-  beforeDestroy: function() {
-    //this.$cookies.set("showServices", this.showServices); not working
-    //console.log(this.showServices);
-  },
+  beforeDestroy: function() {},
 
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
@@ -889,8 +834,9 @@ export default {
       // window.onload = function() {
       window.open(note, "theApp");
     },
+
     switchService: function() {
-      //this.$cookies.set("showServices", this.showServices);
+      this.$cookies.set("showServices", this.showServices);
       db.database()
         .ref(
           "portal_profiles/" +
@@ -898,8 +844,8 @@ export default {
             "/prefs"
         )
         .update({ showServices: this.showServices });
-      this.$cookies.set("showServices", this.showServices);
     },
+
     avatarLink2: function(index) {
       return (
         BASEURL +
@@ -911,13 +857,12 @@ export default {
 
     showDomain: function(index) {
       //check if current domain is listed in channel
-      //console.log("-----",this.channels[index].team, this.domain);
-      return this.channels[index].purpose.domain &&
-        (this.channels[index].team === this.domain ||
-          ["Home", "Projects", "Ops", "Partners"].includes(this.subdomain))
-        ? this.channels[index].purpose.domain.includes(this.subdomain)
-        : false;
+      return (
+        this.channels[index].purpose.domain &&
+        this.channels[index].purpose.domain == this.domain
+      );
     },
+
     showGroup: function(index) {
       //check if current group is listed in channel
       return JSON.stringify(this.groups).includes(
@@ -1091,21 +1036,6 @@ export default {
           return item.username === this.username;
         });
 
-        // // update groups and profile for newly logged in user (no cookie set)
-        // this.axios
-        //   .get(
-        //     BASEURL +
-        //       "webhooks/portal_profiles2.php?file=base-diglife-coop.php&username=" +
-        //       this.username
-        //   )
-        //   .then(response => (this.groups = response.data))
-        //   .then(
-        //     response =>
-        //       (this.profile = this.users.find(item => {
-        //         return item.username === this.username;
-        //       }))
-        //   );
-
         // update theme for user
         this.axios.get(
           BASEURL +
@@ -1160,32 +1090,10 @@ export default {
               .then(group => {
                 let data = group.val();
                 this.groups = data.channels;
-                //console.log("This channel:" + this.groups);
                 this.tags = data.tags ? data.tags : [];
-                //console.log("This tag:" + this.tags[1]);
+                this.domains = data.domains;
               })
           );
-
-        // // UPDATE FROM FIREBASE HERE FOR FIRST ENTRY
-        // db.firestore()
-        //   .collection("members")
-        //   .doc(this.username)
-        //   .get()
-        //   .then(doc => {
-        //     if (doc.exists) {
-        //       this.tags = doc.data().tags;
-        //       // hell of a map reduce function to flatten JSON
-        //       this.tags = this.tags.reduce((accumulator, currentValue) => {
-        //         return [...accumulator, currentValue.text];
-        //       });
-        //     } else {
-        //       // doc.data() will be undefined in this case
-        //       console.log("No document for user " + this.username + "!");
-        //     }
-        //   })
-        //   .catch(function(error) {
-        //     console.log("Error getting document:", error);
-        //   });
 
         this.$nextTick(function() {
           this.activeUser = false;
@@ -1204,13 +1112,13 @@ export default {
       this.activeUser = true;
     },
 
-    nav: function(domain, subdomain) {
+    nav: function(domain) {
       this.domain = domain;
-      this.subdomain = subdomain;
       this.showNavigation = true;
       this.service = "";
       var element = document.getElementById("theApp");
       element.style.display = "none";
+      console.log(domain);
     },
 
     sub: function(menu) {
@@ -1227,29 +1135,29 @@ export default {
           let timezone = Moment.tz.guess();
           this.snack = "Showing calendar in local timezone for " + timezone;
           this.showSnackBar = true;
-          switch (this.subdomain) {
-            case "Home":
+          switch (this.domain) {
+            case "diglife":
               drive =
                 "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com&ctz=" +
                 timezone;
               break;
-            case "Projects":
+            case "projects":
               drive =
                 "classroom109491638889680858364@group.calendar.google.com&ctz=" +
                 timezone;
               break;
-            case "Ops":
+            case "ops":
               drive =
                 "0627opclgoft1e0o1mql6fk1l8%40group.calendar.google.com&ctz=" +
                 timezone;
               break;
-            case "Partners":
+            case "friends":
               drive = "";
               break;
-            case "Openlearning":
+            case "openlearning":
               drive = "";
               break;
-            case "Ecosystem-maps":
+            case "ecosystem-maps":
               drive = "";
               break;
             default:
@@ -1269,23 +1177,23 @@ export default {
           element.src = "about:blank";
           element.style.display = "block";
           this.service = ":Folders";
-          switch (this.subdomain) {
-            case "Home":
+          switch (this.domain) {
+            case "diglife":
               drive = "1pfEKM3g_gUbHosuwzbc-ea29gjwGAmVZ";
               break;
-            case "Projects":
+            case "projects":
               drive = "1m2EkiK57l0kOjaK3oXzBGvoOYxU_7sme";
               break;
-            case "Ops":
+            case "Oops":
               drive = "1fZ5-UEJlnD5_N_YGtP0BNckuxP7TvRJR";
               break;
-            case "Partners":
+            case "partners":
               drive = "1e2-z9FTqOMJXUc0JRMAEm7XynpkSRy60";
               break;
-            case "Openlearning":
+            case "openlearning":
               drive = "";
               break;
-            case "Ecosystem-maps":
+            case "ecosystem-maps":
               drive = "";
               break;
             default:
@@ -1533,14 +1441,21 @@ export default {
 .md-card .md-title {
   color: #404040 !important;
 }
-.md-toolbar-diglife {
-  background-color: #00b0a0 !important;
+.md-toolbar {
+  background-color: #F47E7E !important;
 }
 
-.md-toolbar-ccmm,
-.md-toolbar-openlearning,
-.md-toolbar-ecosystem-maps {
-  background-color: #3c78d8 !important;
+.md-toolbar-section-end .md-button {
+  min-width: 40px !important;
+  min-height: 40px !important;
+  width: 40px !important;
+  height: 40px !important;
+  margin: 0 10px 0 0px !important;
+  background-color: GREEN;
+  overflow: hidden;
+  font-size: 0.8em;
+  background-color: #db5d7c;
+  color: #fff;
 }
 
 .md-tabs-container {
@@ -1615,5 +1530,24 @@ export default {
   right: 30px;
   font-size: 5em;
   color: #ddd;
+}
+
+
+.pulsating-circle {
+    border: 10px solid #fff;
+    -webkit-border-radius: 30px;
+    height: 50px;
+    width: 50px;
+    position: absolute;
+    left: -10px;
+    top: -10px;
+    -webkit-animation: pulsate 1s ease-out;
+    -webkit-animation-iteration-count: 10; 
+    opacity: 0.0
+}
+@-webkit-keyframes pulsate {
+    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
+    50% {opacity: 1.0;}
+    100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
 }
 </style>

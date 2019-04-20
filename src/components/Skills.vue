@@ -5,15 +5,9 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar
-      :md-duration="4000"
-      :md-active.sync="showSnackBar"
-      md-persistent
-    >
+    <md-snackbar :md-duration="4000" :md-active.sync="showSnackBar" md-persistent>
       <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackBar = false;"
-        >Dismiss</md-button
-      >
+      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
     </md-snackbar>
     <!--
       ----------------------------------------------------------------------
@@ -22,7 +16,7 @@
     -->
     <md-dialog :md-active.sync="activeSettings" style="width:650px;">
       <md-dialog-title>Profile Tags</md-dialog-title>
-      <Tags style="padding: 20px;" />
+      <Tags style="padding: 20px;"/>
     </md-dialog>
 
     <svg width="100%" height="100%"></svg>
@@ -551,7 +545,7 @@ export default {
 <style>
 div.tooltip {
   position: absolute;
-  background-color: #00b0a0;
+  background-color: #0DC9C9;
   color: white;
   max-width: 200px;
   height: auto;
@@ -561,7 +555,7 @@ div.tooltip {
 }
 div.tooltip p {
   background-color: white;
-  color: #00b0a0;
+  color: #0DC9C9;
   font-weight: bold;
   padding: 5px;
   margin: 0 0 -10px;

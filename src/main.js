@@ -8,7 +8,7 @@ import VueAddToCalendar from "vue-add-to-calendar";
 import "vue-material/dist/vue-material.min.css";
 import "vue-material/dist/theme/default.css";
 import "./assets/styles/cards.css";
-import "./assets/styles/navbar.css";
+//import "./assets/styles/navbar.css";
 import "./assets/styles/particles.css";
 import "./assets/styles/tags.css";
 import "./assets/styles/notes.css";

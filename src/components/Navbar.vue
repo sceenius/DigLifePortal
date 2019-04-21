@@ -312,10 +312,10 @@
           >{{ dom.replace("friends", "partners").substring(0, 4) }}</md-button
         >
 
-                <md-button
+        <md-button
           @click="nav('all');"
           v-bind:style="[
-            domain == all ? { color: '#fec019' } : { color: '#fff' }
+            domain == 'all' ? { color: '#fec019' } : { color: '#fff' }
           ]"
           >ALL</md-button
         >
@@ -730,6 +730,10 @@ export default {
     } else {
       this.activeUser = true;
     }
+
+    if (this.$cookies.get("domain")) {
+      this.domain = this.$cookies.get("domain");
+    } 
 
     //showServices cookie
     this.showServices = this.$cookies.get("showServices");
@@ -1152,6 +1156,7 @@ export default {
       var element = document.getElementById("theApp");
       element.style.display = "none";
       console.log(domain);
+      this.$cookies.set("domain", this.domain);
     },
 
     sub: function(menu) {

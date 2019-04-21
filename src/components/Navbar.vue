@@ -5,9 +5,15 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar :md-duration="4000" :md-active.sync="showSnackBar" md-persistent>
+    <md-snackbar
+      :md-duration="4000"
+      :md-active.sync="showSnackBar"
+      md-persistent
+    >
       <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
+      <md-button class="md-primary" @click="showSnackBar = false;"
+        >Dismiss</md-button
+      >
     </md-snackbar>
 
     <md-snackbar
@@ -23,7 +29,8 @@
           showProfileReminder = false;
           openNote('https://notepad.diglife.coop/s/B1PgFFi4E');
         "
-      >Please read this</md-button>
+        >Please read this</md-button
+      >
     </md-snackbar>
 
     <md-snackbar
@@ -39,7 +46,8 @@
           showProfileReminder = false;
           activeSettings = true;
         "
-      >Update it now</md-button>
+        >Update it now</md-button
+      >
     </md-snackbar>
 
     <!--
@@ -53,8 +61,10 @@
       ----------------------------------------------------------------------
     -->
     <md-dialog :md-active.sync="activeSettings" style="padding: 20px;">
-      <md-dialog-title style="padding: 0px; color: #404040 !important;">My Profile</md-dialog-title>
-      <Tags/>
+      <md-dialog-title style="padding: 0px; color: #404040 !important;"
+        >My Profile</md-dialog-title
+      >
+      <Tags />
     </md-dialog>
 
     <!--
@@ -68,17 +78,14 @@
       :md-active.sync="activeUser"
       style="max-width: 400px; max-height: 350px !important;"
     >
-      <md-dialog-title style="color: #404040 !important;">Welcome to DigLife!</md-dialog-title>
+      <md-dialog-title style="color: #404040 !important;"
+        >Welcome to DigLife!</md-dialog-title
+      >
       <div style="padding: 0 25px ;">
         If you are a member of the Digital Life Collective, please use your
         Mattermost username to log into the portal. If you are not a member yet,
-        <a
-          href="https://diglife.com/join-us/"
-        >
-          <u>join us</u>!
-        </a>
-        <br>
-        <br>
+        <a href="https://diglife.com/join-us/"> <u>join us</u>! </a> <br />
+        <br />
         <md-field id="username">
           <label>Username</label>
           <md-input
@@ -116,20 +123,25 @@
           <p>{{ channel.header }}</p>
         </md-tab>
         <md-tab md-label="Team Members">
-          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;">
+          <md-list
+            style="margin: 50px; overflow: auto; height: 55vh !important;"
+          >
             <md-list-item v-for="(member, index) in members" :key="member.id">
               <md-avatar>
                 <img
                   style="top:0; left: 0; width: 60px; height: 50px;"
                   v-bind:src="avatarLink2(index)"
-                >
+                />
               </md-avatar>
               <span class="md-list-item-text">
                 {{ member.first_name }} {{ member.last_name }} ({{
-                member.username
+                  member.username
                 }})
               </span>
-              <md-button @click="directMessage(member.id);" class="md-icon-button md-list-action">
+              <md-button
+                @click="directMessage(member.id);"
+                class="md-icon-button md-list-action"
+              >
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -150,9 +162,7 @@
     <md-dialog :md-active.sync="activeAccess" id="access">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title>
-        {{
-        service.replace(/[!#*@%/."'\\&]/, "")
-        }}
+        {{ service.replace(/[!#*@%/."'\\&]/, "") }}
       </md-dialog-title>
       <md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
@@ -160,20 +170,25 @@
           <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
         </md-tab>
         <md-tab md-label="Team Members">
-          <md-list style="margin: 50px; overflow: auto; height: 55vh !important;">
+          <md-list
+            style="margin: 50px; overflow: auto; height: 55vh !important;"
+          >
             <md-list-item v-for="(member, index) in members" :key="member.id">
               <md-avatar>
                 <img
                   style="top:0; left: 0; width: 50px; height: 50px;"
                   v-bind:src="avatarLink2(index)"
-                >
+                />
               </md-avatar>
               <span class="md-list-item-text">
                 {{ member.first_name }} {{ member.last_name }} ({{
-                member.username
+                  member.username
                 }})
               </span>
-              <md-button @click="directMessage(member.id);" class="md-icon-button md-list-action">
+              <md-button
+                @click="directMessage(member.id);"
+                class="md-icon-button md-list-action"
+              >
                 <!-- Create a direct message channel -->
                 <md-icon class="md-primary">chat_bubble</md-icon>
               </md-button>
@@ -188,8 +203,7 @@
           @click="requestAccess();"
           style="background: #0DC9C9; color: white;"
         >
-          <md-icon style="color: white;">lock_open</md-icon>Request
-          Access
+          <md-icon style="color: white;">lock_open</md-icon>Request Access
         </md-button>
       </md-dialog-actions>
     </md-dialog>
@@ -224,7 +238,8 @@
             <a
               href="https://material.io/tools/icons/?style=baseline"
               target="icons"
-            >from this list</a>
+              >from this list</a
+            >
           </span>
           <span class="md-error"></span>
           <md-icon>{{ menuicon }}</md-icon>
@@ -238,26 +253,31 @@
         </md-field>
 
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button class="md-success md-raised" @click="activeMenu = false;">Cancel</md-button>
+          <md-button class="md-success md-raised" @click="activeMenu = false;"
+            >Cancel</md-button
+          >
           <md-button
             v-if="mode == 'Add'"
             class="md-success md-raised"
             @click="onConfirmAddMenu();"
             style="background: #0DC9C9; color: white;"
-          >Save</md-button>
+            >Save</md-button
+          >
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmDeleteMenu(menuindex);"
             sty
             le="background: #0DC9C9; color: white;"
-          >Remove</md-button>
+            >Remove</md-button
+          >
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
             @click="onConfirmEditMenu(menuindex);"
             style="background: #0DC9C9; color: white;"
-          >Save</md-button>
+            >Save</md-button
+          >
         </md-dialog-actions>
       </div>
     </md-dialog>
@@ -275,9 +295,9 @@
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
       <span class="md-title">
         {{
-        !service
-        ? domain.toUpperCase()
-        : service.replace(/[!#*@%/."'\\&:]/, "")
+          !service
+            ? domain.toUpperCase()
+            : service.replace(/[!#*@%/."'\\&:]/, "")
         }}
       </span>
 
@@ -289,11 +309,24 @@
           v-bind:style="[
             domain == dom ? { color: '#fec019' } : { color: '#fff' }
           ]"
-        >{{dom.replace("friends","partners").substring(0,4)}}</md-button>
+          >{{ dom.replace("friends", "partners").substring(0, 4) }}</md-button
+        >
+
+                <md-button
+          @click="nav('all');"
+          v-bind:style="[
+            domain == all ? { color: '#fec019' } : { color: '#fff' }
+          ]"
+          >ALL</md-button
+        >
 
         <md-menu>
-          <md-avatar  style="cursor: pointer; border: 2px solid transparent;" md-menu-trigger>
-            <div class="pulsating-circle"></div><img v-bind:src="avatarLink">
+          <md-avatar
+            style="cursor: pointer; border: 2px solid transparent;"
+            md-menu-trigger
+          >
+            <div class="pulsating-circle"></div>
+            <img v-bind:src="avatarLink" />
           </md-avatar>
 
           <md-menu-content class="md-card-menu">
@@ -305,7 +338,9 @@
               <md-icon>person</md-icon>
               <span>Profile</span>
             </md-menu-item>
-            <md-menu-item @click="openNote('https://notepad.diglife.coop/s/B1PgFFi4E');">
+            <md-menu-item
+              @click="openNote('https://notepad.diglife.coop/s/B1PgFFi4E');"
+            >
               <md-icon>help</md-icon>
               <span>Help</span>
             </md-menu-item>
@@ -379,31 +414,33 @@
         <md-icon>chat</md-icon>
       </md-button>
 
-      <!--md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Important Channels"
-        @click="sub(':Important Channels');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>announcement</md-icon>
-      </md-button>
+      <!--
+        md-button
+          v-if="!service || service.charAt(0) === ':'"
+          title="Show Important Channels"
+          @click="sub(':Important Channels');"
+          class="md-fab md-mini md-plain"
+        >
+          <md-icon>announcement</md-icon>
+        </md-button>
 
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Affinity Channels"
-        @click="sub(':Affinity Channels');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>chat</md-icon>
-      </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Workteam Channels"
-        @click="sub(':Workteam Channels');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>mms</md-icon>
-      </md-button-->
+        <md-button
+          v-if="!service || service.charAt(0) === ':'"
+          title="Show Affinity Channels"
+          @click="sub(':Affinity Channels');"
+          class="md-fab md-mini md-plain"
+        >
+          <md-icon>chat</md-icon>
+        </md-button>
+        <md-button
+          v-if="!service || service.charAt(0) === ':'"
+          title="Show Workteam Channels"
+          @click="sub(':Workteam Channels');"
+          class="md-fab md-mini md-plain"
+        >
+          <md-icon>mms</md-icon>
+        </md-button
+      -->
       <md-button
         v-if="!service || service.charAt(0) === ':'"
         title="Show Calendar"
@@ -486,7 +523,9 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
-        <span class="md-title" style="color: white;">{{ domain.toUpperCase() }}</span>
+        <span class="md-title" style="color: white;">{{
+          domain.toUpperCase()
+        }}</span>
       </md-toolbar>
 
       <!--
@@ -496,13 +535,11 @@
       -->
       <md-list>
         <md-list-item v-if="username">
-          <md-avatar>
-            <img v-bind:src="avatarLink">
-          </md-avatar>
+          <md-avatar> <img v-bind:src="avatarLink" /> </md-avatar>
           <div v-if="profile" class="md-list-item-text">
-            <p
-              style="font-weight: bold; font-size: 1.4em"
-            >{{ profile.first_name }} {{ profile.last_name }}</p>
+            <p style="font-weight: bold; font-size: 1.4em">
+              {{ profile.first_name }} {{ profile.last_name }}
+            </p>
             <p style="color: #aaa;">{{ profile.position }}</p>
           </div>
           <md-button
@@ -529,9 +566,7 @@
         >
           <md-icon>{{ channel.purpose.icon }}</md-icon>
           <span class="md-list-item-text">
-            {{
-            channel.display_name.replace(/[!#*@%/."'\\&]/, "")
-            }}
+            {{ channel.display_name.replace(/[!#*@%/."'\\&]/, "") }}
           </span>
 
           <md-icon
@@ -544,7 +579,8 @@
                   channel.team + '/' + channel.name
                 )
             "
-          >verified_user</md-icon>
+            >verified_user</md-icon
+          >
           <md-icon
             title="We suggest to join based on your profile"
             style="color: orange;"
@@ -562,7 +598,7 @@
                   tags.indexOf(channel.purpose.tags[3]) > -1 ||
                   tags.indexOf(channel.purpose.tags[4]) > -1)
             "
-          >verified_user
+            >verified_user
             <!--
               tags.filter(
                 value => -1 !== channel.purpose.tags.indexOf(value)
@@ -585,7 +621,7 @@
                     tags.indexOf(channel.purpose.tags[3]) == -1 &&
                     tags.indexOf(channel.purpose.tags[4]) == -1))
             "
-          >verified_user
+            >verified_user
             <!--
               tags.filter(
                 value => -1 !== channel.purpose.tags.indexOf(value)
@@ -602,22 +638,19 @@
       ----------------------------------------------------------------------
     -->
     <md-content class="md-scrollbar">
-      <img v-if="!service" id="logo" v-bind:src="logoLink">
+      <img v-if="!service" id="logo" v-bind:src="logoLink" />
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
 
-      <Particles v-if="!service"/>
+      <Particles v-if="!service" />
       <Channels
         v-if="service.substring(1) == 'Channels'"
         :domain="domain"
         :type="service.substring(1)"
       />
-      <Notes v-if="service == ':Notes'" :domain="domain"/>
-      <Meetings v-if="service == ':Meetings'" :domain="domain"/>
-      <Holons
-        v-if="service == ':Holons'"
-        :domain="domain"
-      />
-      <Skills v-if="service == ':Skills'" :domain="domain"/>
+      <Notes v-if="service == ':Notes'" :domain="domain" />
+      <Meetings v-if="service == ':Meetings'" :domain="domain" />
+      <Holons v-if="service == ':Holons'" :domain="domain" />
+      <Skills v-if="service == ':Skills'" :domain="domain" />
       <iframe
         name="theApp"
         id="theApp"
@@ -1442,7 +1475,7 @@ export default {
   color: #404040 !important;
 }
 .md-toolbar {
-  background-color: #F47E7E !important;
+  background-color: #f47e7e !important;
 }
 
 .md-toolbar-section-end .md-button {
@@ -1532,22 +1565,29 @@ export default {
   color: #ddd;
 }
 
-
 .pulsating-circle {
-    border: 10px solid #fff;
-    -webkit-border-radius: 30px;
-    height: 50px;
-    width: 50px;
-    position: absolute;
-    left: -10px;
-    top: -10px;
-    -webkit-animation: pulsate 1s ease-out;
-    -webkit-animation-iteration-count: 10; 
-    opacity: 0.0
+  border: 10px solid #fff;
+  -webkit-border-radius: 30px;
+  height: 50px;
+  width: 50px;
+  position: absolute;
+  left: -10px;
+  top: -10px;
+  -webkit-animation: pulsate 1s ease-out;
+  -webkit-animation-iteration-count: 10;
+  opacity: 0;
 }
 @-webkit-keyframes pulsate {
-    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.0;}
-    50% {opacity: 1.0;}
-    100% {-webkit-transform: scale(1.2, 1.2); opacity: 0.0;}
+  0% {
+    -webkit-transform: scale(0.1, 0.1);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    -webkit-transform: scale(1.2, 1.2);
+    opacity: 0;
+  }
 }
 </style>

@@ -39,7 +39,11 @@ export default {
   created: function() {
     //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
+    if (this.domain == "all") {
+    this.username = "ledgerbot";
+    } else {
     this.username = this.$cookies.get("username");
+    }
 
     //let domainsRef = db.database().ref("portal_profiles/daviding/domains");
     let channelsRef = db.database().ref("portal_channels");
@@ -438,9 +442,9 @@ export default {
         }
       }
 
-      if (domain === "diglife") {
+      if (domain === "all") {
         return {
-          name: "Digital Life Collective",
+          name: "The Collective",
           children: flares
         };
       } else {
@@ -448,7 +452,7 @@ export default {
           name: "Digital Life Collective",
           children: [
             {
-              name: this.domain,
+              name: this.domain.replace("friends", "partners").toUpperCase(),
               children: this.holons[domain].concat(
                 {
                   name: "Interest Groups",

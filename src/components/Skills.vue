@@ -258,17 +258,17 @@ export default {
             .style("opacity", 0.8);
           tooltip
             .html(
-              "<p style='line-height: 0.9em;'>" +
+              "<p margin-bottom: 1em>" +
                 (d.fullname !== " " ? d.fullname : d.id) +
                 "<br><i style='font-size: 0.8em;'>Joined " +
                 d.fromTime +
-                "</i><br>" +
+                "</i><br>Local Time: " +
                 Moment.tz(d.location).format("LT") +
                 "</p><br>" +
                 (d.tags.length > 0
                   ? d.tags
                       .map(el => {
-                        return el + "<br>";
+                        return el + "<hr>";
                       })
                       .toString()
                       .replace(/,/g, "")
@@ -374,18 +374,27 @@ export default {
 
 <style>
 div.tooltip {
+  line-height: 1em;
   position: absolute;
   background-color: #0dc9c9;
   color: white;
-  max-width: 200px;
   height: auto;
   padding: 10px;
+  font-weight: normal;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
   pointer-events: none;
   column-count: 2;
   -webkit-column-count: 2; /* Chrome, Safari, Opera */
   -moz-column-count: 2; /* Firefox */
 }
+
+div.tooltip hr {
+  margin: 2px 0 2px 0;
+  border-bottom: 0px;
+  border-top: 1px dotted #fff;
+  font-weight: normal;
+}
+
 div.tooltip p {
   background-color: white;
   color: #0dc9c9;

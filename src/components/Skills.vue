@@ -96,6 +96,7 @@ export default {
               //if (data.domains.includes(domain)) { //requires updated profile
               this.nodes.push({
                 id: data.username,
+                domains: data.domains,
                 group: 1,
                 tags: data.moretags.length > 0 ? data.moretags.sort() : [],
                 fromTime: data.fromTime,
@@ -283,6 +284,16 @@ export default {
         .on("click", d => {
           if (d.id === this.$cookies.get("username")) {
             this.activeSettings = true;
+          } else {
+            // open a 1:1 chat window
+            window.open(
+              CHATURL +
+                (this.domain == "all" ? d.domains[0] : this.domain) +
+                "/messages/@" +
+                d.id,
+              "_target"
+            );
+            ///-- https://chat.diglife.coop/"+data.domain[0]+"/messages/@"+username"
           }
         })
         //.attr("stroke", d =>  this.color(d.group) )

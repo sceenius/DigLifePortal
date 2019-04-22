@@ -64,7 +64,6 @@ export default {
       users.forEach(user => {
         let data = user.val();
         //console.log(JSON.stringify(data.channels));
-        data.domains = data.domains;
         data.moretags = [];
         data.fromTime = Moment(data.create_at).fromNow();
         data.diffTime = new Date().getTime();
@@ -97,6 +96,7 @@ export default {
               this.nodes.push({
                 id: data.username,
                 domains: data.domains,
+                location: data.timezone.automaticTimezone,
                 group: 1,
                 tags: data.moretags.length > 0 ? data.moretags.sort() : [],
                 fromTime: data.fromTime,
@@ -262,7 +262,9 @@ export default {
                 (d.fullname !== " " ? d.fullname : d.id) +
                 "<br><i style='font-size: 0.8em;'>Joined " +
                 d.fromTime +
-                "</i></p><br>" +
+                "</i><br>" +
+                Moment.tz(d.location).format("LT") +
+                "</p><br>" +
                 (d.tags.length > 0
                   ? d.tags
                       .map(el => {
@@ -380,6 +382,9 @@ div.tooltip {
   padding: 10px;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
   pointer-events: none;
+  column-count: 2;
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
 }
 div.tooltip p {
   background-color: white;

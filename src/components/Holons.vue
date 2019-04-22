@@ -486,8 +486,10 @@ div.tooltip {
   position: absolute;
   background-color: #F47E7E;
   color: white;
-  max-width: 200px;
   height: auto;
+  column-count: 2;
+  -webkit-column-count: 2; /* Chrome, Safari, Opera */
+  -moz-column-count: 2; /* Firefox */
   padding: 10px;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
   pointer-events: none;

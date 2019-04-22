@@ -291,6 +291,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Notes",
   components: { VueTagsInput, VueMarkdown },
+  props: ["domain"],
   data() {
     return {
       service: "Zettelkasten",
@@ -367,8 +368,10 @@ export default {
     // FB ADDED PATTERN /////////////////////////////
     notesRef.on("child_added", note => {
       var data = note.val();
-      this.notes.push(data);
-      this.notes.sort(SortByTime);
+      if (data.tags.includes(this.domain) || this.domain == "all") {
+        this.notes.push(data);
+        this.notes.sort(SortByTime);
+      }
     });
     // FB CHANGED PATTERN /////////////////////////////
     notesRef.on("child_changed", note => {

@@ -118,7 +118,8 @@ export default {
         //.range(["rgba(0, 176, 160,0.4)", "rgba(0,95,86,1)"])
         //.range(["rgba(219,93,124,0.4)", "rgba(219,93,124,1)"])
         //.range(["#00e8d2", "#00554d"])
-        .range(["rgba(253,177,126,0.2)", "rgba(253,177,126,1)"])
+        //.range(["rgba(253,177,126,0.2)", "rgba(253,177,126,1)"])
+        .range(["rgba(193,187,184,0.2)", "rgba(193,187,184,1)"])
         .interpolate(d3.interpolateHcl);
 
       this.format = d3.format(",d");

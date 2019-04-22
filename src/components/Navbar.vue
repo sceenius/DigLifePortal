@@ -702,7 +702,7 @@ export default {
     }
 
     if (this.$cookies.get("domain")) {
-      this.domain = this.$cookies.get("domain");
+      this.domain = this.$cookies.get("mydomain");
     }
 
     //showServices cookie
@@ -1125,7 +1125,7 @@ export default {
       var element = document.getElementById("theApp");
       element.style.display = "none";
       console.log(domain);
-      this.$cookies.set("domain", this.domain);
+      this.$cookies.set("mydomain", domain);
     },
 
     sub: function(menu) {

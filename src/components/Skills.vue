@@ -5,15 +5,9 @@
         SNACKBARS  - https://vuematerial.io/components/snackbar
       ----------------------------------------------------------------------
     -->
-    <md-snackbar
-      :md-duration="4000"
-      :md-active.sync="showSnackBar"
-      md-persistent
-    >
+    <md-snackbar :md-duration="4000" :md-active.sync="showSnackBar" md-persistent>
       <span>{{ snack }}</span>
-      <md-button class="md-primary" @click="showSnackBar = false;"
-        >Dismiss</md-button
-      >
+      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
     </md-snackbar>
     <!--
       ----------------------------------------------------------------------
@@ -22,7 +16,7 @@
     -->
     <md-dialog :md-active.sync="activeSettings" style="width:650px;">
       <md-dialog-title>Profile Tags</md-dialog-title>
-      <Tags style="padding: 20px;" />
+      <Tags style="padding: 20px;"/>
     </md-dialog>
 
     <svg width="100%" height="100%"></svg>
@@ -97,11 +91,6 @@ export default {
             }
           })
           .then(profile => {
-            console.log(
-              this.domain,
-              data.username,
-              data.domains.includes(this.domain)
-            );
             if (data.domains.includes(this.domain) || this.domain == "all") {
               this.users.push(data);
               //if (data.domains.includes(domain)) { //requires updated profile

@@ -665,7 +665,7 @@ export default {
     activeInfo: false,
     activeSettings: false,
     activeMenu: false,
-    domain: "diglife",
+    domain: "all",
     service: "",
     username: "",
     snack: "",
@@ -780,7 +780,6 @@ export default {
           this.groups = group.val();
         } else if (group.key === "domains") {
           this.domains = group.val();
-          this.domain = this.domains[0];
         }
       });
     }

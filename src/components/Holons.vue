@@ -39,11 +39,7 @@ export default {
   created: function() {
     //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
-    if (this.domain == "all") {
-    this.username = "ledgerbot";
-    } else {
     this.username = this.$cookies.get("username");
-    }
 
     //let domainsRef = db.database().ref("portal_profiles/daviding/domains");
     let channelsRef = db.database().ref("portal_channels");
@@ -66,7 +62,7 @@ export default {
           var data = channel.val();
 
           //console.log(this.domains);
-          if (this.domains.includes(data.team)) {
+          if (this.domains.includes(data.team) || this.domain == "all") {
             this.channels.push(data);
             //console.log(data.team, this.holons[data.team]);
             if (data.display_name.charAt(0) === "!") {
@@ -179,9 +175,9 @@ export default {
         .attr("fill", d =>
           d.children
             ? this.color(d.depth)
-            // : d.data.image
+            : // : d.data.image
             // ? "url(#" + d.data.id + ")"
-            : d.data.is_member
+            d.data.is_member
             ? "rgba(15,186,185, " + d.data.opacity + ")"
             : "rgba(255,255,255, " + d.data.opacity + ")"
         )

@@ -280,7 +280,8 @@
         <md-button
           v-for="(dom, index) in domains"
           :key="index"
-          @click="nav(dom);"
+          :title="dom"
+          @click="service == '' ? nav(dom) : sub(service, dom);"
           v-bind:style="[
             domain == dom ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -288,7 +289,7 @@
 
         <md-button
           style="background-color: #c5536f;"
-          @click="nav('all');"
+          @click="service == '' ? nav('all') : sub(service, 'all');"
           v-bind:style="[
             domain == 'all' ? { color: '#fec019' } : { color: '#fff' }
           ]"
@@ -701,7 +702,7 @@ export default {
       this.activeUser = true;
     }
 
-    if (this.$cookies.get("domain")) {
+    if (this.$cookies.get("mydomain")) {
       this.domain = this.$cookies.get("mydomain");
     }
 
@@ -1120,15 +1121,18 @@ export default {
 
     nav: function(domain) {
       this.domain = domain;
-      this.showNavigation = true;
+      this.$cookies.set("mydomain", domain);
       this.service = "";
+      this.showNavigation = true;
       var element = document.getElementById("theApp");
       element.style.display = "none";
-      console.log(domain);
-      this.$cookies.set("mydomain", domain);
+      //console.log(domain);
     },
 
-    sub: function(menu) {
+    sub: function(menu, dom) {
+      if (dom) {
+        this.domain = dom;
+      }
       let element = document.getElementById("theApp");
       let drive = "";
       element.src = "about:blank";

@@ -289,6 +289,7 @@
 
         <md-button
           style="background-color: #c5536f;"
+          title="All domains"
           @click="service == '' ? nav('all') : sub(service, 'all');"
           v-bind:style="[
             domain == 'all' ? { color: '#fec019' } : { color: '#fff' }

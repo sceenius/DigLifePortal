@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter" style="padding: 30px;">
+  <div class="md-layout md-gutter" style="padding: 0 30px 0 30px;">
     <!--
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar
@@ -221,15 +221,7 @@
 
       <div class="md-card-header">
         <md-card-header-text>
-          <div class="md-title">
-            <!--
-              md-icon
-                style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-                >how_to_vote
-              </md-icon
-            -->
-            {{ note.text.replace(/:[\w]+:/, "") }}
-          </div>
+          <div class="md-title">{{ note.text.replace(/:[\w]+:/, "") }}</div>
         </md-card-header-text>
       </div>
 
@@ -256,7 +248,6 @@
           <md-menu v-for="(member, index2) in note.members" :key="index2">
             <md-avatar style="cursor: pointer; border: 2px solid transparent;" md-menu-trigger>
               <img v-bind:src="avatarLink(member)" alt="Avatar">
-              <!-- md-tooltip md-direction="top">{{ member }}</md-tooltip -->
             </md-avatar>
 
             <md-menu-content class="md-card-menu">
@@ -368,7 +359,10 @@ export default {
     // FB ADDED PATTERN /////////////////////////////
     notesRef.on("child_added", note => {
       var data = note.val();
-      if (data.tags.includes(this.domain) || this.domain == "all") {
+      if (
+        (data.tags && data.tags.includes(this.domain)) ||
+        this.domain == "all"
+      ) {
         this.notes.push(data);
         this.notes.sort(SortByTime);
       }

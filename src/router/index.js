@@ -15,12 +15,12 @@ export default new Router({
       component: Navbar
     },
     {
-      path: "/holons",
-      name: "Holons",
-      component: Holons
+      path: "/:service/:domain",
+      name: "Navbar",
+      component: Navbar
     },
     {
-      path: "/skills",
+      path: "/skills/:domain",
       name: "Skills",
       component: Skills
     },

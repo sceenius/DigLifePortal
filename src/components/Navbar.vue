@@ -339,6 +339,7 @@
       >
         <md-icon>fullscreen</md-icon>
       </md-button>
+
       <md-button
         v-if="service && service.charAt(0) !== ':'"
         v-for="(menu, index) in channel.menu"
@@ -695,7 +696,7 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     // domain coming from router
-    this.domain = this.$route.params.domain || "diglife";
+    //this.domain = this.$route.params.domain || "diglife";
     // username coming from cookie
     if (this.$cookies.get("username")) {
       this.username = this.$cookies.get("username");
@@ -703,8 +704,17 @@ export default {
       this.activeUser = true;
     }
 
-    if (this.$cookies.get("mydomain")) {
+    if (this.$route.params.domain) {
+      this.domain = this.$route.params.domain;
+    } else if (this.$cookies.get("mydomain")) {
       this.domain = this.$cookies.get("mydomain");
+    } else {
+      this.domain = "diglife";
+    }
+
+    if (this.$route.params.service) {
+      this.service = ":Holons";
+      console.log(this.service);
     }
 
     //showServices cookie

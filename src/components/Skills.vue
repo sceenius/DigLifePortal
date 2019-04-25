@@ -215,7 +215,7 @@ export default {
                 (d.tags
                   ? d.tags
                       .map(el => {
-                        return el + "<br>";
+                        return "<span>" + el + "</span><br>";
                       })
                       .toString()
                       .replace(/,/g, "")
@@ -379,13 +379,16 @@ div.tooltip {
   background-color: #0dc9c9;
   color: white;
   height: auto;
-  padding: 10px;
   font-weight: normal;
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
   pointer-events: none;
   column-count: 2;
   -webkit-column-count: 2; /* Chrome, Safari, Opera */
   -moz-column-count: 2; /* Firefox */
+}
+
+div.tooltip span {
+  padding: 5px;
 }
 
 div.tooltip hr {

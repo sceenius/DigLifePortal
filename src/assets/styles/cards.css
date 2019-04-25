@@ -10,7 +10,7 @@
 
 .md-card:hover {
   transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.325, 1) !important;
-  transform: scale(1) rotate(5deg) translate(50px, 50px) !important;
+  transform: scale(1) rotate(5deg) translate(50px, 60px) !important;
   -moz-transform: scale(1) rotate(5deg);
   -webkit-transform: scale(1) rotate(5deg);
 }

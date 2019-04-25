@@ -308,7 +308,7 @@ export default {
     channelsRef.on("child_added", channel => {
       let data = channel.val();
 
-      if (this.domain === data.team) {
+      if (this.domain == data.team || this.domain == "all") {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
@@ -571,7 +571,10 @@ export default {
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
-          window.open(topic.purpose.link, "theApp");
+          window.open(
+            CHATURL + this.domain + "/channels/" + topic.name,
+            "theApp"
+          );
           // };
           break;
         case "ask":

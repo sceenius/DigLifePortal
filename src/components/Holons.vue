@@ -1,7 +1,16 @@
 <template>
-  <svg width="100%" height="100%">
-    <defs></defs>
-  </svg>
+  <div>
+    <svg id="map" width="100%" height="100%">
+      <defs></defs>
+    </svg>
+    <iframe
+      name="theHolonApp"
+      id="theHolonApp"
+      style="font-size: 100px; width:100%; min-height:95vh; max-height: 95vh; overflow: auto; display: none"
+      frameborder="0"
+      scrolling="yes"
+    >MM here.</iframe>
+  </div>
 </template>
 
 <script>
@@ -37,6 +46,7 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    //this.domain = this.$route.params.domain || "diglife";
     //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
     this.username = this.$cookies.get("username");
@@ -186,14 +196,21 @@ export default {
         .attr("pointer-events", d => (!d.children ? null : null)) // "none" to turn off
 
         // Can only click on holons that have children
-        .on(
-          "click",
-          d =>
+        .on("click", d => {
+          if (
             (d.children &&
               focus !== d &&
               (zoom(d), d3.event.stopPropagation())) ||
-            (!d.children && window.open(d.data.link, d.data.name))
-        )
+            !d.children
+          ) {
+            var element = document.getElementById("map");
+            element.style.display = "none";
+            element = document.getElementById("theHolonApp");
+            element.src = "about:blank";
+            element.style.display = "block";
+            window.open(d.data.link, "theHolonApp");
+          }
+        })
         // .on("click", d => !d.children && window.open(d.data.link, d.data.name))
         .on("mouseover.tooltip", d => {
           if (!d.children) {
@@ -204,12 +221,12 @@ export default {
             tooltip
               .html(
                 "<p>" +
-                  d.data.name +
+                  d.data.name.replace(/[!#*@%/."'\\&]/, "") +
                   "</p><br>" +
                   (d.data.members
                     ? d.data.members
                         .map(el => {
-                          return el + "<br>";
+                          return "<span>" + el + "</span><br>";
                         })
                         .toString()
                         .replace(/,/g, "")
@@ -220,10 +237,10 @@ export default {
           }
         })
         .on("mouseout.tooltip", d => {
-          tooltip
-            .transition()
-            .duration(100)
-            .style("opacity", 0);
+          tooltip.style("opacity", 0);
+          //tooltip.selectAll().remove()
+          //             .style("display", "none")
+          // .remove();
           //}
         });
 
@@ -239,14 +256,21 @@ export default {
         .attr("class", "label")
         .attr("pointer-events", d => (d.children ? null : null))
         // Click event on labels is the same as on nodes
-        .on(
-          "click",
-          d =>
+        .on("click", d => {
+          if (
             (d.children &&
               focus !== d &&
               (zoom(d), d3.event.stopPropagation())) ||
-            (!d.children && window.open(d.data.link, d.data.name))
-        )
+            !d.children
+          ) {
+            var element = document.getElementById("map");
+            element.style.display = "none";
+            element = document.getElementById("theHolonApp");
+            element.src = "about:blank";
+            element.style.display = "block";
+            window.open(d.data.link, "theHolonApp");
+          }
+        })
 
         // .attr("cursor", "alias")
         .style("fill-opacity", d => (d.parent === root ? 1 : 0))
@@ -487,10 +511,9 @@ div.tooltip {
   background-color: #F47E7E;
   color: white;
   height: auto;
-  column-count: 2;
-  -webkit-column-count: 2; /* Chrome, Safari, Opera */
-  -moz-column-count: 2; /* Firefox */
-  padding: 10px;
+  column-count: 3;
+  -webkit-column-count: 3; /* Chrome, Safari, Opera */
+  -moz-column-count: 3; /* Firefox */
   box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.6);
   pointer-events: none;
 }
@@ -500,5 +523,27 @@ div.tooltip p {
   font-weight: bold;
   padding: 5px;
   margin: 0 0 -10px;
+}
+
+div.tooltip span {
+  padding: 5px;
+}
+
+@-webkit-keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 </style>

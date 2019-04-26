@@ -606,6 +606,7 @@ export default {
     snack: "",
     users: [],
     domains: [],
+    domain: "",
     channels: [],
     profile: [],
     groups: [],
@@ -637,9 +638,16 @@ export default {
     }
 
     if (this.$route.params.service) {
-      this.service = "holons";
-      console.log(this.service);
+      this.service = this.$route.params.service;
     }
+ 
+      if (this.$route.params.domain) {
+        this.domain =  this.$route.params.domain;
+      } else if (this.$cookies.get("mydomain")) {
+         this.domain =  this.$cookies.get("mydomain");
+      } else {
+         this.domain =  "diglife";
+      }
 
     //showServices cookie
     this.showServices = this.$cookies.get("showServices");
@@ -728,15 +736,15 @@ export default {
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
-    domain: function() {
-      if (this.$route.params.domain) {
-        return this.$route.params.domain;
-      } else if (this.$cookies.get("mydomain")) {
-        return this.$cookies.get("mydomain");
-      } else {
-        return "diglife";
-      }
-    },
+    // domain: function() {
+    //   if (this.$route.params.domain) {
+    //     return this.$route.params.domain;
+    //   } else if (this.$cookies.get("mydomain")) {
+    //     return this.$cookies.get("mydomain");
+    //   } else {
+    //     return "diglife";
+    //   }
+    // },
 
     // compute v-bind:src for img
     avatarLink: function() {
@@ -1064,9 +1072,14 @@ export default {
       this.activeUser = true;
     },
 
-    nav: function(domain) {
-      this.domain = domain;
-      this.$cookies.set("mydomain", domain);
+    nav: function(dom) {
+          window.history.pushState(
+            "Navbar",
+            "Nav",
+            "/nav/" + dom
+          );
+      this.$cookies.set("mydomain", dom);
+      this.domain = dom;
       this.service = "";
       this.showNavigation = true;
       var element = document.getElementById("theApp");

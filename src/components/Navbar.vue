@@ -131,7 +131,7 @@
               </span>
               <md-button @click="directMessage(member.id);" class="md-icon-button md-list-action">
                 <!-- Create a direct message channel -->
-                <md-icon class="md-primary">chat_bubble</md-icon>
+                <md-icon class="md-primary">forum</md-icon>
               </md-button>
             </md-list-item>
           </md-list>
@@ -171,7 +171,7 @@
               </span>
               <md-button @click="directMessage(member.id);" class="md-icon-button md-list-action">
                 <!-- Create a direct message channel -->
-                <md-icon class="md-primary">chat_bubble</md-icon>
+                <md-icon class="md-primary">forum</md-icon>
               </md-button>
             </md-list-item>
           </md-list>
@@ -331,7 +331,8 @@
       ----------------------------------------------------------------------
     -->
     <div id="actions">
-      <md-button
+      <div id="inner">
+        <!-- md-button
         v-if="service && service.charAt(0) !== ':'"
         title="Open app in new window"
         @click="sub('appLink');"
@@ -359,96 +360,30 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>add</md-icon>
-      </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Holons"
-        @click="sub(':Holons');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>blur_circular</md-icon>
-      </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Skills"
-        @click="sub(':Skills');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>people_outline</md-icon>
-      </md-button>
-
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Channels"
-        @click="sub(':Channels');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>chat</md-icon>
-      </md-button>
-
-      <!--
-        md-button
-          v-if="!service || service.charAt(0) === ':'"
-          title="Show Important Channels"
-          @click="sub(':Important Channels');"
-          class="md-fab md-mini md-plain"
-        >
-          <md-icon>announcement</md-icon>
+        </md-button-->
+        <md-button title="Holonic Map" @click="sub('holons');" class="md-fab md-mini md-plain">
+          <md-icon>bubble_chart</md-icon>
+        </md-button>
+        <md-button title="Network Map" @click="sub('skills');" class="md-fab md-mini md-plain">
+          <md-icon>scatter_plot</md-icon>
         </md-button>
 
-        <md-button
-          v-if="!service || service.charAt(0) === ':'"
-          title="Show Affinity Channels"
-          @click="sub(':Affinity Channels');"
-          class="md-fab md-mini md-plain"
-        >
-          <md-icon>chat</md-icon>
+        <md-button title="Show Channels" @click="sub('channels');" class="md-fab md-mini md-plain">
+          <md-icon>forum</md-icon>
         </md-button>
-        <md-button
-          v-if="!service || service.charAt(0) === ':'"
-          title="Show Workteam Channels"
-          @click="sub(':Workteam Channels');"
-          class="md-fab md-mini md-plain"
-        >
-          <md-icon>mms</md-icon>
-        </md-button
-      -->
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Calendar"
-        @click="sub(':Calendar');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>event</md-icon>
-      </md-button>
-      <!--
-        md-button
-          v-if="!service || service.charAt(0) === ':'"
-          title="Show Meetings"
-          @click="sub(':Meetings');"
-          class="md-fab md-mini md-plain"
-        >
-          <md-icon>videocam</md-icon>
-        </md-button
-      -->
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Folders"
-        @click="sub(':Folders');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>folder_shared</md-icon>
-      </md-button>
-      <md-button
-        v-if="!service || service.charAt(0) === ':'"
-        title="Show Notes"
-        @click="sub(':Notes');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>description</md-icon>
-      </md-button>
 
-      <!--
+        <md-button title="Show Calendar" @click="sub(':Calendar');" class="md-fab md-mini md-plain">
+          <md-icon>event</md-icon>
+        </md-button>
+
+        <md-button title="Show Folders" @click="sub(':Folders');" class="md-fab md-mini md-plain">
+          <md-icon>folder</md-icon>
+        </md-button>
+        <md-button title="Show Notes" @click="sub('notes');" class="md-fab md-mini md-plain">
+          <md-icon>insert_drive_file</md-icon>
+        </md-button>
+
+        <!--
         md-speed-dial>
               <md-speed-dial-target>
 
@@ -475,7 +410,8 @@
 
               </md-speed-dial-content>
         </md-speed-dial
-      -->
+        -->
+      </div>
     </div>
     <!--
       ----------------------------------------------------------------------
@@ -613,17 +549,14 @@
     <md-content class="md-scrollbar">
       <img v-if="!service" id="logo" v-bind:src="logoLink">
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
-
       <Particles v-if="!service"/>
-      <Channels
-        v-if="service.substring(1) == 'Channels'"
-        :domain="domain"
-        :type="service.substring(1)"
-      />
-      <Notes v-if="service == ':Notes'" :domain="domain"/>
-      <Meetings v-if="service == ':Meetings'" :domain="domain"/>
-      <Holons v-if="service == ':Holons'" :domain="domain"/>
-      <Skills v-if="service == ':Skills'" :domain="domain"/>
+
+      <Channels v-if="service == 'channels'" :domain="domain"/>
+      <Notes v-if="service == 'notes'" :domain="domain"/>
+      <Meetings v-if="service == 'meetings'" :domain="domain"/>
+      <Holons v-if="service == 'holons'" :domain="domain"/>
+      <Skills v-if="service == 'skills'" :domain="domain"/>
+
       <iframe
         name="theApp"
         id="theApp"
@@ -668,7 +601,6 @@ export default {
     activeInfo: false,
     activeSettings: false,
     activeMenu: false,
-    domain: "all",
     service: "",
     username: "",
     snack: "",
@@ -704,16 +636,8 @@ export default {
       this.activeUser = true;
     }
 
-    if (this.$route.params.domain) {
-      this.domain = this.$route.params.domain;
-    } else if (this.$cookies.get("mydomain")) {
-      this.domain = this.$cookies.get("mydomain");
-    } else {
-      this.domain = "diglife";
-    }
-
     if (this.$route.params.service) {
-      this.service = ":Holons";
+      this.service = "holons";
       console.log(this.service);
     }
 
@@ -804,6 +728,16 @@ export default {
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
+    domain: function() {
+      if (this.$route.params.domain) {
+        return this.$route.params.domain;
+      } else if (this.$cookies.get("mydomain")) {
+        return this.$cookies.get("mydomain");
+      } else {
+        return "diglife";
+      }
+    },
+
     // compute v-bind:src for img
     avatarLink: function() {
       return (
@@ -1229,52 +1163,46 @@ export default {
           );
 
           break;
-        case ":Holons":
+        case "holons":
           this.service = "";
+          window.history.pushState(
+            "Navbar",
+            "Holons",
+            "/holons/" + this.domain
+          );
+          //this.$router.push({ name: "Navbar", path: "/holons/" + this.domain });
           this.$nextTick(() => {
-            this.service = ":Holons";
+            this.service = "holons";
           });
           break;
-        case ":Skills":
+        case "skills":
           this.service = "";
+          window.history.pushState(
+            "Navbar",
+            "Skills",
+            "/skills/" + this.domain
+          );
+          //this.$router.push({ name: "Navbar", path: "/skills/" + this.domain });
           this.$nextTick(() => {
-            this.service = ":Skills";
+            this.service = "skills";
           });
           break;
-        case ":Notes":
+        case "notes":
           this.service = "";
+          window.history.pushState("Navbar", "Notes", "/notes/" + this.domain);
           this.$nextTick(() => {
-            this.service = ":Notes";
+            this.service = "notes";
           });
           break;
-        case ":Channels":
+        case "channels":
           this.service = "";
+          window.history.pushState(
+            "Navbar",
+            "Channels",
+            "/channels/" + this.domain
+          );
           this.$nextTick(() => {
-            this.service = ":Channels";
-          });
-          break;
-        case ":Important Channels":
-          this.service = "";
-          this.$nextTick(() => {
-            this.service = ":Important Channels";
-          });
-          break;
-        case ":Affinity Channels":
-          this.service = "";
-          this.$nextTick(() => {
-            this.service = ":Affinity Channels";
-          });
-          break;
-        case ":Workteam Channels":
-          this.service = "";
-          this.$nextTick(() => {
-            this.service = ":Workteam Channels";
-          });
-          break;
-        case ":Meetings":
-          this.service = "";
-          this.$nextTick(() => {
-            this.service = ":Meetings";
+            this.service = "channels";
           });
           break;
         case "infoLink":
@@ -1446,9 +1374,26 @@ export default {
 
 #actions {
   position: absolute;
-  width: 40px;
+  width: 80px;
   bottom: 25%;
   right: 15px;
+  transition: 0.5s;
+}
+
+#actions #inner {
+  border-radius: 25px;
+  margin-left: 87px;
+  padding-left: 8px;
+  border-left: 8px solid #FEC019;
+  transition: 0.5s;
+}
+
+#actions:hover {
+  width: 140px;
+}
+
+#actions:hover > #inner {
+  border-left: 8px solid transparent;
 }
 
 #actions .md-button {

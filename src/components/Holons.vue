@@ -32,13 +32,10 @@ export default {
       service: "Holons",
       channels: [],
       domains: [],
-      flares2: [],
-      //domains: [],
       holons: [],
       width: "",
       height: "",
       element: ""
-      //domain: this.domain
     };
   },
   ///////////////////////////////////////////////////////////////////////////////
@@ -82,7 +79,7 @@ export default {
                 name: data.display_name,
                 image: data.image,
                 members: data.members,
-                is_member: data.members.includes(this.username),
+                is_member: data.members && data.members.includes(this.username),
                 size: data.total_msg_count,
                 link: CHATURL + data.team + "/channels/" + data.name,
                 opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -93,7 +90,7 @@ export default {
                 name: data.display_name,
                 image: data.image,
                 members: data.members,
-                is_member: data.members.includes(this.username),
+                is_member: data.members && data.members.includes(this.username),
                 size: data.total_msg_count,
                 link: CHATURL + data.team + "/channels/" + data.name,
                 opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -104,7 +101,7 @@ export default {
                 name: data.display_name,
                 image: data.image,
                 members: data.members,
-                is_member: data.members.includes(this.username),
+                is_member: data.members && data.members.includes(this.username),
                 size: data.total_msg_count,
                 link: CHATURL + data.team + "/channels/" + data.name,
                 opacity: 1 / Math.sqrt((utime - data.last_post_at) / 86400000) // 1/SQR(#days since last post)
@@ -120,7 +117,7 @@ export default {
 
     //    this.$nextTick(function() {
 
-    new Promise(resolve => setTimeout(resolve, 500)).then(resolve => {
+    new Promise(resolve => setTimeout(resolve, 1000)).then(resolve => {
       //console.log(this.flare);
       this.color = d3
         .scaleLinear()
@@ -163,7 +160,7 @@ export default {
         .attr(
           "viewBox",
           `-${this.width / 2 + 150} -${this.height / 2} ${this.width +
-            250} ${this.height + 1050}`
+            250} ${this.height + 50}`
         )
         .style("display", "block")
         .style("margin", "0 -14px")
@@ -438,50 +435,50 @@ export default {
     // https://bl.ocks.org/feifang/664c0f16adfcb4dea31b923f74e897a0
 
     flare: function() {
-      let domain =
-        !this.domain || this.domain === "Home"
-          ? "diglife"
-          : this.domain.toLowerCase();
+      // let domain =
+      //   !this.domain || this.domain === "Home"
+      //     ? "diglife"
+      //     : this.domain.toLowerCase();
 
-      var flares = [];
-      for (var dom of this.domains) {
-        // skip leftover domains
-        if (this.holons[dom].length) {
-          flares.push({
-            name: dom.replace("friends", "partners").toUpperCase(),
-            children: this.holons[dom].concat(
-              {
-                name: "Interest Groups",
-                children: this.holons[dom].topics
-              },
-              {
-                name: "Important Channels",
-                children: this.holons[dom].important
-              }
-            )
-          });
+      if (this.domain == "all") {
+        var flares = [];
+        for (var dom of this.domains) {
+          // skip leftover domains
+          if (this.holons[dom].length) {
+            flares.push({
+              name: dom.replace("friends", "partners").toUpperCase(),
+              children: this.holons[dom].concat(
+                {
+                  name: "Interest Groups",
+                  children: this.holons[dom].topics
+                },
+                {
+                  name: "Important Channels",
+                  children: this.holons[dom].important
+                }
+              )
+            });
+          }
         }
-      }
-
-      if (domain === "all") {
         return {
           name: "The Collective",
           children: flares
         };
       } else {
+        //console.log(this.holons[this.domain], this.domain);
         return {
           name: "Digital Life Collective",
           children: [
             {
               name: this.domain.replace("friends", "partners").toUpperCase(),
-              children: this.holons[domain].concat(
+              children: this.holons[this.domain].concat(
                 {
                   name: "Interest Groups",
-                  children: this.holons[domain].topics
+                  children: this.holons[this.domain].topics
                 },
                 {
                   name: "Important Channels",
-                  children: this.holons[domain].important
+                  children: this.holons[this.domain].important
                 }
               )
             }

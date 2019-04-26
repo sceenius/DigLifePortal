@@ -206,7 +206,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain", "type"],
+  props: ["domain"],
   data() {
     return {
       service: "",

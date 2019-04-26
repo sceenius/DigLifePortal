@@ -12,7 +12,11 @@ var config = {
   storageBucket: "diglife-coop.appspot.com",
   messagingSenderId: "811117156004"
 };
-const firebaseApp = firebase.initializeApp(config);
-//firebaseApp.firestore().settings({ timestampsInSnapshots: true });
+// const firebaseApp = firebase.initializeApp(config);
+// //firebaseApp.firestore().settings({ timestampsInSnapshots: true });
+// export default firebaseApp;
 
-export default firebaseApp;
+// https://github.com/zeit/next.js/issues/1999
+export default (!firebase.apps.length
+  ? firebase.initializeApp(config)
+  : firebase.app());

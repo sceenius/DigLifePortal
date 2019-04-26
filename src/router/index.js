@@ -19,15 +19,5 @@ export default new Router({
       name: "Navbar",
       component: Navbar
     },
-    {
-      path: "/skills/:domain",
-      name: "Skills",
-      component: Skills
-    },
-    {
-      path: "/:domain",
-      name: "Navbar",
-      component: Navbar
-    }
   ]
 });

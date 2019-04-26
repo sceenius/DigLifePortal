@@ -640,14 +640,14 @@ export default {
     if (this.$route.params.service) {
       this.service = this.$route.params.service;
     }
- 
-      if (this.$route.params.domain) {
-        this.domain =  this.$route.params.domain;
-      } else if (this.$cookies.get("mydomain")) {
-         this.domain =  this.$cookies.get("mydomain");
-      } else {
-         this.domain =  "diglife";
-      }
+
+    if (this.$route.params.domain) {
+      this.domain = this.$route.params.domain;
+    } else if (this.$cookies.get("mydomain")) {
+      this.domain = this.$cookies.get("mydomain");
+    } else {
+      this.domain = "diglife";
+    }
 
     //showServices cookie
     this.showServices = this.$cookies.get("showServices");
@@ -1073,11 +1073,7 @@ export default {
     },
 
     nav: function(dom) {
-          window.history.pushState(
-            "Navbar",
-            "Nav",
-            "/nav/" + dom
-          );
+      window.history.pushState("Navbar", "Nav", "/nav/" + dom);
       this.$cookies.set("mydomain", dom);
       this.domain = dom;
       this.service = "";
@@ -1387,22 +1383,22 @@ export default {
 
 #actions {
   position: absolute;
-  width: 80px;
+  width: 40px;
   bottom: 25%;
-  right: 15px;
+  right: 0;
   transition: 0.5s;
 }
 
 #actions #inner {
   border-radius: 25px;
-  margin-left: 87px;
+  margin-left: 32px;
   padding-left: 8px;
   border-left: 8px solid #FEC019;
   transition: 0.5s;
 }
 
 #actions:hover {
-  width: 140px;
+  width: 100px;
 }
 
 #actions:hover > #inner {

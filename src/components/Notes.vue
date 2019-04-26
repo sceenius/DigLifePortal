@@ -55,14 +55,15 @@
       ----------------------------------------------------------------------
     -->
     <div id="actions">
-      <md-button
-        title="Update card history"
-        @click="activeDialogHistory = true;"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>file_copy</md-icon>
-      </md-button>
-      <md-button
+      <div id="inner">
+        <md-button
+          title="Update card history"
+          @click="activeDialogHistory = true;"
+          class="md-fab md-mini md-plain"
+        >
+          <md-icon>file_copy</md-icon>
+        </md-button>
+        <!-- md-button
         title="Go back to card view"
         @click="returnToCards();"
         class="md-fab md-mini md-plain"
@@ -75,7 +76,8 @@
         class="md-fab md-mini md-plain"
       >
         <md-icon>exit_to_app</md-icon>
-      </md-button>
+        </md-button-->
+      </div>
     </div>
 
     <!--

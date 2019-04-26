@@ -90,7 +90,7 @@ export default {
             }
           })
           .then(profile => {
-            if (data.domains.includes(this.domain) || this.domain == "all") {
+            if (data.domains && data.domains.includes(this.domain) || this.domain == "all") {
               this.users.push(data);
               //if (data.domains.includes(domain)) { //requires updated profile
               this.nodes.push({
@@ -268,7 +268,7 @@ export default {
                 (d.tags.length > 0
                   ? d.tags
                       .map(el => {
-                        return el + "<hr>";
+                        return "<span>" + el + "</span><br><hr>";
                       })
                       .toString()
                       .replace(/,/g, "")
@@ -388,7 +388,8 @@ div.tooltip {
 }
 
 div.tooltip span {
-  padding: 5px;
+  display: inline-block;
+  padding: 3px !important;
 }
 
 div.tooltip hr {

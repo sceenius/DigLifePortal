@@ -518,12 +518,13 @@ div.tooltip p {
   background-color: white;
   color: #F47E7E;
   font-weight: bold;
-  padding: 5px;
+  padding: 15px !important;
   margin: 0 0 -10px;
 }
 
 div.tooltip span {
-  padding: 5px;
+  display: inline-block;
+  padding: 3px !important;
 }
 
 @-webkit-keyframes fadeOut {

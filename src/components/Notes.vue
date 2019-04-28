@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter" style="padding: 0 30px 0 30px;">
+  <div class="md-layout md-gutter" style="padding: 30px 30px 0 30px;">
     <!--
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar

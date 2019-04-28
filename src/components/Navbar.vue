@@ -1074,7 +1074,7 @@ export default {
     },
 
     nav: function(dom) {
-      window.history.pushState("Navbar", "Nav", "/nav/" + dom);
+      //window.history.pushState("Navbar", "Nav", "/nav/" + dom);
       this.$cookies.set("mydomain", dom);
       this.domain = dom;
       this.service = "";

@@ -277,10 +277,15 @@ export default {
         if (group.key === "channels") {
           this.groups = data;
         } else if (group.key === "tags") {
+          for (const key of data) {
+            this.tags.push(key.text);
+          }
           // convert tags to flat array
-          this.tags = data.reduce((accumulator, currentValue) => {
-            return [...accumulator, currentValue.text];
-          });
+          // this.tags =
+          //   //fails with 1 data object
+          //   data.reduce((accumulator, currentValue) => {
+          //     return [...accumulator, currentValue.text];
+          //   });
         }
       });
     }
@@ -371,7 +376,7 @@ export default {
     },
     // is suggested
     isSuggested: function(topic) {
-      if (topic.purpose.tags) {
+      if (topic.purpose.tags && this.tags) {
         //alert(this.tags);
         return this.tags.filter(
           value => -1 !== topic.purpose.tags.indexOf(value)

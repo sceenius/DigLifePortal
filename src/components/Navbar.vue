@@ -1067,6 +1067,8 @@ export default {
 
     onLogout: function() {
       // Logout
+      this.service = "";
+      this.domain = "";
       this.profile = "";
       this.username = "";
       this.$cookies.set("username", "");

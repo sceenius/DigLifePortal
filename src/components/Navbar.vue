@@ -272,7 +272,7 @@
         {{
         !service
         ? domain.toUpperCase()
-        : service.replace(/[!#*@%/."'\\&:]/, "")
+        : service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
         }}
       </span>
 
@@ -593,7 +593,7 @@ export default {
     // },
     showNavigation: false,
     showSidepanel: false,
-    showServices: true,
+    showServices: false,
     showSnackBar: false,
     showProfileReminder: true,
     activeUser: false,
@@ -650,7 +650,8 @@ export default {
     }
 
     //showServices cookie
-    this.showServices = this.$cookies.get("showServices");
+    this.showServices =
+      this.$cookies.get("showServices") == "true" ? true : false;
     console.log("Intializing app..");
     let usersRef = db.database().ref("portal_users");
     let profilesRef = db.database().ref("portal_profiles");

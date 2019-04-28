@@ -188,8 +188,7 @@
     <!-- sequential-entrance -->
     <md-card
       md-with-hover
-      v-if="service == 'Zettelkasten'"
-      v-for="(note, index) in notes"
+      v-for="(note, index) in members(notes)"
       :key="index"
       class="md-layout-item"
       id="noteCards"
@@ -356,6 +355,22 @@ export default {
     function SortByTime(x, y) {
       return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
     }
+
+    // LOAD USER PREFERENCES ///////////////////////////////////////////////////
+    let prefsRef = db
+      .database()
+      .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+    prefsRef.on("child_added", pref => {
+      if (pref.key === "showServices") {
+        this.showServices = pref.val();
+      }
+    });
+    prefsRef.on("child_changed", pref => {
+      if (pref.key === "showServices") {
+        this.showServices = pref.val();
+      }
+    });
+
     // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
     let notesRef = db.database().ref("portal_notes");
     // FB ADDED PATTERN /////////////////////////////
@@ -392,6 +407,17 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    members: function(notes) {
+      return notes.filter(note => {
+        return (
+          (this.showServices &&
+            note.members &&
+            note.members.includes(this.username)) ||
+          !this.showServices
+        );
+      });
+    },
+
     // create slug for URL
     slug: function() {
       this.name = Slugify(this.display_name, { lower: true });

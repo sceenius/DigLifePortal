@@ -112,8 +112,7 @@
     -->
     <md-card
       md-with-hover
-      v-if="(showServices && isMember(topic)) || !showServices"
-      v-for="(topic, index) in topics"
+      v-for="(topic, index) in members(topics)"
       :key="index"
       class="md-layout-item"
     >
@@ -353,6 +352,18 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     // is member
+    members: function(topics) {
+      return topics.filter(topic => {
+        return (
+          (this.showServices &&
+            JSON.stringify(this.groups).includes(
+              topic.team + "/" + topic.name
+            )) ||
+          !this.showServices
+        );
+      });
+    },
+
     isMember: function(topic) {
       return JSON.stringify(this.groups).includes(
         topic.team + "/" + topic.name

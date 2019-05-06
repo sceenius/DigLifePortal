@@ -158,7 +158,7 @@
         CARDS // https://codesandbox.io/s/r4yov1w80n for animation
       ----------------------------------------------------------------------
     -->
-    <md-speed-dial v-if="service == 'Zettelkasten'">
+    <md-speed-dial v-if="service == 'notes'">
       <md-speed-dial-target>
         <md-icon class="md-morph-initial">add</md-icon>
         <md-icon class="md-morph-final">close</md-icon>
@@ -287,7 +287,7 @@ export default {
   props: ["domain"],
   data() {
     return {
-      service: "Zettelkasten",
+      service: "notes",
       tag: "",
       mode: "", // Edit or Create mode for dialog
       script: "", // Edit or Create script for execution
@@ -429,7 +429,7 @@ export default {
     },
 
     returnToCards: function() {
-      this.service = "Zettelkasten";
+      this.service = "notes";
       this.activeDialogNote = false;
       var element = document.getElementById("theApp");
       element.src = "about:blank";
@@ -590,7 +590,7 @@ export default {
     cardAction: function(action, note) {
       switch (action) {
         case "edit":
-          this.service = "Zettelkasten Note";
+          this.service = "notes";
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
@@ -612,31 +612,16 @@ export default {
           }
           // window.onload = function() {
           window.open(
-            "https://notepad.diglife.coop/" + note.id + "?both",
+            CHATURL + this.domain + "/notes/" + note.id + "?both",
             "theApp"
           );
           break;
         case "open":
-          // following not working since service is not visible in Navbar
-          // window.onload = function() {
-          //   window.open(note.purpose.link, "theApp");
-          // let prefsRef = db
-          //   .database()
-          //   .ref("portal_profiles/" + this.username + "/prefs");
-          // prefsRef.update({
-          //   service: "Zettelkasten Note",
-          //   link: "https://notepad.diglife.coop/" + note.id
-          // });
-          this.service = "Zettelkasten Note";
+          this.service = "notes";
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
-          // window.onload = function() {
-          window.open("https://notepad.diglife.coop/" + note.id, "theApp");
-
-          // };
-
-          // };
+          window.open(CHATURL + this.domain + "/notes/" + note.id, "theApp");
           break;
         case "ask":
           break;

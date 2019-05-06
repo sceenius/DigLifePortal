@@ -135,8 +135,11 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">{{ topic.display_name[0] }}Channel</div>
-        <img src="https://ledger.diglife.coop/images/brand/logo_secondary.svg">
+        <div class="md-subhead">{{ topic.display_name[0] }} Channel</div>
+        <div class="pin" @click="switchFavorite(topic.channel_id);">
+          <md-icon v-if="isFavorite(topic.channel_id)">favorite</md-icon>
+          <md-icon v-else>favorite_border</md-icon>
+        </div>
       </div>
 
       <div class="md-card-header">
@@ -223,6 +226,7 @@ export default {
       topics2: [],
       groups: [],
       tags: [],
+      favorites: [],
       autocompleteItems: [
         { text: "Accessibility", frequency: 5 },
         { text: "Accounting", frequency: 2 },
@@ -267,7 +271,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    this.username = this.$cookies.get("username");
+    this.username = this.$cookies.get("username").replace(".", "%2E");
 
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
@@ -291,17 +295,21 @@ export default {
     }
 
     // LOAD USER PREFERENCES ///////////////////////////////////////////////////
-    let prefsRef = db
-      .database()
-      .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+    let prefsRef = db.database().ref("portal_profiles/" + this.username);
+
     prefsRef.on("child_added", pref => {
-      if (pref.key === "showServices") {
-        this.showServices = pref.val();
+      if (pref.key === "prefs") {
+        this.showServices = pref.val().showServices;
+      } else if (pref.key === "favorites") {
+        this.favorites = pref.val();
       }
     });
+
     prefsRef.on("child_changed", pref => {
-      if (pref.key === "showServices") {
-        this.showServices = pref.val();
+      if (pref.key === "prefs") {
+        this.showServices = pref.val().showServices;
+      } else if (pref.key === "favorites") {
+        this.favorites = pref.val();
       }
     });
 
@@ -312,13 +320,15 @@ export default {
     channelsRef.on("child_added", channel => {
       let data = channel.val();
 
-      if (this.domain == data.team || this.domain == "all") {
+      if ((this.domain = data.team || this.domain === "all")) {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());
           }
           this.topics.push(data);
           //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
+
+          // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
         });
       }
     });
@@ -367,6 +377,24 @@ export default {
           !this.showServices
         );
       });
+    },
+
+    switchFavorite: function(id) {
+      if (this.favorites.includes(id)) {
+        for (var i = 0; i < this.favorites.length; i++) {
+          if (this.favorites[i] === id) {
+            this.favorites.splice(i, 1);
+          }
+        }
+      } else {
+        this.favorites.push(id);
+      }
+      let profileRef = db.database().ref("portal_profiles/" + this.username);
+      profileRef.update({ favorites: this.favorites });
+    },
+
+    isFavorite: function(id) {
+      return this.favorites.includes(id);
     },
 
     isMember: function(topic) {
@@ -645,4 +673,15 @@ export default {
 };
 </script>
 <style>
+.pin {
+  position: absolute !important;
+  right: 10px !important;
+  top: 10px !important;
+  cursor: pointer;
+}
+
+.pin .md-icon {
+  font-size: 2em !important;
+  color: white !important;
+}
 </style>

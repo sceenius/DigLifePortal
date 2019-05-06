@@ -1,11 +1,11 @@
 .md-card {
   border-radius: 1rem;
   transition: transform 0.3s ease-in-out;
-  transform: scale(0.6) !important;
-  -moz-transform: scale(0.6);
-  -webkit-transform: scale(0.6) !important;
-  margin: calc(-160px * (1 - 0.6)) calc(-110px * (1 - 0.6))
-    calc(-160px * (1 - 0.6)) calc(-110px * (1 - 0.6)) !important;
+  transform: scale(0.8) !important;
+  -moz-transform: scale(0.8);
+  -webkit-transform: scale(0.8) !important;
+  margin: calc(-150px * (1 - 0.8)) calc(-100px * (1 - 0.8))
+    calc(-150px * (1 - 0.8)) calc(-100px * (1 - 0.8)) !important;
 }
 
 .md-card:hover {
@@ -205,7 +205,7 @@
   color: #404040;
   padding: 5px;
   line-height: 1.2em;
-  font-size: 0.9em;
+  font-size: 1em;
   overflow: auto;
   max-height: 100px !important;
 }

@@ -276,7 +276,7 @@
         }}
       </span>
 
-      <div class="md-toolbar-section-end">
+      <div class="md-toolbar-section-end md-scrollbar">
         <md-button
           v-for="(dom, index) in domains"
           :key="index"
@@ -1429,12 +1429,13 @@ export default {
   min-height: 40px !important;
   width: 40px !important;
   height: 40px !important;
-  margin: 0 10px 0 0px !important;
+  margin: 0 8px 0 0px !important;
   background-color: GREEN;
   overflow: hidden;
   font-size: 0.8em;
   background-color: #db5d7c;
   color: #fff;
+  border-radius: 5px;
 }
 
 .md-tabs-container {
@@ -1535,5 +1536,23 @@ export default {
     -webkit-transform: scale(1.2, 1.2);
     opacity: 0;
   }
+}
+
+.md-toolbar-section-end {
+  max-height: 60px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+  text-align: right;
+  display: block !important;
+}
+
+.md-toolbar-section-end::-webkit-scrollbar {
+  display: none;
+}
+
+.md-toolbar-section-end:hover::-webkit-scrollbar {
+  display: none;
 }
 </style>

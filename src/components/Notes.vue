@@ -217,7 +217,8 @@
         </md-menu>
 
         <div class="md-subhead">Note</div>
-        <img src="https://ledger.diglife.coop/images/brand/logo_secondary.svg">
+        <md-icon class="pin" v-if="note.pinned">favorite</md-icon>
+        <md-icon class="pin" v-else>favorite_border</md-icon>
       </div>
 
       <div class="md-card-header">
@@ -648,4 +649,13 @@ export default {
 };
 </script>
 <style>
+.pin {
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  font-weight: normal;
+  font-size: 2em !important;
+  color: white !important;
+  cursor: pointer;
+}
 </style>

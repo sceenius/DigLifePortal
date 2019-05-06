@@ -131,7 +131,8 @@ export default {
 
       this.format = d3.format(",d");
       this.width = 932;
-      this.height = this.width;
+      this.height = 1400;
+      //this.height = this.width;
 
       this.pack = data =>
         d3
@@ -160,7 +161,7 @@ export default {
         .attr(
           "viewBox",
           `-${this.width / 2 + 150} -${this.height / 2} ${this.width +
-            250} ${this.height + 50}`
+            250} ${this.height + 150}`
         )
         .style("display", "block")
         .style("margin", "0 -14px")

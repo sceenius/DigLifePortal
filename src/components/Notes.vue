@@ -278,7 +278,7 @@ import Slack from "node-slack";
 import Moment from "moment";
 import Slugify from "slugify";
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
-import { BASEURL, CHATURL } from "../main.js";
+import { BASEURL, CHATURL, NOTEURL } from "../main.js";
 import db from "../firebase/init.js";
 
 export default {
@@ -612,7 +612,7 @@ export default {
           }
           // window.onload = function() {
           window.open(
-            CHATURL + this.domain + "/notes/" + note.id + "?both",
+            NOTEURL + this.domain + "/notes/" + note.id + "?both",
             "theApp"
           );
           break;
@@ -621,7 +621,7 @@ export default {
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
-          window.open(CHATURL + this.domain + "/notes/" + note.id, "theApp");
+          window.open(NOTEURL + this.domain + "/notes/" + note.id, "theApp");
           break;
         case "ask":
           break;

@@ -21,6 +21,7 @@ import router from "./router";
 
 export const BASEURL = "https://ledger.diglife.coop/";
 export const CHATURL = "https://chat.diglife.coop/";
+export const NOTEURL = "https://notepad.diglife.coop/";
 
 Vue.config.productionTip = false;
 //Vue.config.BASE = "https://diglife.com/webhooks";

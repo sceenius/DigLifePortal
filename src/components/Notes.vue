@@ -640,4 +640,9 @@ export default {
   color: white !important;
   cursor: pointer;
 }
+
+#noteCards .md-card-banner {
+  background-image: url("https://ledger.diglife.coop/images/cards/composition.png") !important;
+  background-size: cover;
+}
 </style>

@@ -1128,6 +1128,10 @@ export default {
             case "ecosystem-maps":
               drive = "";
               break;
+            case "cc-college":
+              drive = "omdev.ca%40gmail.com&ctz=";
+              break;
+
             default:
               drive =
                 "6fkigtu9vcqjtv9bnfd23lvqsk@group.calendar.google.com&ctz=" +
@@ -1164,6 +1168,10 @@ export default {
             case "ecosystem-maps":
               drive = "";
               break;
+            case "cc-college":
+              drive = "1w3FdHsyc5fXdFZE8c9AO85U8D_j2sAtr";
+              break;
+
             default:
               drive = "0B_zdMVo5TxZQS0dmYlhXaUJIams";
               break;

@@ -319,8 +319,7 @@ export default {
     let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       let data = channel.val();
-
-      if ((this.domain = data.team || this.domain === "all")) {
+      if (this.domain === data.team || this.domain === "all") {
         extensionsRef.child(channel.key).once("value", extension => {
           if (extension.exists()) {
             data = _.merge(data, extension.val());

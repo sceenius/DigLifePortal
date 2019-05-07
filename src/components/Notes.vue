@@ -1,5 +1,5 @@
 <template>
-  <div class="md-layout md-gutter" style="padding: 30px 30px 0 30px;">
+  <div class="md-layout md-gutter" v-if="service == ''" style="padding: 30px 30px 0 30px;">
     <!--
       ----------------------------------------------------------------------
         SNACKBARS  - https://vuematerial.io/components/snackbar
@@ -158,7 +158,7 @@
         CARDS // https://codesandbox.io/s/r4yov1w80n for animation
       ----------------------------------------------------------------------
     -->
-    <md-speed-dial v-if="service == 'notes'">
+    <md-speed-dial v-if="service == ''">
       <md-speed-dial-target>
         <md-icon class="md-morph-initial">add</md-icon>
         <md-icon class="md-morph-final">close</md-icon>
@@ -287,7 +287,7 @@ export default {
   props: ["domain"],
   data() {
     return {
-      service: "notes",
+      service: "",
       tag: "",
       mode: "", // Edit or Create mode for dialog
       script: "", // Edit or Create script for execution
@@ -429,7 +429,7 @@ export default {
     },
 
     returnToCards: function() {
-      this.service = "notes";
+      this.service = "";
       this.activeDialogNote = false;
       var element = document.getElementById("theApp");
       element.src = "about:blank";
@@ -437,7 +437,7 @@ export default {
     },
 
     returnToApp: function() {
-      this.service = "CodiMD";
+      this.service = "notes";
       var element = document.getElementById("theApp");
       element.src = "about:blank";
       element.style.display = "block";
@@ -562,7 +562,7 @@ export default {
       clipboard.select();
       document.execCommand("copy");
 
-      this.service = "CodiMD";
+      this.service = "notes";
       var element = document.getElementById("theApp");
       element.src = "about:blank";
       element.style.display = "block";

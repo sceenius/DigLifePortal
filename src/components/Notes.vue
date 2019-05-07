@@ -611,17 +611,14 @@ export default {
             notesRef.child(note.id).update(note);
           }
           // window.onload = function() {
-          window.open(
-            NOTEURL + this.domain + "/notes/" + note.id + "?both",
-            "theApp"
-          );
+          window.open(NOTEURL + note.id + "?both", "theApp");
           break;
         case "open":
           this.service = "notes";
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
-          window.open(NOTEURL + this.domain + "/notes/" + note.id, "theApp");
+          window.open(NOTEURL + note.id, "theApp");
           break;
         case "ask":
           break;

@@ -608,7 +608,7 @@ export default {
     domains: [],
     domain: "",
     channels: [],
-    profile: [],
+    profile: "",
     groups: [],
     members: [],
     total: "",
@@ -637,16 +637,9 @@ export default {
       this.activeUser = true;
     }
 
+    // recall service
     if (this.$route.params.service) {
       this.service = this.$route.params.service;
-    }
-
-    if (this.$route.params.domain) {
-      this.domain = this.$route.params.domain;
-    } else if (this.$cookies.get("mydomain")) {
-      this.domain = this.$cookies.get("mydomain");
-    } else {
-      this.domain = "diglife";
     }
 
     //showServices cookie
@@ -725,6 +718,16 @@ export default {
           this.groups = group.val();
         } else if (group.key === "domains") {
           this.domains = group.val();
+
+          // assign default domain
+          if (this.$route.params.domain) {
+            this.domain = this.$route.params.domain;
+          } else if (this.$cookies.get("mydomain")) {
+            this.domain = this.$cookies.get("mydomain");
+          } else {
+            this.domain = this.domains[0];
+            console.log("domain: ", this.domain, this.username, this.profile);
+          }
         }
       });
     }
@@ -1053,6 +1056,20 @@ export default {
                 this.groups = data.channels;
                 this.tags = data.tags ? data.tags : [];
                 this.domains = data.domains;
+                // assign default domain
+                if (this.$route.params.domain) {
+                  this.domain = this.$route.params.domain;
+                } else if (this.$cookies.get("mydomain")) {
+                  this.domain = this.$cookies.get("mydomain");
+                } else {
+                  this.domain = this.domains[0];
+                  console.log(
+                    "domain: ",
+                    this.domain,
+                    this.username,
+                    this.profile
+                  );
+                }
               })
           );
 
@@ -1071,7 +1088,9 @@ export default {
       this.domain = "";
       this.profile = "";
       this.username = "";
-      this.$cookies.set("username", "");
+      this.$cookies.remove("username");
+      this.$cookies.remove("mydomain");
+      this.$cookies.remove("showServices");
       this.activeUser = true;
     },
 

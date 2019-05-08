@@ -193,7 +193,7 @@
       class="md-layout-item"
       id="noteCards"
     >
-      <div class="md-card-banner">
+      <div v-bind:class="[cardType(note),'md-card-banner']">
         <md-menu>
           <md-button
             style="font-size: 0.8em; position: absolute; top:-5px; left: -5px;"
@@ -379,7 +379,7 @@ export default {
       var data = note.val();
       if (
         (data.tags && data.tags.includes(this.domain)) ||
-        this.domain == "all"
+        this.domain === "all"
       ) {
         this.notes.push(data);
         this.notes.sort(SortByTime);
@@ -417,6 +417,15 @@ export default {
           !this.showServices
         );
       });
+    },
+
+    cardType: function(note) {
+      return (
+        note.tags &&
+        note.tags.filter(tag => {
+          return tag.substring(0, 4) === "type";
+        })[0]
+      );
     },
 
     // create slug for URL
@@ -459,7 +468,7 @@ export default {
       this.notes = this.notes.filter(element => element.id !== note.id);
       //remove from app (manually)
       this.snack =
-        "Card successfully removed. Please also remove from the app. ";
+        "Card successfully removed. The owner needs to remove from the app (access dropdown). ";
       this.showSnackBar = true;
     },
 
@@ -641,8 +650,19 @@ export default {
   cursor: pointer;
 }
 
+#noteCards .md-card-banner,
 #noteCards .md-card-banner {
-  background-image: url("https://ledger.diglife.coop/images/cards/composition.png") !important;
+  background-image: url("https://ledger.diglife.coop/images/cards/pattern_composition.png") !important;
   background-size: cover;
+}
+
+#noteCards .type-game {
+  background-image: url("https://ledger.diglife.coop/images/cards/pattern_corals.png") !important;
+  background-size: cover;
+}
+
+#noteCards .type-game .md-icon,
+#noteCards .type-game .md-subhead {
+  color: black !important;
 }
 </style>

@@ -582,9 +582,10 @@ export default {
       this.activeUser = true;
     }
 
-    // recall service
+    // get query parameter (use params for path)
     if (this.$route.params.service) {
       this.service = this.$route.params.service;
+      console.log("query:", this.service);
     }
 
     //showServices cookie

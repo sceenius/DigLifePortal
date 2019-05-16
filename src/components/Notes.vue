@@ -353,8 +353,8 @@ export default {
     // use only locally since logout may change this
     this.username = this.$cookies.get("username");
 
-    if (this.$route.params.tag) {
-      this.tag = this.$route.params.tag;
+    if (this.$route.query.tag) {
+      this.tag = this.$route.query.tag;
       console.log(this.tag, this.domains);
     }
 
@@ -411,8 +411,11 @@ export default {
         }
       });
     });
-    var element = document.getElementById("theApp");
-    element.style.display = "none";
+
+    this.$nextTick(function() {
+      var element = document.getElementById("theApp");
+      element.style.display = "none";
+    });
   },
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
@@ -600,7 +603,7 @@ export default {
       window.history.pushState(
         "Navbar",
         "Notes",
-        "/notes/" + this.domain + "/" + tag
+        "/notes/" + this.domain + "?tag=" + tag
       );
       this.notes = this.notes.filter(note => note.tags.includes(tag));
     },

@@ -18,11 +18,6 @@ export default new Router({
       path: "/:service/:domain",
       name: "Navbar",
       component: Navbar
-    },
-    {
-      path: "/:service/:domain/:tag",
-      name: "Navbar",
-      component: Navbar
     }
   ]
 });

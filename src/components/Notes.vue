@@ -233,7 +233,7 @@
           Changed {{ note.fromTime }}
         </p>
         <p class="info" style="width: 250px; height: 90px; overflow: auto;">
-          <md-chip v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
+          <md-chip @click="openTag(tag)" v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
         </p>
       </div>
 
@@ -277,14 +277,14 @@ import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
 import Moment from "moment";
 import Slugify from "slugify";
-import _ from "lodash/fp/object"; //lodash/fp/object for objects only
+import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL, NOTEURL } from "../main.js";
 import db from "../firebase/init.js";
 
 export default {
   name: "Notes",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain"],
+  props: ["domain", "domains"],
   data() {
     return {
       service: "",
@@ -353,6 +353,11 @@ export default {
     // use only locally since logout may change this
     this.username = this.$cookies.get("username");
 
+    if (this.$route.params.tag) {
+      this.tag = this.$route.params.tag;
+      console.log(this.tag, this.domains);
+    }
+
     function SortByTime(x, y) {
       return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
     }
@@ -378,13 +383,22 @@ export default {
     notesRef.on("child_added", note => {
       var data = note.val();
       if (
-        (data.tags && data.tags.includes(this.domain)) ||
-        this.domain === "all"
+        (data.tags &&
+          data.tags.includes(this.domain) &&
+          data.tags.includes(this.tag)) ||
+        (data.tags && !this.tag && data.tags.includes(this.domain)) ||
+        (data.tags &&
+          !this.tag &&
+          this.domain === "all" &&
+          _.intersection(this.domains, data.tags).length > 0)
+        //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
+        //(this.domain === "all" && this.domains.includes(this.domain))
       ) {
         this.notes.push(data);
         this.notes.sort(SortByTime);
       }
     });
+
     // FB CHANGED PATTERN /////////////////////////////
     notesRef.on("child_changed", note => {
       var data = note.val();
@@ -579,6 +593,16 @@ export default {
       this.snack =
         "Template copied to clipboard. Please paste it into the new file.";
       this.showSnackBar = true;
+    },
+
+    // openTag
+    openTag: function(tag) {
+      window.history.pushState(
+        "Navbar",
+        "Notes",
+        "/notes/" + this.domain + "/" + tag
+      );
+      this.notes = this.notes.filter(note => note.tags.includes(tag));
     },
 
     // submit notes history

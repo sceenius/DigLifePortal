@@ -288,6 +288,7 @@
         >{{ dom.replace("friends", "partners").substring(0, 4) }}</md-button>
 
         <md-button
+          v-if="domains.length > 0"
           style="background-color: #c5536f;"
           title="All domains"
           @click="service == '' ? nav('all') : sub(service, 'all');"
@@ -332,39 +333,11 @@
     -->
     <div id="actions">
       <div id="inner">
-        <!-- md-button
-        v-if="service && service.charAt(0) !== ':'"
-        title="Open app in new window"
-        @click="sub('appLink');"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>fullscreen</md-icon>
-      </md-button>
-
-      <md-button
-        v-if="service && service.charAt(0) !== ':'"
-        v-for="(menu, index) in channel.menu"
-        :key="index"
-        v-bind:title="menu.title"
-        @click="sub(menu.link);"
-        @contextmenu.prevent="editMenu(menu, index);"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>{{ menu.icon }}</md-icon>
-      </md-button>
-
-      <md-button
-        v-if="service && service.charAt(0) !== ':'"
-        title="Add Menu Entry"
-        @click="addMenu();"
-        class="md-fab md-mini md-plain"
-      >
-        <md-icon>add</md-icon>
-        </md-button-->
-        <md-button title="Holonic Map" @click="sub('holons');" class="md-fab md-mini md-plain">
+        <md-button title="Show Holonic Map" @click="sub('holons');" class="md-fab md-mini md-plain">
           <md-icon>bubble_chart</md-icon>
         </md-button>
-        <md-button title="Network Map" @click="sub('skills');" class="md-fab md-mini md-plain">
+
+        <md-button title="Show Network Map" @click="sub('skills');" class="md-fab md-mini md-plain">
           <md-icon>scatter_plot</md-icon>
         </md-button>
 
@@ -379,38 +352,10 @@
         <md-button title="Show Folders" @click="sub(':Folders');" class="md-fab md-mini md-plain">
           <md-icon>folder</md-icon>
         </md-button>
+
         <md-button title="Show Notes" @click="sub('notes');" class="md-fab md-mini md-plain">
           <md-icon>insert_drive_file</md-icon>
         </md-button>
-
-        <!--
-        md-speed-dial>
-              <md-speed-dial-target>
-
-                <md-icon>announcement</md-icon>
-              </md-speed-dial-target>
-
-              <md-speed-dial-content>
-
-                <md-button
-                  class="md-icon-button"
-                  @click="createNote('plain');"
-                  title="Create plain note"
-                >
-                  <md-icon>assignment</md-icon>
-                </md-button>
-
-                <md-button
-                  class="md-icon-button"
-                  @click="createNote('meeting');"
-                  title="Create meeting note"
-                >
-                  <md-icon>videocam</md-icon>
-                </md-button>
-
-              </md-speed-dial-content>
-        </md-speed-dial
-        -->
       </div>
     </div>
     <!--
@@ -552,7 +497,7 @@
       <Particles v-if="!service"/>
 
       <Channels v-if="service == 'channels'" :domain="domain"/>
-      <Notes v-if="service == 'notes'" :domain="domain"/>
+      <Notes v-if="service == 'notes'" :domain="domain" :domains="domains"/>
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
       <Holons v-if="service == 'holons'" :domain="domain"/>
       <Skills v-if="service == 'skills'" :domain="domain"/>
@@ -1088,7 +1033,7 @@ export default {
       this.domain = "";
       this.profile = "";
       this.username = "";
-      this.$cookies.remove("username");
+      //this.$cookies.remove("username");
       this.$cookies.remove("mydomain");
       this.$cookies.remove("showServices");
       this.activeUser = true;
@@ -1424,11 +1369,11 @@ export default {
   margin-left: 32px;
   padding-left: 8px;
   border-left: 8px solid #FEC019;
-  transition: 0.5s;
+  transition: 1s;
 }
 
 #actions:hover {
-  width: 100px;
+  width: 120px;
 }
 
 #actions:hover > #inner {

@@ -46,16 +46,16 @@ new Vue({
     groups: ""
   }),
   created: function() {
-    this.axios
-      .get(BASEURL + "webhooks/portal_meetings.php?file=base-diglife-coop.php")
-      .then(response => (this.meetings = response.data.meetings))
-      //.then(response => console.log(this.users))
-      .then(response =>
-        db
-          .database()
-          .ref("portal_meetings")
-          .update(this.meetings)
-      );
+    // this.axios
+    //   .get(BASEURL + "webhooks/portal_meetings.php?file=base-diglife-coop.php")
+    //   .then(response => (this.meetings = response.data.meetings))
+    //   //.then(response => console.log(this.users))
+    //   .then(response =>
+    //     db
+    //       .database()
+    //       .ref("portal_meetings")
+    //       .update(this.meetings)
+    //   );
 
     this.axios
       .get(BASEURL + "webhooks/portal_users2.php?file=base-diglife-coop.php")

@@ -284,7 +284,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Notes",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain", "domains"],
+  props: ["domain"],
   data() {
     return {
       service: "",
@@ -301,6 +301,7 @@ export default {
       history: "",
       status: "",
       notes: [],
+      domains: [],
       cards: [],
       groups: [],
       tags: [],
@@ -357,6 +358,10 @@ export default {
       this.tag = this.$route.query.tag;
     }
 
+    if (this.domain === "") {
+      this.domain = this.$route.query.domain;
+    }
+
     function SortByTime(x, y) {
       return x.id === y.id ? 0 : x.time < y.time ? 1 : -1;
     }
@@ -376,27 +381,41 @@ export default {
       }
     });
 
-    // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
+    // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
     let notesRef = db.database().ref("portal_notes");
-    // FB ADDED PATTERN /////////////////////////////
-    notesRef.on("child_added", note => {
-      var data = note.val();
-      if (
-        (data.tags &&
-          data.tags.includes(this.domain) &&
-          data.tags.includes(this.tag)) ||
-        (data.tags && !this.tag && data.tags.includes(this.domain)) ||
-        (data.tags &&
-          !this.tag &&
-          this.domain === "all" &&
-          _.intersection(this.domains, data.tags).length > 0)
-        //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
-        //(this.domain === "all" && this.domains.includes(this.domain))
-      ) {
-        this.notes.push(data);
-        this.notes.sort(SortByTime);
-      }
-    });
+    let domainsRef = db
+      .database()
+      .ref("portal_profiles/" + this.username + "/domains");
+
+    domainsRef
+      .once("value", profile => {
+        if (profile.exists()) {
+          this.domains = profile.val();
+        }
+      })
+
+      .then(profile => {
+        // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
+        // FB ADDED PATTERN /////////////////////////////
+        notesRef.on("child_added", note => {
+          var data = note.val();
+          if (
+            (data.tags &&
+              data.tags.includes(this.domain) &&
+              data.tags.includes(this.tag)) ||
+            (data.tags && !this.tag && data.tags.includes(this.domain)) ||
+            (data.tags &&
+              !this.tag &&
+              this.domain === "all" &&
+              _.intersection(this.domains, data.tags).length > 0)
+            //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
+            //(this.domain === "all" && this.domains.includes(this.domain))
+          ) {
+            this.notes.push(data);
+            this.notes.sort(SortByTime);
+          }
+        });
+      });
 
     // FB CHANGED PATTERN /////////////////////////////
     notesRef.on("child_changed", note => {

@@ -283,7 +283,7 @@
           :title="dom"
           @click="service == '' ? nav(dom) : sub(service, dom);"
           v-bind:style="[
-            domain == dom ? { color: '#fec019' } : { color: '#fff' }
+            domain === dom ? { color: '#fec019' } : { color: '#fff' }
           ]"
         >{{ dom.replace("friends", "partners").substring(0, 4) }}</md-button>
 
@@ -293,7 +293,7 @@
           title="All domains"
           @click="service == '' ? nav('all') : sub(service, 'all');"
           v-bind:style="[
-            domain == 'all' ? { color: '#fec019' } : { color: '#fff' }
+            domain === 'all' ? { color: '#fec019' } : { color: '#fff' }
           ]"
         >ALL</md-button>
 
@@ -496,8 +496,8 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service"/>
 
-      <Channels v-if="service == 'channels'" :domain="domain" :domains="domains"/>
-      <Notes v-if="service == 'notes'" :domain="domain" :domains="domains"/>
+      <Channels v-if="service == 'channels'" :domain="domain"/>
+      <Notes v-if="service == 'notes'" :domain="domain"/>
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
       <Holons v-if="service == 'holons'" :domain="domain"/>
       <Skills v-if="service == 'skills'" :domain="domain"/>
@@ -1066,7 +1066,6 @@ export default {
       this.showNavigation = true;
       var element = document.getElementById("theApp");
       element.style.display = "none";
-      //console.log(domain);
     },
 
     sub: function(menu, dom) {

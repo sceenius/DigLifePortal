@@ -208,7 +208,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain", "domains"],
+  props: ["domain"],
   data() {
     return {
       service: "",
@@ -223,6 +223,8 @@ export default {
       result: "",
       status: "",
       channels: [],
+      //domain: "",
+      domains: [],
       channels2: [],
       groups: [],
       tags: [],
@@ -272,12 +274,11 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.username = this.$cookies.get("username").replace(".", "%2E");
-    console.log(this.domains);
-    this.channels = this.channels.filter(
-      channel => channel.team === this.domain || this.domain === "all"
-    );
+    // instant relaod does not refresh domain prop in time
+    if (this.domain === "") {
+      this.domain = this.$route.query.domain;
+    }
 
-    //console.log(this.domain,this.channels);
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
       let groupsRef = db.database().ref("portal_profiles/" + this.username);
@@ -318,22 +319,36 @@ export default {
       }
     });
 
-    // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
-
-    // // porta_extensions contains any channel info not stored in Mattermost
+    // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
     let channelsRef = db.database().ref("portal_channels");
-    channelsRef.on("child_added", channel => {
-      let data = channel.val();
-      //console.log(this.domains, data.team)
-      if (
-        this.domain === data.team ||
-        (this.domain === "all" && this.domains.includes(data.team))
-      ) {
-        this.channels.push(data);
-        //this.channels.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-        // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
-      }
-    });
+    let domainsRef = db
+      .database()
+      .ref("portal_profiles/" + this.username + "/domains");
+
+    //console.log(this.domains, domainsRef)
+    domainsRef
+      .once("value", profile => {
+        if (profile.exists()) {
+          this.domains = profile.val();
+        }
+      })
+      .then(profile => {
+        // // porta_extensions contains any channel info not stored in Mattermost
+        channelsRef.on("child_added", channel => {
+          let data = channel.val();
+          //console.log(this.domain, this.domains);
+          //console.log(this.domains, data.team)
+          if (
+            this.domain === data.team ||
+            (this.domain === "all" && this.domains.includes(data.team))
+          ) {
+            this.channels.push(data);
+
+            //this.channels.sort(SortByName);  WARNING: SORT CORRUPTS DATA
+            // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
+          }
+        });
+      });
 
     channelsRef.on("child_changed", channel => {
       let data = channel.val();

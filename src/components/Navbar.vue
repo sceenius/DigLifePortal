@@ -496,7 +496,7 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service"/>
 
-      <Channels v-if="service == 'channels'" :domain="domain"/>
+      <Channels v-if="service == 'channels'" :domain="domain" :domains="domains"/>
       <Notes v-if="service == 'notes'" :domain="domain" :domains="domains"/>
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
       <Holons v-if="service == 'holons'" :domain="domain"/>
@@ -583,10 +583,9 @@ export default {
     }
 
     // get query parameter (use params for path)
-    if (this.$route.params.service) {
-      this.service = this.$route.params.service;
-      console.log("query:", this.service);
-    }
+    //if (this.$route.params.service) {
+    this.service = this.$route.query.service || "";
+    //}
 
     //showServices cookie
     this.showServices =
@@ -620,26 +619,57 @@ export default {
       });
     });
 
+    console.log("Loading domains..");
+    if (this.$cookies.get("username")) {
+      let domainsRef = db
+        .database()
+        .ref(
+          "portal_profiles/" +
+            this.$cookies.get("username").replace(".", "%2E") +
+            "/domains"
+        );
+      //console.log(this.domains, domainsRef)
+      domainsRef.once("value", profile => {
+        if (profile.exists()) {
+          this.domains = profile.val();
+          if (this.$route.query.domain) {
+            this.domain = this.$route.query.domain;
+          } else if (this.$cookies.get("mydomain")) {
+            this.domain = this.$cookies.get("mydomain");
+          } else {
+            this.domain = this.domains[0];
+          }
+        }
+      });
+    }
+
     console.log("Loading channels..");
     let channelsRef = db.database().ref("portal_channels");
     // porta_extensions contains any channel info not stored in Mattermost
-    let extensionsRef = db.database().ref("portal_extensions");
+    //let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       var data = channel.val();
-      if (channel.val().display_name.charAt(0) !== "#") {
-        extensionsRef.child(channel.key).once("value", extension => {
-          if (extension.exists()) {
-            data = _.merge(data, extension.val());
-          }
-          this.channels.push(data);
-          // sort here due to asnyc promise
-          this.channels.sort(SortByName);
-          //console.log(channel.key, data.name, extension.val());
-        });
-
-        //console.log("This channel: ", this.channels);
+      // if (channel.val().display_name.charAt(0) !== "#") {
+      //     extensionsRef.child(channel.key).once("value", extension => {
+      // if (extension.exists()) {
+      //   data = _.merge(data, extension.val());
+      // }
+      if (this.domains.includes(this.domain)) {
+        //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
+        //(this.domain === "all" && this.domains.includes(this.domain))
+        this.channels.push(data);
+        //this.notes.sort(SortByTime);
       }
+      //console.log(this.channels, this.domain);
+      //this.channels.push(channel.val());
+      // sort here due to asnyc promise
+      //this.channels.sort(SortByName);
+      //console.log(channel.key, data.name, extension.val());
     });
+
+    //console.log("This channel: ", this.channels);
+    // }
+    // });
 
     function SortByName(x, y) {
       return x.display_name === y.display_name
@@ -657,23 +687,11 @@ export default {
           "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
         );
       groupsRef.on("child_added", group => {
-        var data = group.val();
+        //var data = group.val();
         //console.log(data);
 
         if (group.key === "channels") {
           this.groups = group.val();
-        } else if (group.key === "domains") {
-          this.domains = group.val();
-
-          // assign default domain
-          if (this.$route.params.domain) {
-            this.domain = this.$route.params.domain;
-          } else if (this.$cookies.get("mydomain")) {
-            this.domain = this.$cookies.get("mydomain");
-          } else {
-            this.domain = this.domains[0];
-            console.log("domain: ", this.domain, this.username, this.profile);
-          }
         }
       });
     }
@@ -1003,8 +1021,8 @@ export default {
                 this.tags = data.tags ? data.tags : [];
                 this.domains = data.domains;
                 // assign default domain
-                if (this.$route.params.domain) {
-                  this.domain = this.$route.params.domain;
+                if (this.$route.query.domain) {
+                  this.domain = this.$route.query.domain;
                 } else if (this.$cookies.get("mydomain")) {
                   this.domain = this.$cookies.get("mydomain");
                 } else {
@@ -1153,7 +1171,7 @@ export default {
           window.history.pushState(
             "Navbar",
             "Holons",
-            "/holons/" + this.domain
+            "?service=holons&domain=" + this.domain
           );
           //this.$router.push({ name: "Navbar", path: "/holons/" + this.domain });
           this.$nextTick(() => {
@@ -1165,7 +1183,7 @@ export default {
           window.history.pushState(
             "Navbar",
             "Skills",
-            "/skills/" + this.domain
+            "?service=skills&domain=" + this.domain
           );
           //this.$router.push({ name: "Navbar", path: "/skills/" + this.domain });
           this.$nextTick(() => {
@@ -1174,7 +1192,11 @@ export default {
           break;
         case "notes":
           this.service = "";
-          window.history.pushState("Navbar", "Notes", "/notes/" + this.domain);
+          window.history.pushState(
+            "Navbar",
+            "Notes",
+            "?service=notes&domain=" + this.domain
+          );
           this.$nextTick(() => {
             this.service = "notes";
           });
@@ -1184,7 +1206,7 @@ export default {
           window.history.pushState(
             "Navbar",
             "Channels",
-            "/channels/" + this.domain
+            "?service=channels&domain=" + this.domain
           );
           this.$nextTick(() => {
             this.service = "channels";

@@ -16,7 +16,7 @@
       ----------------------------------------------------------------------
     -->
     <md-button
-      v-if="!activeDialogTopic"
+      v-if="!activeDialogchannel"
       @click="createCard();"
       class="md-fab md-primary"
       style="position: absolute; bottom: 20px; right: 20px; z-index: 99"
@@ -27,7 +27,7 @@
     <md-dialog
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
-      :md-active.sync="activeDialogTopic"
+      :md-active.sync="activeDialogchannel"
     >
       <md-dialog-title>
         <md-icon style="color: black;">group_work</md-icon>
@@ -88,7 +88,7 @@
         </md-field>
 
         <md-dialog-actions style="padding: 25px 0;">
-          <md-button class="md-success md-raised" @click="activeDialogTopic = false;">Cancel</md-button>
+          <md-button class="md-success md-raised" @click="activeDialogchannel = false;">Cancel</md-button>
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
@@ -112,7 +112,7 @@
     -->
     <md-card
       md-with-hover
-      v-for="(topic, index) in members(topics)"
+      v-for="(channel, index) in members(channels)"
       :key="index"
       class="md-layout-item"
     >
@@ -123,21 +123,21 @@
           </md-button>
 
           <md-menu-content class="md-card-menu">
-            <md-menu-item @click="editCard(topic, index);">
+            <md-menu-item @click="editCard(channel, index);">
               <md-icon>edit</md-icon>
               <span>Edit</span>
             </md-menu-item>
 
-            <md-menu-item @click="deleteCard(topic);">
+            <md-menu-item @click="deleteCard(channel);">
               <md-icon>archive</md-icon>
               <span>Archive</span>
             </md-menu-item>
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">{{ topic.display_name[0] }} Channel</div>
-        <div class="pin" @click="switchFavorite(topic.channel_id);">
-          <md-icon v-if="isFavorite(topic.channel_id)">favorite</md-icon>
+        <div class="md-subhead">{{ channel.display_name[0] }} Channel</div>
+        <div class="pin" @click="switchFavorite(channel.channel_id);">
+          <md-icon v-if="isFavorite(channel.channel_id)">favorite</md-icon>
           <md-icon v-else>favorite_border</md-icon>
         </div>
       </div>
@@ -147,46 +147,46 @@
           <div class="md-title">
             <md-icon
               style="line-height: 0.9; font-size: 1em !important; color: #404040;"
-            >{{ topic.purpose.icon }}</md-icon>
-            {{ topic.display_name.replace(/[!#*@%/."'\\&]/, "") }}
+            >{{ channel.purpose.icon }}</md-icon>
+            {{ channel.display_name.replace(/[!#*@%/."'\\&]/, "") }}
           </div>
         </md-card-header-text>
 
-        <md-chip style="background-color: green" v-if="isMember(topic)">Joined</md-chip>
+        <md-chip style="background-color: green" v-if="isMember(channel)">Joined</md-chip>
         <md-chip
           style="background-color: orange"
-          v-if="isSuggested(topic) && !isMember(topic)"
+          v-if="isSuggested(channel) && !isMember(channel)"
         >Suggested</md-chip>
         <md-chip
           style="background-color: #ccc"
-          v-if="!isMember(topic) && !isSuggested(topic)"
+          v-if="!isMember(channel) && !isSuggested(channel)"
         >Not Joined</md-chip>
       </div>
 
       <div class="md-card-mid">
         <p class="info md-scrollbar">
-          <vue-markdown>{{topic.header}}</vue-markdown>
+          <vue-markdown>{{channel.header}}</vue-markdown>
         </p>
       </div>
 
       <md-card-actions>
-        <md-button v-if="isMember(topic)" @click="cardAction('leave', topic);">Leave</md-button>
+        <md-button v-if="isMember(channel)" @click="cardAction('leave', channel);">Leave</md-button>
         <md-button
-          v-if="isMember(topic)"
+          v-if="isMember(channel)"
           style="background: #0DC9C9; color: white;"
-          @click="cardAction('open', topic);"
+          @click="cardAction('open', channel);"
         >Open</md-button>
-        <md-button v-if="!isMember(topic)" @click="cardAction('ask', topic);">Ask</md-button>
+        <md-button v-if="!isMember(channel)" @click="cardAction('ask', channel);">Ask</md-button>
         <md-button
-          v-if="!isMember(topic)"
+          v-if="!isMember(channel)"
           style="background: #0DC9C9; color: white;"
-          @click="cardAction('join', topic);"
+          @click="cardAction('join', channel);"
         >Join</md-button>
       </md-card-actions>
 
       <div class="md-card-footer">
         <div class="md-card-avatars md-scrollbar">
-          <md-avatar v-for="(member, index) in topic.members" :key="index">
+          <md-avatar v-for="(member, index) in channel.members" :key="index">
             <img v-bind:src="avatarLink(member)" alt="Avatar">
             <md-tooltip md-direction="top">{{ member }}</md-tooltip>
           </md-avatar>
@@ -208,7 +208,7 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain"],
+  props: ["domain", "domains"],
   data() {
     return {
       service: "",
@@ -217,13 +217,13 @@ export default {
       script: "", // Edit or Create script for execution
       showServices: false,
       showCardNavigation: false,
-      activeDialogTopic: false,
+      activeDialogchannel: false,
       showSnackBar: false,
       snack: "",
       result: "",
       status: "",
-      topics: [],
-      topics2: [],
+      channels: [],
+      channels2: [],
       groups: [],
       tags: [],
       favorites: [],
@@ -272,7 +272,12 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     this.username = this.$cookies.get("username").replace(".", "%2E");
+    console.log(this.domains);
+    this.channels = this.channels.filter(
+      channel => channel.team === this.domain || this.domain === "all"
+    );
 
+    //console.log(this.domain,this.channels);
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
       let groupsRef = db.database().ref("portal_profiles/" + this.username);
@@ -314,36 +319,35 @@ export default {
     });
 
     // LOAD CHANNELS AND EXTENSIONS /////////////////////////////////////////////
+
+    // // porta_extensions contains any channel info not stored in Mattermost
     let channelsRef = db.database().ref("portal_channels");
-    // porta_extensions contains any channel info not stored in Mattermost
-    let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       let data = channel.val();
-      if (this.domain === data.team || this.domain === "all") {
-        extensionsRef.child(channel.key).once("value", extension => {
-          if (extension.exists()) {
-            data = _.merge(data, extension.val());
-          }
-          this.topics.push(data);
-          //this.topics.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-
-          // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
-        });
+      //console.log(this.domains, data.team)
+      if (
+        this.domain === data.team ||
+        (this.domain === "all" && this.domains.includes(data.team))
+      ) {
+        this.channels.push(data);
+        //this.channels.sort(SortByName);  WARNING: SORT CORRUPTS DATA
+        // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
       }
     });
 
     channelsRef.on("child_changed", channel => {
       let data = channel.val();
-      this.topics.forEach(function(element, index, arr) {
+      this.channels.forEach(function(element, index, arr) {
         if (element.channel_id === data.channel_id) {
           // lodash function to merge objects recursively
           arr[index] = _.merge(arr[index], data);
         }
       });
     });
+
     channelsRef.on("child_removed", channel => {
       let data = channel.val();
-      this.topics.forEach(function(element, index, arr) {
+      this.channels.forEach(function(element, index, arr) {
         if (element.channel_id === data.channel_id) {
           // lodash function to merge objects recursively
           arr.splice(index, 1);
@@ -366,12 +370,12 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
     // is member
-    members: function(topics) {
-      return topics.filter(topic => {
+    members: function(channels) {
+      return channels.filter(channel => {
         return (
           (this.showServices &&
             JSON.stringify(this.groups).includes(
-              topic.team + "/" + topic.name
+              channel.team + "/" + channel.name
             )) ||
           !this.showServices
         );
@@ -396,17 +400,17 @@ export default {
       return this.favorites.includes(id);
     },
 
-    isMember: function(topic) {
+    isMember: function(channel) {
       return JSON.stringify(this.groups).includes(
-        topic.team + "/" + topic.name
+        channel.team + "/" + channel.name
       );
     },
     // is suggested
-    isSuggested: function(topic) {
-      if (topic.purpose.tags && this.tags) {
+    isSuggested: function(channel) {
+      if (channel.purpose.tags && this.tags) {
         //alert(this.tags);
         return this.tags.filter(
-          value => -1 !== topic.purpose.tags.indexOf(value)
+          value => -1 !== channel.purpose.tags.indexOf(value)
         ).length;
       } else {
         return false;
@@ -423,9 +427,9 @@ export default {
     },
 
     // create new card
-    createCard: function(topic) {
+    createCard: function(channel) {
       // all interest groups created in the diglife domain
-      this.team_id = this.topics[0].team_id;
+      this.team_id = this.channels[0].team_id;
       this.channel_id = "";
       this.display_name = "";
       this.name = "";
@@ -433,34 +437,34 @@ export default {
       this.header = "";
       this.formtags = [];
       this.mode = "Create";
-      this.activeDialogTopic = true;
+      this.activeDialogchannel = true;
     },
 
-    // edit existing card (needs index of topic)
-    editCard: function(topic, index) {
-      //alert(topic.purpose.tags);
-      this.team_id = topic.team_id;
-      this.channel_id = topic.channel_id;
-      this.display_name = topic.display_name;
-      this.name = topic.name;
-      this.icon = topic.purpose.icon;
-      this.header = topic.header;
-      //this.formtags = topic.purpose.tags;
+    // edit existing card (needs index of channel)
+    editCard: function(channel, index) {
+      //alert(channel.purpose.tags);
+      this.team_id = channel.team_id;
+      this.channel_id = channel.channel_id;
+      this.display_name = channel.display_name;
+      this.name = channel.name;
+      this.icon = channel.purpose.icon;
+      this.header = channel.header;
+      //this.formtags = channel.purpose.tags;
       // the tag control needs text key-value pairs
-      if (topic.purpose.tags && topic.purpose.tags[0].text === undefined) {
-        this.formtags = topic.purpose.tags.map(function(element) {
+      if (channel.purpose.tags && channel.purpose.tags[0].text === undefined) {
+        this.formtags = channel.purpose.tags.map(function(element) {
           return { text: element };
         });
       } else {
-        this.formtags = topic.purpose.tags;
+        this.formtags = channel.purpose.tags;
       }
       this.formindex = index;
       this.mode = "Edit";
-      this.activeDialogTopic = true;
+      this.activeDialogchannel = true;
     },
 
-    // edit existing card (needs index of topic)
-    deleteCard: function(topic, index) {
+    // edit existing card (needs index of channel)
+    deleteCard: function(channel, index) {
       this.axios
         .get(
           BASEURL +
@@ -468,19 +472,19 @@ export default {
             "portal_delete_channel.php" +
             "?file=base-diglife-coop.php" +
             "&channel_id=" +
-            topic.channel_id
+            channel.channel_id
         )
-        .then(delete this.topics[index])
+        .then(delete this.channels[index])
         .then(
           db
             .database()
-            .ref("portal_channels/" + topic.channel_id)
+            .ref("portal_channels/" + channel.channel_id)
             .remove()
         )
         .then(
           db
             .database()
-            .ref("portal_extensions/" + topic.channel_id)
+            .ref("portal_extensions/" + channel.channel_id)
             .remove()
         )
         .then(response => {
@@ -514,7 +518,7 @@ export default {
         }
 
         // prepare some values before writing them back to MM
-        // topic channels starting with "#"
+        // channel channels starting with "#"
         if (this.display_name[0] !== "#") {
           this.display_name = "#" + this.display_name;
         }
@@ -551,11 +555,11 @@ export default {
           // does not update all fields
           .then(response => {
             if (this.mode === "Edit") {
-              this.channel = _.merge(this.topics[formindex], response.data);
+              this.channel = _.merge(this.channels[formindex], response.data);
             } else {
               this.channel = response.data;
               // this would be pushed twice, child_added
-              //this.topics.push(response.data);
+              //this.channels.push(response.data);
             }
           })
 
@@ -583,12 +587,12 @@ export default {
             this.showSnackBar = true;
           });
 
-        this.activeDialogTopic = false;
+        this.activeDialogchannel = false;
       }
     },
 
     // execute card action
-    cardAction: function(action, topic) {
+    cardAction: function(action, channel) {
       switch (action) {
         case "join":
           // join channel
@@ -598,24 +602,26 @@ export default {
                 "webhooks/portal_join_channel.php?file=base-diglife-coop.php&username=" +
                 this.$cookies.get("username") +
                 "&channel_id=" +
-                topic.channel_id
+                channel.channel_id
             )
             .then(response => (this.result = response.data))
-            .then(response => this.groups.push(topic.team + "/" + topic.name))
             .then(response =>
-              topic.members.push(this.$cookies.get("username"))
+              this.groups.push(channel.team + "/" + channel.name)
+            )
+            .then(response =>
+              channel.members.push(this.$cookies.get("username"))
             );
           break;
         case "open":
           // following not working since service is not visible in Navbar
           // window.onload = function() {
-          //   window.open(topic.purpose.link, "theApp");
-          this.service = topic.display_name.replace("#", "");
+          //   window.open(channel.purpose.link, "theApp");
+          this.service = channel.display_name.replace("#", "");
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
           window.open(
-            CHATURL + this.domain + "/channels/" + topic.name,
+            CHATURL + this.domain + "/channels/" + channel.name,
             "theApp"
           );
           // };
@@ -623,7 +629,7 @@ export default {
         case "ask":
           let question = prompt("Please ask your question", "Ask the Expert");
 
-          var slack = new Slack(CHATURL + "hooks/" + topic.purpose.hook);
+          var slack = new Slack(CHATURL + "hooks/" + channel.purpose.hook);
           var err = slack.send({
             text:
               "##### :question: Question from @" +
@@ -631,7 +637,7 @@ export default {
               "\n" +
               question +
               "\n_Tip: you can respond via a direct message or invite the user into this channel._",
-            channel: topic.name,
+            channel: channel.name,
             username: "ledgerbot",
             icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
             unfurl_links: true,
@@ -649,18 +655,18 @@ export default {
                 "webhooks/portal_leave_channel.php?file=base-diglife-coop.php&username=" +
                 this.$cookies.get("username") +
                 "&channel_id=" +
-                topic.channel_id
+                channel.channel_id
             )
             .then(response => (this.result = response.data))
             .then(response =>
               this.groups.splice(
-                this.groups.indexOf(topic.team + "/" + topic.name),
+                this.groups.indexOf(channel.team + "/" + channel.name),
                 1
               )
             )
             .then(response =>
-              topic.members.splice(
-                topic.members.indexOf(this.$cookies.get("username")),
+              channel.members.splice(
+                channel.members.indexOf(this.$cookies.get("username")),
                 1
               )
             );

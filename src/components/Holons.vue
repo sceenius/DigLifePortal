@@ -43,8 +43,6 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    //this.domain = this.$route.params.domain || "diglife";
-    //let domain = this.domain === "Home" ? "diglife" : this.domain.toLowerCase();
     let utime = new Date().getTime();
     this.username = this.$cookies.get("username");
 

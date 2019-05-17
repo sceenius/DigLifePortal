@@ -355,7 +355,6 @@ export default {
 
     if (this.$route.query.tag) {
       this.tag = this.$route.query.tag;
-      console.log(this.tag, this.domains);
     }
 
     function SortByTime(x, y) {
@@ -603,7 +602,7 @@ export default {
       window.history.pushState(
         "Navbar",
         "Notes",
-        "/notes/" + this.domain + "?tag=" + tag
+        "?service=notes&domain=" + this.domain + "&tag=" + tag
       );
       this.notes = this.notes.filter(note => note.tags.includes(tag));
     },

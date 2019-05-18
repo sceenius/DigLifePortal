@@ -619,7 +619,8 @@ export default {
       });
     });
 
-    console.log("Loading domains..");
+    // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
+    let channelsRef = db.database().ref("portal_channels");
     if (this.$cookies.get("username")) {
       let domainsRef = db
         .database()
@@ -629,43 +630,46 @@ export default {
             "/domains"
         );
       //console.log(this.domains, domainsRef)
-      domainsRef.once("value", profile => {
-        if (profile.exists()) {
-          this.domains = profile.val();
-          if (this.$route.query.domain) {
-            this.domain = this.$route.query.domain;
-          } else if (this.$cookies.get("mydomain")) {
-            this.domain = this.$cookies.get("mydomain");
-          } else {
-            this.domain = this.domains[0];
+      domainsRef
+        .once("value", profile => {
+          if (profile.exists()) {
+            this.domains = profile.val();
+            if (this.$route.query.domain) {
+              this.domain = this.$route.query.domain;
+            } else if (this.$cookies.get("mydomain")) {
+              this.domain = this.$cookies.get("mydomain");
+            } else {
+              this.domain = this.domains[0];
+            }
+            console.log("Loading domains.." + this.domain);
           }
-        }
-      });
+        })
+        .then(profile => {
+          console.log("Loading channels..");
+          let channelsRef = db.database().ref("portal_channels");
+          // porta_extensions contains any channel info not stored in Mattermost
+          //let extensionsRef = db.database().ref("portal_extensions");
+          channelsRef.on("child_added", channel => {
+            var data = channel.val();
+            // if (channel.val().display_name.charAt(0) !== "#") {
+            //     extensionsRef.child(channel.key).once("value", extension => {
+            // if (extension.exists()) {
+            //   data = _.merge(data, extension.val());
+            // }
+            if (this.domains.includes(this.domain)) {
+              //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
+              //(this.domain === "all" && this.domains.includes(this.domain))
+              this.channels.push(data);
+              //this.notes.sort(SortByTime);
+            }
+            //console.log(this.channels, this.domain);
+            //this.channels.push(channel.val());
+            // sort here due to asnyc promise
+            //this.channels.sort(SortByName);
+            //console.log(channel.key, data.name, extension.val());
+          });
+        });
     }
-
-    console.log("Loading channels..");
-    let channelsRef = db.database().ref("portal_channels");
-    // porta_extensions contains any channel info not stored in Mattermost
-    //let extensionsRef = db.database().ref("portal_extensions");
-    channelsRef.on("child_added", channel => {
-      var data = channel.val();
-      // if (channel.val().display_name.charAt(0) !== "#") {
-      //     extensionsRef.child(channel.key).once("value", extension => {
-      // if (extension.exists()) {
-      //   data = _.merge(data, extension.val());
-      // }
-      if (this.domains.includes(this.domain)) {
-        //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
-        //(this.domain === "all" && this.domains.includes(this.domain))
-        this.channels.push(data);
-        //this.notes.sort(SortByTime);
-      }
-      //console.log(this.channels, this.domain);
-      //this.channels.push(channel.val());
-      // sort here due to asnyc promise
-      //this.channels.sort(SortByName);
-      //console.log(channel.key, data.name, extension.val());
-    });
 
     //console.log("This channel: ", this.channels);
     // }

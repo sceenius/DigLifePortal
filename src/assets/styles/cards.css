@@ -15,16 +15,25 @@
   -webkit-transform: scale(1) rotate(5deg);
 }
 
-#noteCards.md-card .md-chip {
+.md-card .md-chip.md-tag {
   margin: 3px;
   position: relative;
-  top: 0;
-  right: 0;
-  display: inline-block;
-  padding: 6px;
-  line-height: 15px;
+  padding: 8px;
+  line-height: 10px;
   height: 26px;
   background-color: #aaa;
+  color: white;
+}
+
+.md-card .md-chip.md-status {
+  position: absolute;
+  top: 35px;
+  right: 5px;
+  background-color: #fc5f61;
+  color: white;
+  margin: 10px 0 0 0;
+  padding: 0px 20px 0px 20px;
+  font-size: 0.9em;
 }
 
 .md-speed-dial {
@@ -113,16 +122,6 @@
   padding: 10px;
 }
 
-.md-card .md-chip {
-  position: absolute;
-  top: 35px;
-  right: 5px;
-  background-color: #fc5f61;
-  color: white;
-  margin: 10px 0 0 0;
-  padding: 0px 20px 0px 20px;
-  font-size: 0.9em;
-}
 .md-card-mid {
   position: absolute;
   width: 100%;

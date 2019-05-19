@@ -152,12 +152,14 @@
           </div>
         </md-card-header-text>
 
-        <md-chip style="background-color: green" v-if="isMember(channel)">Joined</md-chip>
+        <md-chip class="md-status" style="background-color: green" v-if="isMember(channel)">Joined</md-chip>
         <md-chip
+          class="md-status"
           style="background-color: orange"
           v-if="isSuggested(channel) && !isMember(channel)"
         >Suggested</md-chip>
         <md-chip
+          class="md-status"
           style="background-color: #ccc"
           v-if="!isMember(channel) && !isSuggested(channel)"
         >Not Joined</md-chip>

@@ -225,6 +225,9 @@
         <md-card-header-text>
           <div class="md-title">{{ note.text.replace(/:[\w]+:/, "") }}</div>
         </md-card-header-text>
+
+                <md-chip class="md-status" style="background-color: green" >Note started</md-chip>
+
       </div>
 
       <div class="md-card-mid">
@@ -233,7 +236,7 @@
           Changed {{ note.fromTime }}
         </p>
         <p class="info" style="width: 250px; height: 90px; overflow: auto;">
-          <md-chip @click="openTag(tag)" v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
+          <md-chip class="md-tag" @click="openTag(tag)" v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
         </p>
       </div>
 

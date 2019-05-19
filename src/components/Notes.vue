@@ -226,8 +226,10 @@
           <div class="md-title">{{ note.text.replace(/:[\w]+:/, "") }}</div>
         </md-card-header-text>
 
-                <md-chip class="md-status" style="background-color: green" >Note started</md-chip>
-
+        <md-chip
+          v-if="note.status"
+          :class="['md-status', note.status.replace(' ','-')]"
+        >{{note.status.substring(7)}}</md-chip>
       </div>
 
       <div class="md-card-mid">
@@ -235,8 +237,13 @@
           <md-icon>access_time</md-icon>
           Changed {{ note.fromTime }}
         </p>
-        <p class="info" style="width: 250px; height: 90px; overflow: auto;">
-          <md-chip class="md-tag" @click="openTag(tag)" v-for="(tag, index) in note.tags" :key="tag.id">{{ tag }}</md-chip>
+        <p style="margin-top: -10px; width: 250px; height: 90px; overflow: auto;">
+          <md-chip
+            class="md-tag"
+            @click="openTag(tag)"
+            v-for="(tag, index) in note.tags"
+            :key="tag.id"
+          >{{ tag }}</md-chip>
         </p>
       </div>
 
@@ -414,6 +421,9 @@ export default {
             //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
             //(this.domain === "all" && this.domains.includes(this.domain))
           ) {
+            data.status = data.tags.find(function(tag) {
+              return tag.substring(0, 6) === "status";
+            });
             this.notes.push(data);
             this.notes.sort(SortByTime);
           }
@@ -712,5 +722,8 @@ export default {
 #noteCards .type-game .md-icon,
 #noteCards .type-game .md-subhead {
   color: black !important;
+}
+#noteCards .status-not-started {
+  background-color: #aaa;
 }
 </style>

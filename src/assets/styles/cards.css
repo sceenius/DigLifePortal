@@ -16,24 +16,27 @@
 }
 
 .md-card .md-chip.md-tag {
+  border-top: 2px solid #ddd;
+  border-bottom: 2px solid #fff;
   margin: 3px;
   position: relative;
-  padding: 8px;
-  line-height: 10px;
+  padding: 10px;
+  line-height: 1px;
   height: 26px;
-  background-color: #aaa;
-  color: white;
+  background-color: #ddd;
 }
 
 .md-card .md-chip.md-status {
   position: absolute;
   top: 35px;
   right: 5px;
+  border-top: 2px solid #ddd;
+  border-bottom: 2px solid #fff;
   background-color: #fc5f61;
   color: white;
   margin: 10px 0 0 0;
   padding: 0px 20px 0px 20px;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .md-speed-dial {

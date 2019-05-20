@@ -228,11 +228,12 @@
 
         <md-chip
           v-if="note.status"
+          @click="openTag(note.status)"
           :class="['md-status', note.status.replace(' ','-')]"
         >{{note.status.substring(7)}}</md-chip>
       </div>
 
-      <div class="md-card-mid">
+      <div v-if="!note.status" class="md-card-mid">
         <p class="info">
           <md-icon>access_time</md-icon>
           Changed {{ note.fromTime }}
@@ -246,7 +247,16 @@
           >{{ tag }}</md-chip>
         </p>
       </div>
-
+      <div v-else class="md-card-mid">
+        <center>
+          <fulfilling-bouncing-circle-spinner
+            style="margin-top: 35px;"
+            :animation-duration="2000"
+            :size="80"
+            :color="'#F47E7E'"
+          />
+        </center>
+      </div>
       <md-card-actions>
         <md-button @click="cardAction('edit', note);">Edit</md-button>
         <md-button
@@ -287,13 +297,19 @@ import VueMarkdown from "vue-markdown";
 import Slack from "node-slack";
 import Moment from "moment";
 import Slugify from "slugify";
+import { PixelSpinner, FulfillingBouncingCircleSpinner } from "epic-spinners";
 import _ from "lodash/fp/array"; //lodash/fp/object for objects only
 import { BASEURL, CHATURL, NOTEURL } from "../main.js";
 import db from "../firebase/init.js";
 
 export default {
   name: "Notes",
-  components: { VueTagsInput, VueMarkdown },
+  components: {
+    VueTagsInput,
+    VueMarkdown,
+    PixelSpinner,
+    FulfillingBouncingCircleSpinner
+  },
   props: ["domain"],
   data() {
     return {

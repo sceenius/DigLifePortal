@@ -216,7 +216,7 @@
           </md-menu-content>
         </md-menu>
 
-        <div class="md-subhead">Note</div>
+        <div class="md-subhead">{{note.type.substring(5).toUpperCase()}}</div>
         <md-icon class="pin" v-if="note.pinned">favorite</md-icon>
         <md-icon class="pin" v-else>favorite_border</md-icon>
       </div>
@@ -234,24 +234,20 @@
       </div>
 
       <div v-if="!note.status" class="md-card-mid">
-        <p class="info">
-          <md-icon>access_time</md-icon>
-          Changed {{ note.fromTime }}
-        </p>
-        <p style="margin-top: -10px; width: 250px; height: 90px; overflow: auto;">
-          <md-chip
-            class="md-tag"
-            @click="openTag(tag)"
-            v-for="(tag, index) in note.tags"
-            :key="tag.id"
-          >{{ tag }}</md-chip>
-        </p>
+        <md-icon>access_time</md-icon>
+        Changed {{ note.fromTime }}
+        <br>
+        <md-chip
+          class="md-tag"
+          @click="openTag(tag)"
+          v-for="(tag, index) in note.tags"
+          :key="tag.id"
+        >{{ tag }}</md-chip>
       </div>
       <div v-else class="md-card-mid">
         <center>
           <fulfilling-bouncing-circle-spinner
-            style="margin-top: 35px;"
-            :animation-duration="2000"
+            :animation-duration="3000"
             :size="80"
             :color="'#F47E7E'"
           />
@@ -437,9 +433,14 @@ export default {
             //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
             //(this.domain === "all" && this.domains.includes(this.domain))
           ) {
-            data.status = data.tags.find(function(tag) {
-              return tag.substring(0, 6) === "status";
-            });
+            data.status =
+              data.tags.find(function(tag) {
+                return tag.substring(0, 6) === "status";
+              }) || "";
+            data.type =
+              data.tags.find(function(tag) {
+                return tag.substring(0, 4) === "type";
+              }) || "type-note";
             this.notes.push(data);
             this.notes.sort(SortByTime);
           }
@@ -735,11 +736,33 @@ export default {
   background-size: cover;
 }
 
+#noteCards .type-role {
+  background-image: url("https://ledger.diglife.coop/images/cards/pattern_arches.png") !important;
+  background-size: cover;
+}
+
 #noteCards .type-game .md-icon,
+#noteCards .type-role .md-icon,
+#noteCards .type-role .md-subhead,
 #noteCards .type-game .md-subhead {
   color: black !important;
 }
+
 #noteCards .status-not-started {
   background-color: #aaa;
+}
+
+#noteCards .md-card-mid {
+  overflow: auto;
+  top: 135px;
+  max-height: 100px;
+}
+
+#noteCards .md-card-mid::-webkit-scrollbar {
+  display: none;
+}
+
+#noteCards .md-card-mid:hover::-webkit-scrollbar {
+  display: none;
 }
 </style>

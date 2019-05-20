@@ -28,14 +28,14 @@
 
 .md-card .md-chip.md-status {
   position: absolute;
-  top: 35px;
+  top: 45px;
   right: 5px;
   border-top: 2px solid #ddd;
   border-bottom: 2px solid #fff;
   background-color: #fc5f61;
   color: white;
-  margin: 10px 0 0 0;
-  padding: 0px 20px 0px 20px;
+  line-height: 10px;
+  padding: 10px;
   font-size: 1em;
 }
 
@@ -90,7 +90,8 @@
 }
 
 .md-card-banner .md-subhead {
-  font-size: 1.4em !important;
+  font-size: 1.3em !important;
+  font-weight: bold;
   color: white;
 }
 
@@ -148,8 +149,8 @@
   left: 0;
   bottom: 0;
   width: 100%;
-  max-height: 60px;
-  background-color: #e2e2e2;
+  height: 60px;
+  background-color: #e2e2e2 !important;
   overflow: hide;
 }
 

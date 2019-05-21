@@ -345,11 +345,11 @@
           <md-icon>forum</md-icon>
         </md-button>
 
-        <md-button title="Show Calendar" @click="sub(':Calendar');" class="md-fab md-mini md-plain">
+        <md-button title="Show Calendar" @click="sub('calendar');" class="md-fab md-mini md-plain">
           <md-icon>event</md-icon>
         </md-button>
 
-        <md-button title="Show Folders" @click="sub(':Folders');" class="md-fab md-mini md-plain">
+        <md-button title="Show Folders" @click="sub('folders');" class="md-fab md-mini md-plain">
           <md-icon>folder</md-icon>
         </md-button>
 
@@ -501,7 +501,15 @@
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
       <Holons v-if="service == 'holons'" :domain="domain"/>
       <Skills v-if="service == 'skills'" :domain="domain"/>
-
+      <iframe
+        v-if="service == 'calendar'"
+        name="theApp"
+        id="theApp"
+        style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto; display: none"
+        frameborder="0"
+        scrolling="yes"
+      >dddddddddddddddddd</iframe>
+      
       <iframe
         name="theApp"
         id="theApp"
@@ -754,10 +762,24 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   beforeDestroy: function() {},
 
+  watch: {
+    "$route.query": {
+      handler(query) {
+        this.service = query.service;
+        this.domain = query.domain;
+        this.tag = query.tag;
+      }
+    }
+  },
+
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
+    // goBack() {
+    //   window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
+    // },
+
     openNote: function(note) {
       this.service = "Help";
       var element = document.getElementById("theApp");
@@ -1080,12 +1102,18 @@ export default {
       let drive = "";
       element.src = "about:blank";
       element.style.display = "none";
+
+      this.$router.push({
+        name: "Navbar",
+        query: { domain: this.domain, service: menu }
+      });
+
       // Open the contextual action button
       switch (menu) {
-        case ":Calendar":
+        case "calendar":
           element.src = "about:blank";
           element.style.display = "block";
-          this.service = ":Calendar";
+          this.service = "calendar";
           let timezone = Moment.tz.guess();
           this.snack = "Showing calendar in local timezone for " + timezone;
           this.showSnackBar = true;
@@ -1131,10 +1159,10 @@ export default {
           );
 
           break;
-        case ":Folders":
+        case "folders":
           element.src = "about:blank";
           element.style.display = "block";
-          this.service = ":Folders";
+          this.service = "folders";
           switch (this.domain) {
             case "diglife":
               drive = "1pfEKM3g_gUbHosuwzbc-ea29gjwGAmVZ";
@@ -1171,23 +1199,30 @@ export default {
           break;
         case "holons":
           this.service = "";
-          window.history.pushState(
-            "Navbar",
-            "Holons",
-            "?service=holons&domain=" + this.domain
-          );
-          //this.$router.push({ name: "Navbar", path: "/holons/" + this.domain });
+          // this.$router.push({
+          //   name: "Navbar",
+          //   query: { domain: this.domain, service: "holons" }
+          // });
+          // window.history.pushState(
+          //   "Navbar",
+          //   "Holons",
+          //   "?service=holons&domain=" + this.domain
+          // );
           this.$nextTick(() => {
             this.service = "holons";
           });
           break;
         case "skills":
           this.service = "";
-          window.history.pushState(
-            "Navbar",
-            "Skills",
-            "?service=skills&domain=" + this.domain
-          );
+          // this.$router.push({
+          //   name: "Navbar",
+          //   query: { domain: this.domain, service: "skills" }
+          // });
+          // window.history.pushState(
+          //   "Navbar",
+          //   "Skills",
+          //   "?service=skills&domain=" + this.domain
+          // );
           //this.$router.push({ name: "Navbar", path: "/skills/" + this.domain });
           this.$nextTick(() => {
             this.service = "skills";
@@ -1195,22 +1230,30 @@ export default {
           break;
         case "notes":
           this.service = "";
-          window.history.pushState(
-            "Navbar",
-            "Notes",
-            "?service=notes&domain=" + this.domain
-          );
+          // this.$router.push({
+          //   name: "Navbar",
+          //   query: { domain: this.domain, service: "notes" }
+          // });
+          // window.history.pushState(
+          //   "Navbar",
+          //   "Notes",
+          //   "?service=notes&domain=" + this.domain
+          // );
           this.$nextTick(() => {
             this.service = "notes";
           });
           break;
         case "channels":
           this.service = "";
-          window.history.pushState(
-            "Navbar",
-            "Channels",
-            "?service=channels&domain=" + this.domain
-          );
+          // this.$router.push({
+          //   name: "Navbar",
+          //   query: { domain: this.domain, service: "channels" }
+          // });
+          // window.history.pushState(
+          //   "Navbar",
+          //   "Channels",
+          //   "?service=channels&domain=" + this.domain
+          // );
           this.$nextTick(() => {
             this.service = "channels";
           });

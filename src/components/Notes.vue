@@ -190,9 +190,15 @@
       md-with-hover
       v-for="(note, index) in members(notes)"
       :key="index"
-      class="md-layout-item"
+      v-bind:class="[cardType(note),'md-layout-item']"
       id="noteCards"
     >
+      <img
+        v-if="note.stage !== ''"
+        @click="cardAction('open', note);"
+        style="position: absolute; width: 190px; left: 30px; top: 90px; cursor: pointer; "
+        v-bind:src="badgeLink(note.stage)"
+      >
       <div v-bind:class="[cardType(note),'md-card-banner']">
         <md-menu>
           <md-button
@@ -233,7 +239,7 @@
         >{{note.status.substring(7)}}</md-chip>
       </div>
 
-      <div v-if="!note.status" class="md-card-mid">
+      <div v-if="note.stage === ''" class="md-card-mid">
         <md-icon>access_time</md-icon>
         Changed {{ note.fromTime }}
         <br>
@@ -244,16 +250,16 @@
           :key="tag.id"
         >{{ tag }}</md-chip>
       </div>
-      <div v-else class="md-card-mid">
-        <center>
+      <div v-else :class="['md-card-mid', note.stage]">
+        <!--center>
           <fulfilling-bouncing-circle-spinner
             :animation-duration="3000"
             :size="80"
             :color="'#F47E7E'"
           />
-        </center>
+        </center-->
       </div>
-      <md-card-actions>
+      <md-card-actions v-if="note.stage === ''">
         <md-button @click="cardAction('edit', note);">Edit</md-button>
         <md-button
           style="background: #0DC9C9; color: white;"
@@ -437,6 +443,10 @@ export default {
               data.tags.find(function(tag) {
                 return tag.substring(0, 6) === "status";
               }) || "";
+            data.stage =
+              data.tags.find(function(tag) {
+                return tag.substring(0, 5) === "stage";
+              }) || "";
             data.type =
               data.tags.find(function(tag) {
                 return tag.substring(0, 4) === "type";
@@ -454,6 +464,18 @@ export default {
       // also merge Firebase data after form submission, not here
       this.notes.forEach(function(element, index, arr) {
         if (element.id === data.id) {
+          data.status =
+            data.tags.find(function(tag) {
+              return tag.substring(0, 6) === "status";
+            }) || "";
+          data.stage =
+            data.tags.find(function(tag) {
+              return tag.substring(0, 5) === "stage";
+            }) || "";
+          data.type =
+            data.tags.find(function(tag) {
+              return tag.substring(0, 4) === "type";
+            }) || "type-note";
           // lodash function to merge objects recursively
           arr[index] = _.merge(arr[index], data);
         }
@@ -500,6 +522,11 @@ export default {
     // compute v-bind:src for img
     avatarLink: function(username) {
       return BASEURL + "images/avatars/avatar_" + username + ".png";
+    },
+
+    // compute v-bind:src for img
+    badgeLink: function(stage) {
+      return BASEURL + "images/cards/" + stage + ".png";
     },
 
     returnToCards: function() {
@@ -741,10 +768,17 @@ export default {
   background-size: cover;
 }
 
+#noteCards .type-opi {
+  background-image: url("https://ledger.diglife.coop/images/cards/pattern_marble.jpg") !important;
+  background-size: cover;
+}
+
 #noteCards .type-game .md-icon,
 #noteCards .type-role .md-icon,
+#noteCards .type-opi .md-icon,
 #noteCards .type-role .md-subhead,
-#noteCards .type-game .md-subhead {
+#noteCards .type-game .md-subhead,
+#noteCards .type-opi .md-subhead {
   color: black !important;
 }
 
@@ -764,5 +798,9 @@ export default {
 
 #noteCards .md-card-mid:hover::-webkit-scrollbar {
   display: none;
+}
+
+#noteCards.type-opi .md-card-header {
+  background-color: transparent;
 }
 </style>

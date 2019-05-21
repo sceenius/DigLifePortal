@@ -13,11 +13,11 @@ export default new Router({
       path: "/",
       name: "Navbar",
       component: Navbar
-    },
-    {
-      path: "/:service/:domain",
-      name: "Navbar",
-      component: Navbar
     }
+    // {
+    //   path: "/:service/:domain",
+    //   name: "Navbar",
+    //   component: Navbar
+    // }
   ]
 });

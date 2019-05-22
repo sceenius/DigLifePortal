@@ -397,7 +397,7 @@ export default {
     // LOAD USER PREFERENCES ///////////////////////////////////////////////////
     let prefsRef = db
       .database()
-      .ref("portal_profiles/" + this.$cookies.get("username") + "/prefs");
+      .ref("portal_profiles/" + this.username.replace(".", "%2E") + "/prefs");
     prefsRef.on("child_added", pref => {
       if (pref.key === "showServices") {
         this.showServices = pref.val();
@@ -413,7 +413,7 @@ export default {
     let notesRef = db.database().ref("portal_notes");
     let domainsRef = db
       .database()
-      .ref("portal_profiles/" + this.username + "/domains");
+      .ref("portal_profiles/" + this.username.replace(".", "%2E") + "/domains");
 
     domainsRef
       .once("value", profile => {

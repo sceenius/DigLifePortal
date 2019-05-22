@@ -272,7 +272,8 @@
         {{
         !service
         ? domain.toUpperCase()
-        : service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
+        : this.$route.query.tag ? this.$route.query.tag.substring(5).toUpperCase() :
+        service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
         }}
       </span>
 

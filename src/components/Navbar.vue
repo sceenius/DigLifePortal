@@ -272,7 +272,8 @@
         {{
         !service
         ? domain.toUpperCase()
-        : service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
+        : this.$route.query.tag ? this.$route.query.tag.substring(5).toUpperCase() :
+        service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
         }}
       </span>
 
@@ -501,15 +502,7 @@
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
       <Holons v-if="service == 'holons'" :domain="domain"/>
       <Skills v-if="service == 'skills'" :domain="domain"/>
-      <iframe
-        v-if="service == 'calendar'"
-        name="theApp"
-        id="theApp"
-        style="width:100%; min-height:95vh; max-height: 95vh; overflow: auto; display: none"
-        frameborder="0"
-        scrolling="yes"
-      >dddddddddddddddddd</iframe>
-      
+
       <iframe
         name="theApp"
         id="theApp"
@@ -1085,28 +1078,43 @@ export default {
     },
 
     nav: function(dom) {
-      //window.history.pushState("Navbar", "Nav", "/nav/" + dom);
-      this.$cookies.set("mydomain", dom);
-      this.domain = dom;
-      this.service = "";
+      //window.history.pushState("Navbar", "Nav", "?domain=" + dom);
+
+      // this.$router.go(1);
       this.showNavigation = true;
       var element = document.getElementById("theApp");
       element.style.display = "none";
+      //this.$nextTick(() => {
+      this.$cookies.set("mydomain", dom);
+      this.domain = dom;
+      //this.service = "";
+
+      this.$router.push({
+        name: "Navbar",
+        query: { domain: dom, service: this.service }
+      });
+      //});
     },
 
     sub: function(menu, dom) {
       if (dom) {
         this.domain = dom;
       }
+
+      this.service = ""; // triggers an update
+
+      this.$nextTick(() => {
+        this.service = menu;
+        this.$router.push({
+          name: "Navbar",
+          query: { domain: this.domain, service: this.service }
+        });
+      });
+
       let element = document.getElementById("theApp");
       let drive = "";
       element.src = "about:blank";
       element.style.display = "none";
-
-      this.$router.push({
-        name: "Navbar",
-        query: { domain: this.domain, service: menu }
-      });
 
       // Open the contextual action button
       switch (menu) {
@@ -1197,67 +1205,65 @@ export default {
           );
 
           break;
-        case "holons":
-          this.service = "";
-          // this.$router.push({
-          //   name: "Navbar",
-          //   query: { domain: this.domain, service: "holons" }
-          // });
-          // window.history.pushState(
-          //   "Navbar",
-          //   "Holons",
-          //   "?service=holons&domain=" + this.domain
-          // );
-          this.$nextTick(() => {
-            this.service = "holons";
-          });
-          break;
-        case "skills":
-          this.service = "";
-          // this.$router.push({
-          //   name: "Navbar",
-          //   query: { domain: this.domain, service: "skills" }
-          // });
-          // window.history.pushState(
-          //   "Navbar",
-          //   "Skills",
-          //   "?service=skills&domain=" + this.domain
-          // );
-          //this.$router.push({ name: "Navbar", path: "/skills/" + this.domain });
-          this.$nextTick(() => {
-            this.service = "skills";
-          });
-          break;
-        case "notes":
-          this.service = "";
-          // this.$router.push({
-          //   name: "Navbar",
-          //   query: { domain: this.domain, service: "notes" }
-          // });
-          // window.history.pushState(
-          //   "Navbar",
-          //   "Notes",
-          //   "?service=notes&domain=" + this.domain
-          // );
-          this.$nextTick(() => {
-            this.service = "notes";
-          });
-          break;
-        case "channels":
-          this.service = "";
-          // this.$router.push({
-          //   name: "Navbar",
-          //   query: { domain: this.domain, service: "channels" }
-          // });
-          // window.history.pushState(
-          //   "Navbar",
-          //   "Channels",
-          //   "?service=channels&domain=" + this.domain
-          // );
-          this.$nextTick(() => {
-            this.service = "channels";
-          });
-          break;
+        // case "holons":
+        //   this.service = "";
+        //   // this.$router.push({
+        //   //   name: "Navbar",
+        //   //   query: { domain: this.domain, service: "holons" }
+        //   // });
+        //   // window.history.pushState(
+        //   //   "Navbar",
+        //   //   "Holons",
+        //   //   "?service=holons&domain=" + this.domain
+        //   // );
+        //   this.$nextTick(() => {
+        //     this.service = "holons";
+        //   });
+        //   break;
+        // case "skills":
+        //   this.service = "";
+        //   // this.$router.push({
+        //   //   name: "Navbar",
+        //   //   query: { domain: this.domain, service: "skills" }
+        //   // });
+        //   // window.history.pushState(
+        //   //   "Navbar",
+        //   //   "Skills",
+        //   //   "?service=skills&domain=" + this.domain
+        //   // );
+        //   //this.$router.push({ name: "Navbar", path: "/skills/" + this.domain });
+        //   this.$nextTick(() => {
+        //     this.service = "skills";
+        //   });
+        //   break;
+        // case "notes":
+        //   //this.service = "";
+        //   // this.$router.push({
+        //   //   name: "Navbar",
+        //   //   query: { domain: this.domain, service: "notes" }
+        //   // });
+        //   // window.history.pushState(
+        //   //   "Navbar",
+        //   //   "Notes",
+        //   //   "?service=notes&domain=" + this.domain
+        //   // );
+
+        //   break;
+        // case "channels":
+        //   this.service = "";
+        //   // this.$router.push({
+        //   //   name: "Navbar",
+        //   //   query: { domain: this.domain, service: "channels" }
+        //   // });
+        //   // window.history.pushState(
+        //   //   "Navbar",
+        //   //   "Channels",
+        //   //   "?service=channels&domain=" + this.domain
+        //   // );
+        //   this.$nextTick(() => {
+        //     this.service = "channels";
+        //   });
+        //   break;
         case "infoLink":
           // Open dialoug to request access
           this.activeInfo = true;

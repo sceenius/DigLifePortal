@@ -10,9 +10,9 @@
 
 .md-card:hover {
   transition: transform 0.3s cubic-bezier(0.005, 1.65, 0.325, 1) !important;
-  transform: scale(1) rotate(5deg) translate(50px, 60px) !important;
-  -moz-transform: scale(1) rotate(5deg);
-  -webkit-transform: scale(1) rotate(5deg);
+  transform: scale(1.2) translate(0px, 40px) !important;
+  -moz-transform: scale(1.2) translate(0px, 40px);
+  -webkit-transform: scale(1.2) translate(0px, 40px);
 }
 
 .md-card .md-chip.md-tag {
@@ -129,7 +129,7 @@
 .md-card-mid {
   position: absolute;
   width: 100%;
-  top: 110px;
+  top: 135px;
   left: 0px;
   padding: 10px;
 }
@@ -162,22 +162,26 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.md-card-avatars::-webkit-scrollbar {
+.md-card-avatars::-webkit-scrollbar,
+.md-card-info:hover::-webkit-scrollbar {
   width: 5px;
   display: none;
 }
 
-.md-card-avatars:hover::-webkit-scrollbar {
-  display: block;
+.md-card-avatars:hover::-webkit-scrollbar,
+.md-card-info:hover::-webkit-scrollbar {
+  display: block !important;
 }
 
 /* Track */
-.md-card-avatars::-webkit-scrollbar-track {
+.md-card-avatars::-webkit-scrollbar-track,
+.md-card-info:hover::-webkit-scrollbar-track {
   border-radius: 5px;
 }
 
 /* Handle */
-.md-card-avatars::-webkit-scrollbar-thumb {
+.md-card-avatars::-webkit-scrollbar-thumb,
+.md-card-info:hover::-webkit-scrollbar-thumb {
   background: #bbb;
   border-radius: 5px;
 }

@@ -196,7 +196,7 @@
       <img
         v-if="note.stage !== ''"
         @click="cardAction('open', note);"
-        style="position: absolute; width: 190px; left: 30px; top: 90px; cursor: pointer; "
+        style="position: absolute; width: 190px; left: 30px; top: 100px; cursor: pointer; "
         v-bind:src="badgeLink(note.stage)"
       >
       <div v-bind:class="[cardType(note),'md-card-banner']">
@@ -239,7 +239,7 @@
         >{{note.status.substring(7)}}</md-chip>
       </div>
 
-      <div v-if="note.stage === ''" class="md-card-mid">
+      <div v-if="note.stage === ''" class="md-card-mid md-card-info">
         <md-icon>access_time</md-icon>
         Changed {{ note.fromTime }}
         <br>
@@ -797,7 +797,7 @@ export default {
 }
 
 #noteCards .md-card-mid:hover::-webkit-scrollbar {
-  display: none;
+  display: block;
 }
 
 #noteCards.type-opi .md-card-header {

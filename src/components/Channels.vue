@@ -107,6 +107,31 @@
 
     <!--
       ----------------------------------------------------------------------
+        DIALOG BOXES - SUDO DIALOG
+      ----------------------------------------------------------------------
+    -->
+    <md-dialog :md-active.sync="activeAccess" id="access" style="padding: 20px">
+      <!-- https://github.com/vuematerial/vue-material/issues/201 -->
+      <md-dialog-title style="color: #000 !important;">{{channel.display_name}}</md-dialog-title>
+      <p>
+        <vue-markdown>{{ channel.header }}</vue-markdown>
+      </p>
+      <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
+
+      <md-dialog-actions style="padding: 25px">
+        <md-button class @click="cancelAccess();">Cancel</md-button>
+        <md-button
+          class="md-success md-raised"
+          @click="requestAccess();"
+          style="background: #0DC9C9; color: white;"
+        >
+          <md-icon style="color: white;">lock_open</md-icon>Request Access
+        </md-button>
+      </md-dialog-actions>
+    </md-dialog>
+
+    <!--
+      ----------------------------------------------------------------------
         CARDS
       ----------------------------------------------------------------------
     -->
@@ -136,9 +161,8 @@
         </md-menu>
 
         <div class="md-subhead">{{ channel.display_name[0] }} Channel</div>
-        <div class="pin" @click="switchFavorite(channel.channel_id);">
-          <md-icon v-if="isFavorite(channel.channel_id)">favorite</md-icon>
-          <md-icon v-else>favorite_border</md-icon>
+        <div class="pin">
+          <md-icon v-if="!isPublic(channel)" title="Private channel">lock</md-icon>
         </div>
       </div>
 
@@ -165,10 +189,8 @@
         >Not Joined</md-chip>
       </div>
 
-      <div class="md-card-mid">
-        <p class="info md-scrollbar">
-          <vue-markdown>{{channel.header}}</vue-markdown>
-        </p>
+      <div class="md-card-mid info md-card-info md-scrollbar">
+        <vue-markdown>{{channel.header}}</vue-markdown>
       </div>
 
       <md-card-actions>
@@ -178,12 +200,16 @@
           style="background: #0DC9C9; color: white;"
           @click="cardAction('open', channel);"
         >Open</md-button>
-        <md-button v-if="!isMember(channel)" @click="cardAction('ask', channel);">Ask</md-button>
         <md-button
-          v-if="!isMember(channel)"
+          v-if="!isMember(channel) && isPublic(channel)"
           style="background: #0DC9C9; color: white;"
           @click="cardAction('join', channel);"
         >Join</md-button>
+        <md-button
+          v-if="!isMember(channel) && !isPublic(channel)"
+          style="background: #0DC9C9; color: white;"
+          @click="cardAction('sudo', channel);"
+        >Request Access</md-button>
       </md-card-actions>
 
       <div class="md-card-footer">
@@ -220,11 +246,13 @@ export default {
       showServices: false,
       showCardNavigation: false,
       activeDialogchannel: false,
+      activeAccess: false,
       showSnackBar: false,
       snack: "",
       result: "",
       status: "",
       channels: [],
+      channel: "",
       //domain: "",
       domains: [],
       channels2: [],
@@ -422,6 +450,11 @@ export default {
         channel.team + "/" + channel.name
       );
     },
+
+    isPublic: function(channel) {
+      return channel.type === "O";
+    },
+
     // is suggested
     isSuggested: function(channel) {
       if (channel.purpose.tags && this.tags) {
@@ -432,6 +465,36 @@ export default {
       } else {
         return false;
       }
+    },
+
+    requestAccess: function() {
+      this.activeAccess = false;
+
+      var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
+      var err = slack.send({
+        text:
+          "##### :closed_lock_with_key: Request for Access\n@" +
+          this.username +
+          " is requesting sudo access to the [" +
+          this.service +
+          " Service](" +
+          this.channel.purpose.link +
+          ")",
+        channel: this.channel.name,
+        username: "ledgerbot",
+        icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
+        unfurl_links: true,
+        link_names: 1
+      });
+      this.service = "";
+      this.snack = "Thank you! Your request has been submitted.";
+      this.showSnackBar = true;
+    },
+
+    cancelAccess: function() {
+      this.activeAccess = false;
+      this.activeInfo = false;
+      this.service = "";
     },
 
     // create slug for URL
@@ -687,6 +750,10 @@ export default {
                 1
               )
             );
+          break;
+        case "sudo":
+          this.channel = channel;
+          this.activeAccess = true;
           break;
         default:
       }

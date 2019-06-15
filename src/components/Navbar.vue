@@ -147,13 +147,14 @@
         DIALOG BOXES - SUDO DIALOG
       ----------------------------------------------------------------------
     -->
-    <md-dialog :md-active.sync="activeAccess" id="access">
+    <md-dialog :md-active.sync="activeAccess" id="access" style="padding: 20px">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
-      <md-dialog-title>{{ service.replace(/[!#*@%/."'\\&]/, "") }}</md-dialog-title>
-      <md-tabs md-dynamic-height>
+      <md-dialog-title style="color: #000 !important;">{{ service.replace(/[!#*@%/."'\\&]/, "") }}</md-dialog-title>
+      <p><vue-markdown>{{ channel.header }}</vue-markdown></p>
+      <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
+      <!--md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
-          <p>{{ channel.header }}</p>
-          <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
+
         </md-tab>
         <md-tab md-label="Team Members">
           <md-list style="margin: 50px; overflow: auto; height: 55vh !important;">
@@ -170,13 +171,12 @@
                 }})
               </span>
               <md-button @click="directMessage(member.id);" class="md-icon-button md-list-action">
-                <!-- Create a direct message channel -->
                 <md-icon class="md-primary">forum</md-icon>
               </md-button>
             </md-list-item>
           </md-list>
         </md-tab>
-      </md-tabs>
+      </md-tabs-->
       <md-dialog-actions style="padding: 25px">
         <md-button class @click="cancelAccess();">Cancel</md-button>
         <md-button
@@ -526,13 +526,14 @@ import Holons from "./Holons.vue";
 import Skills from "./Skills.vue";
 import Slack from "node-slack";
 import Moment from "moment-timezone";
+import VueMarkdown from "vue-markdown";
 
 import _ from "lodash/fp/object"; //lodash/fp/object for objects only
 import db from "../firebase/init.js";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Channels, Notes, Holons, Skills, Meetings },
+  components: { Particles, Tags, Channels, Notes, Holons, Skills, Meetings, VueMarkdown },
   data: () => ({
     // form: {
     //   username: null

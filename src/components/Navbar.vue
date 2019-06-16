@@ -150,7 +150,9 @@
     <md-dialog :md-active.sync="activeAccess" id="access" style="padding: 20px">
       <!-- https://github.com/vuematerial/vue-material/issues/201 -->
       <md-dialog-title style="color: #000 !important;">{{ service.replace(/[!#*@%/."'\\&]/, "") }}</md-dialog-title>
-      <p><vue-markdown>{{ channel.header }}</vue-markdown></p>
+      <p>
+        <vue-markdown>{{ channel.header }}</vue-markdown>
+      </p>
       <p v-if="channel.purpose">{{ channel.purpose.tags }}</p>
       <!--md-tabs md-dynamic-height>
         <md-tab md-label="About This Service">
@@ -533,7 +535,16 @@ import db from "../firebase/init.js";
 
 export default {
   name: "Navbar",
-  components: { Particles, Tags, Channels, Notes, Holons, Skills, Meetings, VueMarkdown },
+  components: {
+    Particles,
+    Tags,
+    Channels,
+    Notes,
+    Holons,
+    Skills,
+    Meetings,
+    VueMarkdown
+  },
   data: () => ({
     // form: {
     //   username: null
@@ -1100,6 +1111,10 @@ export default {
     sub: function(menu, dom) {
       if (dom) {
         this.domain = dom;
+      }
+
+      if (menu === "Mattermost") {
+        menu = "channels";
       }
 
       this.service = ""; // triggers an update

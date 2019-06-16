@@ -742,16 +742,6 @@ export default {
 };
 </script>
 <style>
-.pin {
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  font-weight: normal;
-  font-size: 2em !important;
-  color: white !important;
-  cursor: pointer;
-}
-
 #noteCards .md-card-banner,
 #noteCards .md-card-banner {
   background-image: url("https://ledger.diglife.coop/images/cards/pattern_composition.png") !important;

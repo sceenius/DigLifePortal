@@ -161,9 +161,16 @@
         </md-menu>
 
         <div class="md-subhead">{{ channel.display_name[0] }} Channel</div>
-        <div class="pin">
-          <md-icon v-if="!isPublic(channel)" title="Private channel">lock</md-icon>
-        </div>
+        <md-icon
+          class="pin"
+          v-if="!isPublic(channel) && !isMember(channel)"
+          title="Private channel"
+        >lock</md-icon>
+        <md-icon
+          class="pin"
+          v-if="!isPublic(channel) && isMember(channel)"
+          title="Private channel"
+        >lock_open</md-icon>
       </div>
 
       <div class="md-card-header">
@@ -762,15 +769,4 @@ export default {
 };
 </script>
 <style>
-.pin {
-  position: absolute !important;
-  right: 10px !important;
-  top: 10px !important;
-  cursor: pointer;
-}
-
-.pin .md-icon {
-  font-size: 2em !important;
-  color: white !important;
-}
 </style>

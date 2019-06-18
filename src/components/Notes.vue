@@ -248,6 +248,7 @@
           @click="openTag(tag)"
           v-for="(tag, index) in note.tags"
           :key="tag.id"
+          :title="tag"
         >{{ tag }}</md-chip>
       </div>
       <div v-else :class="['md-card-mid', note.stage]">
@@ -262,9 +263,15 @@
       <md-card-actions v-if="note.stage === ''">
         <md-button @click="cardAction('edit', note);">Edit</md-button>
         <md-button
+          v-if="!note.link"
           style="background: #0DC9C9; color: white;"
           @click="cardAction('open', note);"
         >Open</md-button>
+        <md-button
+          v-if="note.link"
+          style="background: #0DC9C9; color: white;"
+          @click="cardAction('annotate', note);"
+        >Annotate</md-button>
       </md-card-actions>
 
       <div class="md-card-footer">
@@ -443,6 +450,10 @@ export default {
               data.tags.find(function(tag) {
                 return tag.substring(0, 6) === "status";
               }) || "";
+            data.link =
+              data.tags.find(function(tag) {
+                return tag.substring(0, 4) === "link";
+              }) || null;
             data.stage =
               data.tags.find(function(tag) {
                 return tag.substring(0, 5) === "stage";
@@ -468,6 +479,10 @@ export default {
             data.tags.find(function(tag) {
               return tag.substring(0, 6) === "status";
             }) || "";
+          data.link =
+            data.tags.find(function(tag) {
+              return tag.substring(0, 4) === "link";
+            }) || null;
           data.stage =
             data.tags.find(function(tag) {
               return tag.substring(0, 5) === "stage";
@@ -730,6 +745,11 @@ export default {
           element.src = "about:blank";
           element.style.display = "block";
           window.open(NOTEURL + note.id, "theApp");
+          break;
+
+        case "annotate":
+          this.service = "notes";
+          window.open(note.link.substring(5), "_parent");
           break;
         case "ask":
           break;

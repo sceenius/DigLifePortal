@@ -379,11 +379,7 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
-        <span class="md-title" style="color: white;">
-          {{
-          domain.toUpperCase()
-          }}
-        </span>
+        <span class="md-title" style="color: white;">{{domain.toUpperCase()}}</span>
       </md-toolbar>
 
       <!--
@@ -512,6 +508,7 @@
         frameborder="0"
         scrolling="yes"
       ></iframe>
+      <!-- @load="injectJS();" -->
     </md-content>
   </div>
   <!-- END page-container md-layout-column -->
@@ -785,6 +782,15 @@ export default {
     //   window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
     // },
 
+    injectJS: function() {
+      var iFrameHead = window.frames["theApp"].document.getElementsByTagName(
+        "head"
+      )[0];
+      var myscript = document.createElement("script");
+      myscript.type = "text/javascript";
+      myscript.src = "https://hypothes.is/embed.js"; // replace this with your SCRIPT
+      iFrameHead.appendChild(myscript);
+    },
     openNote: function(note) {
       this.service = "Help";
       var element = document.getElementById("theApp");

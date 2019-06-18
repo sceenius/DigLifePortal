@@ -3,6 +3,7 @@ import App from "./App.vue";
 import VueMaterial from "vue-material";
 import VueCookies from "vue-cookies";
 import VueAddToCalendar from "vue-add-to-calendar";
+//import Hypothesis from "hypothesis";
 //import SequentialEntrance from "vue-sequential-entrance";
 //import "vue-sequential-entrance/vue-sequential-entrance.css";
 import "vue-material/dist/vue-material.min.css";
@@ -30,6 +31,7 @@ Vue.use(VueAxios, axios);
 Vue.use(VueCookies);
 Vue.use(VueMaterial);
 Vue.use(VueAddToCalendar);
+//Vue.use(Hypothesis);
 //Vue.use(SequentialEntrance);
 
 //Vue.use(Vuex);

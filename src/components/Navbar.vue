@@ -618,6 +618,7 @@ export default {
 
         if (data.username === this.username) {
           // calculate days since joined
+          console.log("Loading profile.." + this.username);
           data.diffTime = new Date().getTime();
           data.diffTime =
             (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
@@ -782,15 +783,6 @@ export default {
     //   window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
     // },
 
-    injectJS: function() {
-      var iFrameHead = window.frames["theApp"].document.getElementsByTagName(
-        "head"
-      )[0];
-      var myscript = document.createElement("script");
-      myscript.type = "text/javascript";
-      myscript.src = "https://hypothes.is/embed.js"; // replace this with your SCRIPT
-      iFrameHead.appendChild(myscript);
-    },
     openNote: function(note) {
       this.service = "Help";
       var element = document.getElementById("theApp");

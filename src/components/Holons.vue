@@ -69,14 +69,14 @@ export default {
           var data = channel.val();
 
           //console.log(this.domains);
-          if (this.domains.includes(data.team) || this.domain == "all") {
+          if (this.domains.includes(data.team) || this.domain === "all") {
             this.channels.push(data);
             //console.log(data.team, this.holons[data.team]);
             if (data.display_name.charAt(0) === "!") {
               //console.log("--------", data);
               this.holons[data.team].important.push({
                 id: data.channel_id,
-                name: data.display_name,
+                name: data.display_name.replace("!", ""),
                 image: data.image,
                 members: data.members,
                 is_member: data.members && data.members.includes(this.username),
@@ -87,7 +87,7 @@ export default {
             } else if (data.display_name.charAt(0) === "#") {
               this.holons[data.team].topics.push({
                 id: data.channel_id,
-                name: data.display_name,
+                name: data.display_name.replace("#", ""),
                 image: data.image,
                 members: data.members,
                 is_member: data.members && data.members.includes(this.username),
@@ -441,7 +441,7 @@ export default {
       //     ? "diglife"
       //     : this.domain.toLowerCase();
 
-      if (this.domain == "all") {
+      if (this.domain === "all") {
         var flares = [];
         for (var dom of this.display_domains) {
           // skip leftover domains

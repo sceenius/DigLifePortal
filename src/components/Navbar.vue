@@ -411,16 +411,11 @@
         <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
         <!-- new condition: joining domain via domain sudo group -->
         <md-list-item
-          v-for="(channel, index) in channels"
+          v-for="(channel, index) in showChannel(channels)"
           :key="channel.id"
           @click="openService(index);"
-          v-if="
-            groups &&
-              ((!showServices && showDomain(index)) ||
-                (showServices && showGroup(index) && showDomain(index)))
-          "
         >
-          <md-icon>{{ channel.purpose.icon }}</md-icon>
+          <md-icon v-if="channel.purpose">{{ channel.purpose.icon }}</md-icon>
           <span class="md-list-item-text">{{ channel.display_name.replace(/[!#*@%/."'\\&]/, "") }}</span>
 
           <md-icon
@@ -627,7 +622,7 @@ export default {
     });
 
     // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
-    let channelsRef = db.database().ref("portal_channels");
+    //let channelsRef = db.database().ref("portal_channels");
     if (this.$cookies.get("username")) {
       let domainsRef = db
         .database()
@@ -683,13 +678,13 @@ export default {
     // }
     // });
 
-    function SortByName(x, y) {
-      return x.display_name === y.display_name
-        ? 0
-        : x.display_name > y.display_name
-        ? 1
-        : -1;
-    }
+    // function SortByName(x, y) {
+    //   return x.display_name === y.display_name
+    //     ? 0
+    //     : x.display_name > y.display_name
+    //     ? 1
+    //     : -1;
+    // }
 
     console.log("Loading groups..");
     if (this.$cookies.get("username")) {
@@ -809,19 +804,20 @@ export default {
       );
     },
 
-    showDomain: function(index) {
-      //check if current domain is listed in channel
-      return (
-        this.channels[index].purpose.domain &&
-        this.channels[index].purpose.domain == this.domain
-      );
-    },
-
-    showGroup: function(index) {
-      //check if current group is listed in channel
-      return JSON.stringify(this.groups).includes(
-        this.channels[index].team + "/" + this.channels[index].name
-      );
+    showChannel: function(channels) {
+      return channels.filter(channel => {
+        return (
+          channel.purpose &&
+          channel.purpose.domain &&
+          channel.purpose.domain.includes(this.domain) &&
+          (!this.showServices ||
+            (this.showServices &&
+              this.groups &&
+              JSON.stringify(this.groups).includes(
+                channel.team + "/" + channel.name
+              )))
+        );
+      });
     },
 
     directMessage: function(member_id) {

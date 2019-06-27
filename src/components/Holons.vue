@@ -32,6 +32,7 @@ export default {
       service: "Holons",
       channels: [],
       domains: [],
+      display_domains: [],
       holons: [],
       width: "",
       height: "",
@@ -51,10 +52,11 @@ export default {
     let profilesRef = db.database().ref("portal_profiles");
 
     profilesRef
-      .child(this.username.replace(".", "%2E") + "/domains")
+      .child(this.username.replace(".", "%2E"))
       .once("value")
       .then(doms => {
-        this.domains = doms.val();
+        this.domains = doms.val().domains;
+        this.display_domains = doms.val().display_domains;
 
         for (var dom in this.domains) {
           // IN vs OF UNCLEAR
@@ -441,19 +443,19 @@ export default {
 
       if (this.domain == "all") {
         var flares = [];
-        for (var dom of this.domains) {
+        for (var dom of this.display_domains) {
           // skip leftover domains
-          if (this.holons[dom].length) {
+          if (this.holons[dom.name].length) {
             flares.push({
-              name: dom.replace("friends", "partners").toUpperCase(),
-              children: this.holons[dom].concat(
+              name: dom.display_name.replace("!", ""),
+              children: this.holons[dom.name].concat(
                 {
                   name: "Interest Groups",
-                  children: this.holons[dom].topics
+                  children: this.holons[dom.name].topics
                 },
                 {
                   name: "Important Channels",
-                  children: this.holons[dom].important
+                  children: this.holons[dom.name].important
                 }
               )
             });

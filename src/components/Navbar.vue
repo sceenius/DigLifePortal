@@ -281,14 +281,14 @@
 
       <div class="md-toolbar-section-end md-scrollbar">
         <md-button
-          v-for="(dom, index) in domains"
+          v-for="(dom, index) in display_domains"
           :key="index"
-          :title="dom"
-          @click="service == '' ? nav(dom) : sub(service, dom);"
+          :title="dom.display_name.replace('!', '')"
+          @click="service == '' ? nav(dom.name) : sub(service, dom.name);"
           v-bind:style="[
-            domain === dom ? { color: '#fec019' } : { color: '#fff' }
+            domain === dom.name ? { color: '#fec019' } : { color: '#fff' }
           ]"
-        >{{ dom.replace("friends", "partners").substring(0, 4) }}</md-button>
+        >{{ dom.display_name.replace("!", "").substring(0, 4) }}</md-button>
 
         <md-button
           v-if="domains.length > 0"
@@ -561,6 +561,7 @@ export default {
     snack: "",
     users: [],
     domains: [],
+    display_domains: [],
     domain: "",
     channels: [],
     profile: "",
@@ -608,26 +609,21 @@ export default {
     usersRef.on("child_added", user => {
       let data = user.val();
 
-      let path = data.username.replace(".", "%2E");
-      profilesRef.child(path).once("value", profile => {
-        let snapshot = profile.val();
+      data.diffTime = new Date().getTime();
+      data.diffTime = (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
+      this.users.push(data);
+      //console.log(data);
 
-        // add  data to users array
-        this.users.push(data);
-        //console.log(data);
-
-        if (data.username === this.username) {
-          // calculate days since joined
-          console.log("Loading profile.." + this.username);
-          data.diffTime = new Date().getTime();
-          data.diffTime =
-            (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
-
-          this.profile = data;
-          //this.username = this.$cookies.get("username");
-          this.activeUser = false;
-        }
-      });
+      if (data.username === this.username) {
+        console.log("Loading profile.." + this.username);
+        profilesRef
+          .child(data.username.replace(".", "%2E"))
+          .once("value", profile => {
+            let snapshot = profile.val();
+            this.profile = { ...data, ...snapshot };
+            this.activeUser = false;
+          });
+      }
     });
 
     // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
@@ -636,15 +632,16 @@ export default {
       let domainsRef = db
         .database()
         .ref(
-          "portal_profiles/" +
-            this.$cookies.get("username").replace(".", "%2E") +
-            "/domains"
+          "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
         );
       //console.log(this.domains, domainsRef)
       domainsRef
         .once("value", profile => {
           if (profile.exists()) {
-            this.domains = profile.val();
+            this.domains = profile.val().domains;
+            // display_domains is an object with name and display_name
+            this.display_domains = profile.val().display_domains;
+
             if (this.$route.query.domain) {
               this.domain = this.$route.query.domain;
             } else if (this.$cookies.get("mydomain")) {

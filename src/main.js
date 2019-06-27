@@ -96,7 +96,7 @@ new Vue({
             this.$cookies.get("username")
         )
         .then(response => (this.groups = response.data))
-        //.then(response => console.log(this.channels))
+        .then(response => console.log(this.groups))
         .then(response =>
           db
             .database()

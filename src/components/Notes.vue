@@ -783,12 +783,21 @@ export default {
   background-size: cover;
 }
 
+#noteCards .type-workteam {
+  background-image: url("https://ledger.diglife.coop/images/cards/pattern_workteam.png") !important;
+  background-size: 50%;
+  
+}
+
+
 #noteCards .type-game .md-icon,
 #noteCards .type-role .md-icon,
 #noteCards .type-opi .md-icon,
+#noteCards .type-workteam .md-icon,
 #noteCards .type-role .md-subhead,
 #noteCards .type-game .md-subhead,
-#noteCards .type-opi .md-subhead {
+#noteCards .type-opi .md-subhead,
+#noteCards .type-workteam .md-subhead {
   color: black !important;
 }
 

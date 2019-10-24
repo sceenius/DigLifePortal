@@ -68,7 +68,7 @@
       :md-active.sync="activeUser"
       style="max-width: 400px; max-height: 350px !important;"
     >
-      <md-dialog-title style="color: #404040 !important;">Welcome to DigLife!</md-dialog-title>
+      <md-dialog-title style="color: #404040 !important;">Welcome to DigLife</md-dialog-title>
       <div style="padding: 0 25px ;">
         If you are a member of the Digital Life Collective, please use your
         Mattermost username to log into the portal. If you are not a member yet,

@@ -413,7 +413,7 @@
         <md-list-item
           v-for="(channel, index) in showChannel(channels)"
           :key="channel.id"
-          @click="openService(index);"
+          @click="openService(channel);"
         >
           <md-icon v-if="channel.purpose">{{ channel.purpose.icon }}</md-icon>
           <span class="md-list-item-text">{{ channel.display_name.replace(/[!#*@%/."'\\&]/, "") }}</span>
@@ -1160,6 +1160,10 @@ export default {
             case "cc-college":
               drive = "omdev.ca%40gmail.com&ctz=";
               break;
+            case "dao-alliance":
+              drive =
+                "1rggajpop6j3m0534r111u2bsk%40group.calendar.google.com&ctz=";
+              break;
 
             default:
               drive =
@@ -1199,6 +1203,9 @@ export default {
               break;
             case "cc-college":
               drive = "1bOH-VSg7uyMxGrWQ4fJY-Dw0C9EDR3eZ";
+              break;
+            case "dao-alliance":
+              drive = "1EQEz9Y_hEC0-1VlOASpdx-pO2UllGkW-";
               break;
 
             default:
@@ -1335,16 +1342,17 @@ export default {
       }
     },
 
-    openService: function(index) {
+    openService: function(channel) {
       // let prefsRef = db
       //   .database()
       //   .ref("portal_profiles/" + this.username + "/prefs");
       // prefsRef.update({ service: this.channels[index].display_name });
-      if (this.channels[index].purpose.link.substring(8, 12) === "chat") {
-        this.service = "Mattermost";
-      } else {
-        this.service = this.channels[index].display_name;
-      }
+      // if (this.channels[index].purpose.link.substring(8, 12) === "chat") {
+      //   this.service = "Mattermost";
+      // } else {
+      //   this.service = this.channels[index].display_name;
+      // }
+      this.service = channel.display_name;
       var element = document.getElementById("theApp");
       // if (
       //   this.service === "Zettelkasten" ||
@@ -1358,20 +1366,21 @@ export default {
       // }
 
       // Need to change title to Mattermost for all non-service channels
-      this.channel = this.channels[index];
+      this.channel = channel;
       //this.$forceUpdate();
       document.getElementById("drawer").classList.remove("md-active");
       this.showNavigation = false;
 
       if (
         JSON.stringify(this.groups).includes(
-          this.channels[index].team + "/" + this.channels[index].name
+          channel.team + "/" + channel.name
         ) ||
-        this.channels[index].type === "O"
+        channel.type === "O"
       ) {
         // window.onload = function() {
         // this.service = this.channels[index].display_name;
-        window.open(this.channels[index].purpose.link, "theApp");
+        //console.log(channel.purpose.link);
+        window.open(channel.purpose.link, "_blank"); // no "theApp" due to CORS
         // };
       } else {
         this.activeAccess = true;

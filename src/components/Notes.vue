@@ -244,7 +244,7 @@
         Changed {{ note.fromTime }}
         <br>
         <md-chip
-          class="md-tag"
+          :class="['md-tag','mt-'+tag]"
           @click="openTag(tag)"
           v-for="(tag, index) in note.tags"
           :key="tag.id"
@@ -596,6 +596,7 @@ export default {
     // submit card edits
     createNote: function(type) {
       let clipboard = document.getElementById("Clipboard");
+
       switch (type) {
         case "plain":
           clipboard.value =
@@ -603,8 +604,9 @@ export default {
             "## Subtitle goes here\n" +
             "\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n\n" +
             ":::warning\n" +
-            "###### tags: `plain`" +
-            "\n###### authors: `" +
+            "###### tags: `plain` `" +
+            this.domain +
+            "`\n###### authors: `" +
             this.$cookies.get("username") +
             "`\n:::" +
             "";
@@ -639,12 +641,14 @@ export default {
             "- [ ] \n" +
             "- [ ] \n" +
             ":::warning\n" +
-            "###### tags: `meeting`" +
-            "\n###### authors: `" +
+            "###### tags: `meeting` `" +
+            this.domain +
+            "`\n###### authors: `" +
             this.$cookies.get("username") +
             "`\n:::" +
             "";
           break;
+
         case "news":
           clipboard.value =
             "#  :newspaper: Newsletter Topics\n" +
@@ -664,8 +668,9 @@ export default {
             "Author: ```name```\n" +
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
             ":::warning\n" +
-            "###### tags: `news`" +
-            "\n###### authors: `" +
+            "###### tags: `news` `" +
+            this.domain +
+            "`\n###### authors: `" +
             this.$cookies.get("username") +
             "`\n:::" +
             "";
@@ -683,9 +688,7 @@ export default {
       element.src = "about:blank";
       element.style.display = "block";
       window.open("https://notepad.diglife.coop/new", "theApp");
-      this.snack =
-        "Template copied to clipboard. Please paste it into the new file.";
-      this.showSnackBar = true;
+      alert("Template copied to clipboard. Please paste it into the note.");
     },
 
     // openTag
@@ -696,6 +699,15 @@ export default {
         "?service=notes&domain=" + this.domain + "&tag=" + tag
       );
       this.notes = this.notes.filter(note => note.tags.includes(tag));
+      var elements = document.getElementsByClassName("mt-" + tag);
+      var i;
+      for (i = 0; i < elements.length; i++) {
+        elements[i].style.backgroundColor = "#F47E7E";
+        elements[i].style.color = "#fff";
+      }
+      this.snack =
+        "Cards successfully filtered. Click on the domain tile to reset.";
+      this.showSnackBar = true;
     },
 
     // submit notes history
@@ -786,9 +798,7 @@ export default {
 #noteCards .type-workteam {
   background-image: url("https://ledger.diglife.coop/images/cards/pattern_workteam.png") !important;
   background-size: 50%;
-  
 }
-
 
 #noteCards .type-game .md-icon,
 #noteCards .type-role .md-icon,

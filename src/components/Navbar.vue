@@ -68,10 +68,9 @@
       :md-active.sync="activeUser"
       style="max-width: 400px; max-height: 350px !important;"
     >
-      <md-dialog-title style="color: #404040 !important;">Welcome to DigLife</md-dialog-title>
+      <md-dialog-title style="color: #404040 !important;">Welcome to the Collective!</md-dialog-title>
       <div style="padding: 0 25px ;">
-        If you are a member of the Digital Life Collective, please use your
-        Mattermost username to log into the portal. If you are not a member yet,
+        Please use your Mattermost username to log into the portal. If you are not a member yet,
         <a
           href="https://diglife.com/join-us/"
         >
@@ -412,27 +411,27 @@
         <md-list>
           <md-list-item @click="sub('holons');">
             <md-icon>bubble_chart</md-icon>
-            <span class="md-list-item-text">Show Holonic Map</span>
+            <span class="md-list-item-text">Holonic Map</span>
           </md-list-item>
           <md-list-item @click="sub('skills');">
             <md-icon>scatter_plot</md-icon>
-            <span class="md-list-item-text">Show Network Map</span>
+            <span class="md-list-item-text">Network Map</span>
           </md-list-item>
           <md-list-item @click="sub('channels');">
             <md-icon>forum</md-icon>
-            <span class="md-list-item-text">Show Channels</span>
+            <span class="md-list-item-text">Channels</span>
           </md-list-item>
           <md-list-item @click="sub('calendar');">
             <md-icon>event</md-icon>
-            <span class="md-list-item-text">Show Calendar</span>
+            <span class="md-list-item-text">Calendar</span>
           </md-list-item>
           <md-list-item @click="sub('folders');">
             <md-icon>folder</md-icon>
-            <span class="md-list-item-text">Show Folders</span>
+            <span class="md-list-item-text">File Folders</span>
           </md-list-item>
           <md-list-item @click="sub('notes');">
             <md-icon>insert_drive_file</md-icon>
-            <span class="md-list-item-text">Show Notes</span>
+            <span class="md-list-item-text">Notes</span>
           </md-list-item>
         </md-list>
 
@@ -974,15 +973,14 @@ export default {
             this.tags = data.tags ? data.tags : [];
             this.domains = data.domains;
             this.display_domains = data.display_domains;
-            // assign default domain
-            // if (this.$route.query.domain) {
-            //   this.domain = this.$route.query.domain;
-            // } else if (this.$cookies.get("mydomain")) {
-            //   this.domain = this.$cookies.get("mydomain");
-            // } else {
-            //   this.domain = this.domains[0];
-            //   console.log("domain: ", this.domain, this.username, this.profile);
-            // }
+            //assign default domain
+            if (this.$route.query.domain) {
+              this.domain = this.$route.query.domain;
+            } else if (this.$cookies.get("mydomain")) {
+              this.domain = this.$cookies.get("mydomain");
+            } else {
+              this.domain = "all";
+            }
           });
         //);
 
@@ -991,7 +989,6 @@ export default {
         // get query parameter (use params for path)
         //if (this.$route.params.service) {
         this.service = this.$route.query.service || "holons";
-        this.domain = "all";
 
         //}
 
@@ -1152,6 +1149,7 @@ export default {
       }
 
       this.service = ""; // triggers an update
+      this.$cookies.set("mydomain", dom);
 
       this.$nextTick(() => {
         this.service = menu;

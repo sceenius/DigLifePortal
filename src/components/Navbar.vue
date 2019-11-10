@@ -979,6 +979,7 @@ export default {
             } else if (this.$cookies.get("mydomain")) {
               this.domain = this.$cookies.get("mydomain");
             } else {
+              this.$cookies.set("mydomain", "all");
               this.domain = "all";
             }
           });
@@ -995,7 +996,7 @@ export default {
         //showServices cookie
         this.showServices =
           this.$cookies.get("showServices") === "true" ? true : false;
-        console.log("Intializing app..");
+
         // let profilesRef = db.database().ref("portal_profiles");
 
         // console.log("Loading profile..");
@@ -1102,6 +1103,7 @@ export default {
         this.$nextTick(function() {
           this.activeUser = false;
           this.showProfileReminder = true;
+          this.showNavigation = true;
         });
         // this forces Vue to recalc all computed props
         //this.$forceUpdate();

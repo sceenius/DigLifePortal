@@ -270,14 +270,14 @@
       </md-button>
       <!-- Show the title and navigation path here -->
       <!-- img src="https://diglife.com/brand/logo_primary.svg" / -->
-      <span class="md-title">
-        {{
-        !service
-        ? domain.toUpperCase()
-        : this.$route.query.tag ? this.$route.query.tag.substring(5).toUpperCase() :
-        service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase()
-        }}
+      <span v-if="service" class="md-title">
+        <a
+          @click="sub(service, domain);"
+          style="color: white; text-decoration: underline; cursor: pointer;"
+        >{{ service.replace(/[!#*@%/."'\\&:]/, "").toUpperCase() }}</a>
       </span>
+      
+      <span v-else class="md-title">{{domain.toUpperCase() }}</span>
 
       <div class="md-toolbar-section-end md-scrollbar">
         <md-button
@@ -408,8 +408,36 @@
           </md-button>
         </md-list-item>
 
-        <md-divider style="margin-bottom: 10px;" class="md-inset"></md-divider>
-        <!-- new condition: joining domain via domain sudo group -->
+        <md-divider style="margin: 5px;" class="md-inset"></md-divider>
+        <md-list>
+          <md-list-item @click="sub('holons');">
+            <md-icon>bubble_chart</md-icon>
+            <span class="md-list-item-text">Show Holonic Map</span>
+          </md-list-item>
+          <md-list-item @click="sub('skills');">
+            <md-icon>scatter_plot</md-icon>
+            <span class="md-list-item-text">Show Network Map</span>
+          </md-list-item>
+          <md-list-item @click="sub('channels');">
+            <md-icon>forum</md-icon>
+            <span class="md-list-item-text">Show Channels</span>
+          </md-list-item>
+          <md-list-item @click="sub('calendar');">
+            <md-icon>event</md-icon>
+            <span class="md-list-item-text">Show Calendar</span>
+          </md-list-item>
+          <md-list-item @click="sub('folders');">
+            <md-icon>folder</md-icon>
+            <span class="md-list-item-text">Show Folders</span>
+          </md-list-item>
+          <md-list-item @click="sub('notes');">
+            <md-icon>insert_drive_file</md-icon>
+            <span class="md-list-item-text">Show Notes</span>
+          </md-list-item>
+        </md-list>
+
+        <md-divider style="margin: 5px;" class="md-inset"></md-divider>
+
         <md-list-item
           v-for="(channel, index) in showChannel(channels)"
           :key="channel.id"
@@ -580,9 +608,9 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
     // domain coming from router
-    //this.domain = this.$route.params.domain || "diglife";
     // username coming from cookie
-    if (this.$cookies.get("username")) {
+    // not using cookie due to load delays
+    if (false && this.$cookies.get("username")) {
       this.username = this.$cookies.get("username");
     } else {
       this.activeUser = true;

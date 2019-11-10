@@ -186,9 +186,10 @@
     </md-speed-dial>
 
     <!-- sequential-entrance -->
+    <!-- members(notes) removed-->
     <md-card
       md-with-hover
-      v-for="(note, index) in members(notes)"
+      v-for="(note, index) in notes"
       :key="index"
       v-bind:class="[cardType(note),'md-layout-item']"
       id="noteCards"
@@ -434,6 +435,7 @@ export default {
         // FB ADDED PATTERN /////////////////////////////
         notesRef.on("child_added", note => {
           var data = note.val();
+
           if (
             (data.tags &&
               data.tags.includes(this.domain) &&

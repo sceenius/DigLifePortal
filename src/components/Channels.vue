@@ -377,7 +377,7 @@ export default {
           //console.log(this.domains, data.team)
           if (
             this.domain === data.team ||
-            (this.domain === "all" && this.domains.includes(data.team))
+            this.domain === "all" // && this.domains.includes(data.team))
           ) {
             this.channels.push(data);
 

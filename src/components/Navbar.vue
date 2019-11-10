@@ -616,19 +616,10 @@ export default {
       this.activeUser = true;
     }
 
-    // get query parameter (use params for path)
-    //if (this.$route.params.service) {
-    this.service = this.$route.query.service || "";
-    //}
-
-    //showServices cookie
-    this.showServices =
-      this.$cookies.get("showServices") == "true" ? true : false;
-    console.log("Intializing app..");
-    let usersRef = db.database().ref("portal_users");
-    let profilesRef = db.database().ref("portal_profiles");
+    ///
 
     console.log("Loading users..");
+    let usersRef = db.database().ref("portal_users");
     usersRef.on("child_added", user => {
       let data = user.val();
 
@@ -636,103 +627,16 @@ export default {
       data.diffTime = (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
       this.users.push(data);
       //console.log(data);
-
-      if (data.username === this.username) {
-        console.log("Loading profile.." + this.username);
-        profilesRef
-          .child(data.username.replace(".", "%2E"))
-          .once("value", profile => {
-            let snapshot = profile.val();
-            this.profile = { ...data, ...snapshot };
-            this.activeUser = false;
-          });
-      }
     });
 
-    // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
-    //let channelsRef = db.database().ref("portal_channels");
-    if (this.$cookies.get("username")) {
-      let domainsRef = db
-        .database()
-        .ref(
-          "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
-        );
-      //console.log(this.domains, domainsRef)
-      domainsRef
-        .once("value", profile => {
-          if (profile.exists()) {
-            this.domains = profile.val().domains;
-            // display_domains is an object with name and display_name
-            this.display_domains = profile.val().display_domains;
+    console.log("Loading channels..");
+    let channelsRef = db.database().ref("portal_channels");
+    channelsRef.on("child_added", channel => {
+      let data = channel.val();
+      this.channels.push(data);
+    });
 
-            if (this.$route.query.domain) {
-              this.domain = this.$route.query.domain;
-            } else if (this.$cookies.get("mydomain")) {
-              this.domain = this.$cookies.get("mydomain");
-            } else {
-              this.domain = this.domains[0];
-            }
-            console.log("Loading domains.." + this.domain);
-          }
-        })
-        .then(profile => {
-          console.log("Loading channels..");
-          let channelsRef = db.database().ref("portal_channels");
-          // porta_extensions contains any channel info not stored in Mattermost
-          //let extensionsRef = db.database().ref("portal_extensions");
-          channelsRef.on("child_added", channel => {
-            var data = channel.val();
-            // if (channel.val().display_name.charAt(0) !== "#") {
-            //     extensionsRef.child(channel.key).once("value", extension => {
-            // if (extension.exists()) {
-            //   data = _.merge(data, extension.val());
-            // }
-            if (this.domains.includes(this.domain)) {
-              //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
-              //(this.domain === "all" && this.domains.includes(this.domain))
-              this.channels.push(data);
-              //this.notes.sort(SortByTime);
-            }
-            //console.log(this.channels, this.domain);
-            //this.channels.push(channel.val());
-            // sort here due to asnyc promise
-            //this.channels.sort(SortByName);
-            //console.log(channel.key, data.name, extension.val());
-          });
-        });
-    }
-
-    //console.log("This channel: ", this.channels);
-    // }
-    // });
-
-    // function SortByName(x, y) {
-    //   return x.display_name === y.display_name
-    //     ? 0
-    //     : x.display_name > y.display_name
-    //     ? 1
-    //     : -1;
-    // }
-
-    console.log("Loading groups..");
-    if (this.$cookies.get("username")) {
-      let groupsRef = db
-        .database()
-        .ref(
-          "portal_profiles/" + this.$cookies.get("username").replace(".", "%2E")
-        );
-      groupsRef.on("child_added", group => {
-        //var data = group.val();
-        //console.log(data);
-
-        if (group.key === "channels") {
-          this.groups = group.val();
-        }
-      });
-    }
-
-    // update cookies
-    this.$cookies.config("365d");
+    ///
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1009,7 +913,7 @@ export default {
         // cookies are not stored on mobile devices, new prommpt for every session
         this.$cookies.set("username", this.username);
 
-        // load personal profile from users
+        // load personal profile from users (loading at created event)
         this.profile = this.users.find(item => {
           return item.username === this.username;
         });
@@ -1058,34 +962,145 @@ export default {
                   "/grouptags"
               )
               .set(this.groups.grouptags)
-          )
-          .then(response =>
-            // load personal channels and tags from group membership
-            db
-              .database()
-              .ref("portal_profiles/" + this.username.replace(".", "%2E"))
-              .once("value")
-              .then(group => {
-                let data = group.val();
-                this.groups = data.channels;
-                this.tags = data.tags ? data.tags : [];
-                this.domains = data.domains;
-                // assign default domain
-                if (this.$route.query.domain) {
-                  this.domain = this.$route.query.domain;
-                } else if (this.$cookies.get("mydomain")) {
-                  this.domain = this.$cookies.get("mydomain");
-                } else {
-                  this.domain = this.domains[0];
-                  console.log(
-                    "domain: ",
-                    this.domain,
-                    this.username,
-                    this.profile
-                  );
-                }
-              })
           );
+        // .then(response =>
+        // load personal channels and tags from group membership
+        db.database()
+          .ref("portal_profiles/" + this.username)
+          .once("value")
+          .then(group => {
+            let data = group.val();
+            this.groups = data.channels;
+            this.tags = data.tags ? data.tags : [];
+            this.domains = data.domains;
+            this.display_domains = data.display_domains;
+            // assign default domain
+            // if (this.$route.query.domain) {
+            //   this.domain = this.$route.query.domain;
+            // } else if (this.$cookies.get("mydomain")) {
+            //   this.domain = this.$cookies.get("mydomain");
+            // } else {
+            //   this.domain = this.domains[0];
+            //   console.log("domain: ", this.domain, this.username, this.profile);
+            // }
+          });
+        //);
+
+        /////////////////////////////// CUT
+
+        // get query parameter (use params for path)
+        //if (this.$route.params.service) {
+        this.service = this.$route.query.service || "holons";
+        this.domain = "all";
+
+        //}
+
+        //showServices cookie
+        this.showServices =
+          this.$cookies.get("showServices") === "true" ? true : false;
+        console.log("Intializing app..");
+        // let profilesRef = db.database().ref("portal_profiles");
+
+        // console.log("Loading profile..");
+        // this.users.forEach((user, index, arr) => {
+        // if (user.username === this.username) {
+        //     console.log("Loading user.." + user.username);
+        //     profilesRef
+        //       .child(user.username.replace(".", "%2E"))
+        //       .once("value", profile => {
+        //         let snapshot = profile.val();
+        //         this.profile = { ...user, ...snapshot };
+        //         this.activeUser = false;
+        //       });
+        //   }
+        // });
+
+        // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
+        //let channelsRef = db.database().ref("portal_channels");
+        //if (this.$cookies.get("username")) {
+        // let domainsRef = db
+        //   .database()
+        //   .ref(
+        //     "portal_profiles/" + this.username
+        //   );
+        // //console.log(this.domains, domainsRef)
+        // domainsRef
+        //   .once("value", profile => {
+        //     if (profile.exists()) {
+        //       this.domains = profile.val().domains;
+        //       // display_domains is an object with name and display_name
+        //       this.display_domains = profile.val().display_domains;
+
+        //       if (this.$route.query.domain) {
+        //         this.domain = this.$route.query.domain;
+        //       } else if (this.$cookies.get("mydomain")) {
+        //         this.domain = this.$cookies.get("mydomain");
+        //       } else {
+        //         //this.domain = this.domains[0]; // ISSUE WITH NON-DIGLIFE USER
+        //       }
+        //       console.log("Loading domains.." + this.domain);
+        //     }
+        //   })
+        //   .then(profile => {
+        //     console.log("Loading channels..");
+        //     let channelsRef = db.database().ref("portal_channels");
+        //     // porta_extensions contains any channel info not stored in Mattermost
+        //     //let extensionsRef = db.database().ref("portal_extensions");
+        //     channelsRef.on("child_added", channel => {
+        //       var data = channel.val();
+        //       // if (channel.val().display_name.charAt(0) !== "#") {
+        //       //     extensionsRef.child(channel.key).once("value", extension => {
+        //       // if (extension.exists()) {
+        //       //   data = _.merge(data, extension.val());
+        //       // }
+        //       if (this.domains.includes(this.domain)) {
+        //         //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
+        //         //(this.domain === "all" && this.domains.includes(this.domain))
+        //         this.channels.push(data);
+        //         //this.notes.sort(SortByTime);
+        //       }
+        //       //console.log(this.channels, this.domain);
+        //       //this.channels.push(channel.val());
+        //       // sort here due to asnyc promise
+        //       //this.channels.sort(SortByName);
+        //       //console.log(channel.key, data.name, extension.val());
+        //     });
+        //   });
+        //}
+
+        //console.log("This channel: ", this.channels);
+        // }
+        // });
+
+        // function SortByName(x, y) {
+        //   return x.display_name === y.display_name
+        //     ? 0
+        //     : x.display_name > y.display_name
+        //     ? 1
+        //     : -1;
+        // }
+
+        // console.log("Loading groups..");
+        // //if (this.$cookies.get("username")) {
+        //   let groupsRef = db
+        //     .database()
+        //     .ref(
+        //       "portal_profiles/" + this.username
+        //     );
+        //   groupsRef.on("child_added", group => {
+        //     //var data = group.val();
+        //     //console.log(data);
+
+        //     if (group.key === "channels") {
+        //       this.groups = group.val();
+        //     }
+        //   });
+        //}
+
+        // update cookies
+        this.$cookies.config("365d");
+
+        //////////////////////////////// CUT
 
         this.$nextTick(function() {
           this.activeUser = false;

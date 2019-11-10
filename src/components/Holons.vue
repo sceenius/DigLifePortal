@@ -131,7 +131,7 @@ export default {
 
       this.format = d3.format(",d");
       this.width = 932;
-      this.height = 1400;
+      this.height = 1000; // changed from 1400
       //this.height = this.width;
 
       this.pack = data =>

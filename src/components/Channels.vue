@@ -260,6 +260,7 @@ export default {
       status: "",
       channels: [],
       channel: "",
+      card: "",
       //domain: "",
       domains: [],
       channels2: [],
@@ -312,9 +313,9 @@ export default {
   created: function() {
     this.username = this.$cookies.get("username").replace(".", "%2E");
     // instant relaod does not refresh domain prop in time
-    if (this.domain === "") {
-      this.domain = this.$route.query.domain;
-    }
+    // if (this.domain === "") {
+    //   this.domain = this.$route.query.domain;
+    // }
 
     // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
     if (this.username) {
@@ -358,6 +359,7 @@ export default {
 
     // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
     let channelsRef = db.database().ref("portal_channels");
+    let extensionsRef = db.database().ref("portal_extensions");
     let domainsRef = db
       .database()
       .ref("portal_profiles/" + this.username + "/domains");
@@ -373,8 +375,14 @@ export default {
         // // porta_extensions contains any channel info not stored in Mattermost
         channelsRef.on("child_added", channel => {
           let data = channel.val();
-          //console.log(this.domain, this.domains);
-          //console.log(this.domains, data.team)
+
+          ///load extension data
+          extensionsRef.child(channel.key).once("value", extension => {
+            if (extension.exists()) {
+              data = _.merge(data, extension.val());
+            }
+          });
+
           if (
             this.domain === data.team ||
             this.domain === "all" // && this.domains.includes(data.team))
@@ -417,6 +425,22 @@ export default {
     //   return this.invalid === true ? "md-invalid" : "";
     // }
   },
+
+  ///////////////////////////////////////////////////////////////////////////////
+  //  WATCH - update route params
+  ///////////////////////////////////////////////////////////////////////////////
+
+  watch: {
+    "$route.query": {
+      handler(query) {
+        this.service = query.service;
+        this.domain = query.domain;
+        this.tag = query.tag;
+        this.card = query.channel;
+      }
+    }
+  },
+
   ///////////////////////////////////////////////////////////////////////////////
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
@@ -707,10 +731,22 @@ export default {
           var element = document.getElementById("theApp");
           element.src = "about:blank";
           element.style.display = "block";
-          window.open(
-            CHATURL + this.domain + "/channels/" + channel.name,
-            "theApp"
-          );
+
+          // window.open(
+          //   CHATURL + this.domain + "/channels/" + channel.name,
+          //   "theApp"
+          // );
+
+          // needs watch?
+          this.$router.push({
+            name: "Navbar",
+            query: {
+              domain: this.domain,
+              service: "channels",
+              channel: channel.name
+            }
+          });
+
           // };
           break;
         case "ask":

@@ -66,29 +66,29 @@
       :md-close-on-esc="false"
       :md-click-outside-to-close="false"
       :md-active.sync="activeUser"
-      style="max-width: 400px; max-height: 350px !important;"
+      style="overflow: hidden; max-width: 420px !important; max-height: 450px !important; background-image: url('https://ledger.diglife.coop/images/brand/portal_login.png');"
     >
-      <md-dialog-title style="color: #404040 !important;">Welcome to the Collective!</md-dialog-title>
-      <div style="padding: 0 25px ;">
-        Please use your Mattermost username to log into the portal. If you are not a member yet,
-        <a
-          href="https://diglife.com/join-us/"
-        >
-          <u>join us</u>!
-        </a>
+      <md-dialog-title style="color: #404040 !important;"></md-dialog-title>
+      <div style="padding: 170px 25px;">
         <br>
         <br>
         <md-field id="username">
-          <label>Username</label>
+          <label style="color: white !important; margin-left: 5px; ">Username</label>
           <md-input
+            style="padding-left: 5px; font-size: 24px; background: rgba(0,0,0,.2) !important; color: white !important;"
             v-model="username"
             @keyup.prevent.esc="onConfirm();"
             @keyup.enter="onConfirm();"
             required
           ></md-input>
-          <span class="md-helper-text">Enter your Mattermost username</span>
-          <span class="md-error">The username does not exist</span>
-          <md-icon>person</md-icon>
+          <span class="md-helper-text" style="color: white !important;">
+            Enter your Mattermost username or
+            <a
+              style="color: white !important; text-decoration: underline;"
+              href="https://diglife.com/activate-caas/"
+            >Join us</a>
+          </span>
+          <span class="md-error" style="color: white !important;">The username does not exist</span>
         </md-field>
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
@@ -335,29 +335,77 @@
     -->
     <div id="actions">
       <div id="inner">
-        <md-button title="Show Holonic Map" @click="sub('holons');" class="md-fab md-mini md-plain">
-          <md-icon>bubble_chart</md-icon>
-        </md-button>
+        <div v-if="card != ''">
+          <md-button
+            title="Open app in new window"
+            @click="sub('appLink');"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>fullscreen</md-icon>
+          </md-button>
+          <md-button
+            v-for="(menu, index) in channel.menu"
+            :key="index"
+            v-bind:title="menu.title"
+            @click="sub(menu.link);"
+            @contextmenu.prevent="editMenu(menu, index);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>{{ menu.icon }}</md-icon>
+          </md-button>
+          <md-button title="Add Menu Entry" @click="addMenu();" class="md-fab md-mini md-plain">
+            <md-icon>add</md-icon>
+          </md-button>
+        </div>
+        <div v-else>
+          <md-button
+            title="Show Holonic Map"
+            @click="sub('holons', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>bubble_chart</md-icon>
+          </md-button>
 
-        <md-button title="Show Network Map" @click="sub('skills');" class="md-fab md-mini md-plain">
-          <md-icon>scatter_plot</md-icon>
-        </md-button>
+          <md-button
+            title="Show Network Map"
+            @click="sub('skills', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>scatter_plot</md-icon>
+          </md-button>
 
-        <md-button title="Show Channels" @click="sub('channels');" class="md-fab md-mini md-plain">
-          <md-icon>forum</md-icon>
-        </md-button>
+          <md-button
+            title="Show Channels"
+            @click="sub('channels', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>forum</md-icon>
+          </md-button>
 
-        <md-button title="Show Calendar" @click="sub('calendar');" class="md-fab md-mini md-plain">
-          <md-icon>event</md-icon>
-        </md-button>
+          <md-button
+            title="Show Calendar"
+            @click="sub('calendar', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>event</md-icon>
+          </md-button>
 
-        <md-button title="Show Folders" @click="sub('folders');" class="md-fab md-mini md-plain">
-          <md-icon>folder</md-icon>
-        </md-button>
+          <md-button
+            title="Show Folders"
+            @click="sub('folders', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>folder</md-icon>
+          </md-button>
 
-        <md-button title="Show Notes" @click="sub('notes');" class="md-fab md-mini md-plain">
-          <md-icon>insert_drive_file</md-icon>
-        </md-button>
+          <md-button
+            title="Show Notes"
+            @click="sub('notes', domain);"
+            class="md-fab md-mini md-plain"
+          >
+            <md-icon>insert_drive_file</md-icon>
+          </md-button>
+        </div>
       </div>
     </div>
     <!--
@@ -409,27 +457,27 @@
 
         <md-divider style="margin: 5px;" class="md-inset"></md-divider>
         <md-list>
-          <md-list-item @click="sub('holons');">
+          <md-list-item @click="sub('holons', domain);">
             <md-icon>bubble_chart</md-icon>
             <span class="md-list-item-text">Holonic Map</span>
           </md-list-item>
-          <md-list-item @click="sub('skills');">
+          <md-list-item @click="sub('skills', domain);">
             <md-icon>scatter_plot</md-icon>
             <span class="md-list-item-text">Network Map</span>
           </md-list-item>
-          <md-list-item @click="sub('channels');">
+          <md-list-item @click="sub('channels', domain);">
             <md-icon>forum</md-icon>
             <span class="md-list-item-text">Channels</span>
           </md-list-item>
-          <md-list-item @click="sub('calendar');">
+          <md-list-item @click="sub('calendar', domain);">
             <md-icon>event</md-icon>
             <span class="md-list-item-text">Calendar</span>
           </md-list-item>
-          <md-list-item @click="sub('folders');">
+          <md-list-item @click="sub('folders', domain);">
             <md-icon>folder</md-icon>
             <span class="md-list-item-text">File Folders</span>
           </md-list-item>
-          <md-list-item @click="sub('notes');">
+          <md-list-item @click="sub('notes', domain);">
             <md-icon>insert_drive_file</md-icon>
             <span class="md-list-item-text">Notes</span>
           </md-list-item>
@@ -591,6 +639,7 @@ export default {
     members: [],
     total: "",
     channel: "",
+    card: "",
     invalid: true,
     tags: [],
     menus: [],
@@ -615,7 +664,15 @@ export default {
       this.activeUser = true;
     }
 
-    ///
+    //assign default domain but NO default service (it would show)
+    if (this.$route.query.domain) {
+      this.domain = this.$route.query.domain;
+    } else if (this.$cookies.get("mydomain")) {
+      this.domain = this.$cookies.get("mydomain");
+    } else {
+      this.$cookies.set("mydomain", "all");
+      this.domain = "all";
+    }
 
     console.log("Loading users..");
     let usersRef = db.database().ref("portal_users");
@@ -625,7 +682,6 @@ export default {
       data.diffTime = new Date().getTime();
       data.diffTime = (data.diffTime - data.create_at) / (1000 * 60 * 60 * 24);
       this.users.push(data);
-      //console.log(data);
     });
 
     console.log("Loading channels..");
@@ -634,24 +690,12 @@ export default {
       let data = channel.val();
       this.channels.push(data);
     });
-
-    ///
   },
 
   ///////////////////////////////////////////////////////////////////////////////
   //  COMPUTED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   computed: {
-    // domain: function() {
-    //   if (this.$route.params.domain) {
-    //     return this.$route.params.domain;
-    //   } else if (this.$cookies.get("mydomain")) {
-    //     return this.$cookies.get("mydomain");
-    //   } else {
-    //     return "diglife";
-    //   }
-    // },
-
     // compute v-bind:src for img
     avatarLink: function() {
       return (
@@ -688,12 +732,16 @@ export default {
   ///////////////////////////////////////////////////////////////////////////////
   beforeDestroy: function() {},
 
+  ///////////////////////////////////////////////////////////////////////////////
+  //  WATCH - update route params
+  ///////////////////////////////////////////////////////////////////////////////
   watch: {
     "$route.query": {
       handler(query) {
         this.service = query.service;
         this.domain = query.domain;
         this.tag = query.tag;
+        this.card = query.channel;
       }
     }
   },
@@ -702,10 +750,6 @@ export default {
   //  METHODS - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   methods: {
-    // goBack() {
-    //   window.history.length > 1 ? this.$router.go(-1) : this.$router.push("/");
-    // },
-
     openNote: function(note) {
       this.service = "Help";
       var element = document.getElementById("theApp");
@@ -837,7 +881,9 @@ export default {
     onConfirmAddMenu: function() {
       this.activeMenu = false;
       //console.log(this.channel.channel_id);
+
       this.channels.forEach((channel, index, arr) => {
+        console.log(channel.channel_id, this.channel.channel_id);
         if (channel.channel_id === this.channel.channel_id) {
           if (arr[index].menu === undefined) {
             arr[index].menu = [];
@@ -848,6 +894,7 @@ export default {
             link: this.menulink,
             icon: this.menuicon
           });
+
           // write entire menu to Firebase
           db.database()
             .ref("portal_extensions/" + this.channel.channel_id + "/menu")
@@ -1326,7 +1373,10 @@ export default {
           this.activeInfo = true;
           break;
         case "appLink":
-          window.open(this.channel.purpose.link, "_blank");
+          window.open(
+            CHATURL + this.domain + "/channels/" + this.card,
+            "_blank"
+          );
           break;
         case "dashboardLink":
           window.open(
@@ -1528,6 +1578,10 @@ export default {
 }
 .md-toolbar {
   background-color: #f47e7e !important;
+}
+
+.md-overlay {
+  background: rgba(0, 0, 0, 0.3) !important;
 }
 
 .md-toolbar-section-end .md-button {

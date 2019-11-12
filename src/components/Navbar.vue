@@ -240,7 +240,7 @@
         <md-dialog-actions style="padding: 25px 0;">
           <md-button
             v-if="mode == 'Edit'"
-            class="md-success md-raised"
+            class="md-success md-primary"
             @click="onConfirmDeleteMenu(menuid);"
             style="background: #fff; color: gray;"
           >Remove</md-button>
@@ -1026,8 +1026,7 @@ export default {
       });
 
       this.menus = this.menus.filter(
-        (channel, index, self) =>
-          index === self.findIndex(t => t.channel_id === channel.channel_id)
+        (menu, index, self) => index === self.findIndex(t => t.id === menu.id)
       );
 
       this.snack = "Menu entry successfully added.";

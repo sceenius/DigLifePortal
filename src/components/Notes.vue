@@ -440,6 +440,7 @@ export default {
             (data.tags &&
               data.tags.includes(this.domain) &&
               data.tags.includes(this.tag)) ||
+            (data.tags && data.tags.includes("all")) ||
             (data.tags && !this.tag && data.tags.includes(this.domain)) ||
             (data.tags &&
               !this.tag &&

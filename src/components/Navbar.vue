@@ -11,7 +11,7 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="user.diffTime < 31 && Math.random() > 0.6"
+      v-if="user.diffTime < 31 && Math.random() > 0.5"
       :md-duration="3000"
       :md-active.sync="showProfileReminder"
       md-persistent
@@ -24,6 +24,7 @@
           openNote('https://notepad.diglife.coop/s/B1PgFFi4E');
         "
       >Please read this</md-button>
+      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
     </md-snackbar>
 
     <md-snackbar
@@ -40,6 +41,7 @@
           activeSettings = true;
         "
       >Update it now</md-button>
+      <md-button class="md-primary" @click="showSnackBar = false;">Dismiss</md-button>
     </md-snackbar>
 
     <!--

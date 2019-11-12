@@ -64,7 +64,7 @@ new Vue({
           .update(this.users)
       );
 
-    // note that archived channels are not removed from Firebase and need to be purged from time to time
+    // note that archived channels are not removed from Firebase and need to be purged from time to time (delete them all!)
     // also note that special characters might corrupt the reutrning json file, so FB won't update
     console.log("Updating channels..");
     this.axios

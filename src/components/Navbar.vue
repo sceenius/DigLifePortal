@@ -11,8 +11,8 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="user.diffTime < 31 && Math.random() > 0.5"
-      :md-duration="4000"
+      v-if="user.diffTime < 31 && Math.random() > 0.6"
+      :md-duration="3000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
@@ -27,8 +27,8 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="user.diffTime > 31 && Math.random() > 0.8"
-      :md-duration="4000"
+      v-if="user.diffTime > 31 && Math.random() > 0.9"
+      :md-duration="3000"
       :md-active.sync="showProfileReminder"
       md-persistent
     >
@@ -839,19 +839,24 @@ export default {
     },
 
     showChannel: function(channels) {
-      return channels.filter(channel => {
-        return (
-          channel.purpose &&
-          channel.purpose.domain &&
-          channel.purpose.domain.includes(this.domain) &&
-          (!this.showServices ||
-            (this.showServices &&
-              this.groups &&
-              JSON.stringify(this.groups).includes(
-                channel.team + "/" + channel.name
-              )))
-        );
-      });
+      return channels
+        .filter(
+          (channel, index, self) =>
+            index === self.findIndex(t => t.channel_id === channel.channel_id)
+        )
+        .filter(channel => {
+          return (
+            channel.purpose &&
+            channel.purpose.domain &&
+            channel.purpose.domain.includes(this.domain) &&
+            (!this.showServices ||
+              (this.showServices &&
+                this.groups &&
+                JSON.stringify(this.groups).includes(
+                  channel.team + "/" + channel.name
+                )))
+          );
+        });
     },
 
     directMessage: function(member_id) {

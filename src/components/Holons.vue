@@ -19,7 +19,7 @@
 //import d3 from '../assets/d3';
 import * as d3 from "d3"; //all
 import db from "../firebase/init.js";
-import { BASEURL, CHATURL } from "../main.js";
+import { CHATURL } from "../main.js";
 
 export default {
   name: "Holons",

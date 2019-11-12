@@ -25,12 +25,10 @@ export default {
   name: "Holons",
   color: "",
   components: {},
-  props: ["domain"],
+  props: ["domain", "username", "profile", "channels"],
   data() {
     return {
-      username: "",
       service: "Holons",
-      channels: [],
       domains: [],
       display_domains: [],
       holons: [],
@@ -44,6 +42,7 @@ export default {
   //  ANIMATIONS - https://www.visualcinnamon.com/2015/05/gooey-effect.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log("Creating holons...");
     let utime = new Date().getTime();
     this.username = this.$cookies.get("username");
 

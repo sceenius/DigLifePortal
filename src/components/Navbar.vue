@@ -11,7 +11,7 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="profile.diffTime < 31 && Math.random() > 0.5"
+      v-if="user.diffTime < 31 && Math.random() > 0.5"
       :md-duration="4000"
       :md-active.sync="showProfileReminder"
       md-persistent
@@ -27,7 +27,7 @@
     </md-snackbar>
 
     <md-snackbar
-      v-if="profile.diffTime > 31 && Math.random() > 0.8"
+      v-if="user.diffTime > 31 && Math.random() > 0.8"
       :md-duration="4000"
       :md-active.sync="showProfileReminder"
       md-persistent
@@ -263,7 +263,7 @@
         TOOLBAR - https://vuematerial.io/components/toolbar/
       ----------------------------------------------------------------------
     -->
-    <md-toolbar :class="['md-primary', 'md-toolbar']" v-if="profile">
+    <md-toolbar :class="['md-primary', 'md-toolbar']" v-if="user">
       <md-button class="md-icon-button" @click="showNavigation = true;">
         <md-icon>menu</md-icon>
       </md-button>
@@ -439,11 +439,11 @@
           <md-avatar>
             <img v-bind:src="avatarLink">
           </md-avatar>
-          <div v-if="profile" class="md-list-item-text">
+          <div v-if="user" class="md-list-item-text">
             <p
               style="font-weight: bold; font-size: 1.4em"
-            >{{ profile.first_name }} {{ profile.last_name }}</p>
-            <p style="color: #aaa;">{{ profile.position }}</p>
+            >{{ user.first_name }} {{ user.last_name }}</p>
+            <p style="color: #aaa;">{{ user.position }}</p>
           </div>
           <md-button
             title="Open Settings"
@@ -486,7 +486,7 @@
         <md-divider style="margin: 5px;" class="md-inset"></md-divider>
 
         <md-list-item
-          v-for="(channel, index) in showChannel(channels)"
+          v-for="(channel) in showChannel(channels)"
           :key="channel.id"
           @click="openService(channel);"
         >
@@ -565,10 +565,22 @@
       <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
       <Particles v-if="!service"/>
 
-      <Channels v-if="service == 'channels'" :domain="domain"/>
+      <Channels
+        v-if="service == 'channels'"
+        :domain="domain"
+        :username="username"
+        :profile="profile"
+        :channels="channels"
+      />
       <Notes v-if="service == 'notes'" :domain="domain"/>
       <Meetings v-if="service == 'meetings'" :domain="domain"/>
-      <Holons v-if="service == 'holons'" :domain="domain"/>
+      <Holons
+        v-if="service == 'holons'"
+        :domain="domain"
+        :username="username"
+        :profile="profile"
+        :channels="channels"
+      />
       <Skills v-if="service == 'skills'" :domain="domain"/>
 
       <iframe
@@ -628,12 +640,16 @@ export default {
     activeMenu: false,
     service: "",
     username: "",
+
     snack: "",
     users: [],
+    user: "", // MM user
     domains: [],
     display_domains: [],
+    notes: [],
     domain: "",
     channels: [],
+    profiles: [],
     profile: "",
     groups: [],
     members: [],
@@ -655,6 +671,7 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
+    console.log("Creating navigation...");
     // domain coming from router
     // username coming from cookie
     // not using cookie due to load delays
@@ -684,11 +701,55 @@ export default {
       this.users.push(data);
     });
 
-    console.log("Loading channels..");
+    console.log("Loading profiles..");
+    let profilesRef = db.database().ref("portal_profiles");
+    profilesRef.on("child_added", profile => {
+      let data = profile.val();
+      data.username = profile.key;
+      this.profiles.push(data);
+    });
+
+    console.log("Loading notes..");
+    let notesRef = db.database().ref("portal_notes");
+    notesRef.on("child_added", note => {
+      let data = note.val();
+      this.notes.push(data);
+    });
+
+    console.log("Loading channels and extensions..");
     let channelsRef = db.database().ref("portal_channels");
+    let extensionsRef = db.database().ref("portal_extensions");
     channelsRef.on("child_added", channel => {
       let data = channel.val();
+
+      ///load extension data
+      extensionsRef.child(channel.key).once("value", extension => {
+        if (extension.exists()) {
+          data = _.merge(data, extension.val());
+        }
+      });
+
       this.channels.push(data);
+    });
+
+    // channelsRef.on("child_changed", channel => {
+    //   let data = channel.val();
+    //   this.channels.forEach(function(element, index, arr) {
+    //     if (element.channel_id === data.channel_id) {
+    //       // lodash function to merge objects recursively
+    //       arr[index] = _.merge(arr[index], data);
+    //     }
+    //   });
+    // });
+
+    channelsRef.on("child_removed", channel => {
+      let data = channel.val();
+      this.channels.forEach(function(element, index, arr) {
+        if (element.channel_id === data.channel_id) {
+          // lodash function to merge objects recursively
+          arr.splice(index, 1);
+        }
+      });
     });
   },
 
@@ -698,9 +759,7 @@ export default {
   computed: {
     // compute v-bind:src for img
     avatarLink: function() {
-      return (
-        BASEURL + "images/avatars/avatar_" + this.profile.username + ".png"
-      );
+      return BASEURL + "images/avatars/avatar_" + this.username + ".png";
     },
     // compute v-bind:src for im54321`
     logoLink: function() {
@@ -801,7 +860,7 @@ export default {
         .get(
           BASEURL +
             "webhooks/portal_direct_message.php?file=base-diglife-coop.php&user_id=" +
-            this.profile.id +
+            this.user.id +
             "&member_id=" +
             member_id
         )
@@ -837,7 +896,7 @@ export default {
       this.activeAccess = false;
 
       var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
-      var err = slack.send({
+      slack.send({
         text:
           "##### :closed_lock_with_key: Request for Access\n@" +
           this.username +
@@ -960,76 +1019,86 @@ export default {
         this.$cookies.set("username", this.username);
 
         // load personal profile from users (loading at created event)
-        this.profile = this.users.find(item => {
+        console.log("Loading user for " + this.username + "..");
+        this.user = this.users.find(item => {
           return item.username === this.username;
         });
 
-        // update theme for user
-        this.axios.get(
-          BASEURL +
-            "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
-            this.username
+        console.log("Loading profile for " + this.username + "..");
+        this.profile = this.profiles.find(item => {
+          if (item.username === this.username) {
+            this.groups = item.channels;
+            this.tags = item.tags ? item.tags : [];
+            this.domains = item.domains;
+            this.grouptags = item.grouptags;
+            this.display_domains = item.display_domains;
+            return true;
+          } else return false;
+        });
+
+        this.channels = this.channels.filter(
+          (channel, index, self) =>
+            index === self.findIndex(t => t.channel_id === channel.channel_id)
         );
 
-        //update avatar
-        this.axios.get(
-          BASEURL +
-            "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
-            this.$cookies.get("username")
-        );
+        // // update theme for user
+        // this.axios.get(
+        //   BASEURL +
+        //     "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
+        //     this.username
+        // );
 
-        //update groups
-        this.axios
-          .get(
-            BASEURL +
-              "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-              this.username
-          )
-          .then(response => (this.groups = response.data))
-          //.then(response => console.log(this.channels))
-          .then(response =>
-            db
-              .database()
-              .ref(
-                "portal_profiles/" +
-                  this.username.replace(".", "%2E") +
-                  "/channels"
-              )
-              // update channels and grouptags for this user
-              // note: SET  WILL  overwrite other data of this user profile
-              .set(this.groups.channels)
-          )
-          .then(response =>
-            db
-              .database()
-              .ref(
-                "portal_profiles/" +
-                  this.username.replace(".", "%2E") +
-                  "/grouptags"
-              )
-              .set(this.groups.grouptags)
-          );
+        // //update avatar
+        // this.axios.get(
+        //   BASEURL +
+        //     "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
+        //     this.$cookies.get("username")
+        // );
+
+        // //update groups
+        // this.axios
+        //   .get(
+        //     BASEURL +
+        //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
+        //       this.username
+        //   )
+        //   .then(response => (this.groups = response.data))
+        //   //.then(response => console.log(this.channels))
+        //   .then(response =>
+        //     db
+        //       .database()
+        //       .ref(
+        //         "portal_profiles/" +
+        //           this.username.replace(".", "%2E") +
+        //           "/channels"
+        //       )
+        //       // update channels and grouptags for this user
+        //       // note: SET  WILL  overwrite other data of this user profile
+        //       .set(this.groups.channels)
+        //   )
+        //   .then(response =>
+        //     db
+        //       .database()
+        //       .ref(
+        //         "portal_profiles/" +
+        //           this.username.replace(".", "%2E") +
+        //           "/grouptags"
+        //       )
+        //       .set(this.groups.grouptags)
+        //   );
         // .then(response =>
         // load personal channels and tags from group membership
-        db.database()
-          .ref("portal_profiles/" + this.username)
-          .once("value")
-          .then(group => {
-            let data = group.val();
-            this.groups = data.channels;
-            this.tags = data.tags ? data.tags : [];
-            this.domains = data.domains;
-            this.display_domains = data.display_domains;
-            //assign default domain
-            if (this.$route.query.domain) {
-              this.domain = this.$route.query.domain;
-            } else if (this.$cookies.get("mydomain")) {
-              this.domain = this.$cookies.get("mydomain");
-            } else {
-              this.$cookies.set("mydomain", "all");
-              this.domain = "all";
-            }
-          });
+        // db.database()
+        //   .ref("portal_profiles/" + this.username)
+        //   .once("value")
+        //   .then(group => {
+        //     let data = group.val();
+        //     this.groups = data.channels;
+        //     this.tags = data.tags ? data.tags : [];
+        //     this.domains = data.domains;
+        //     this.display_domains = data.display_domains;
+
+        //   });
         //);
 
         /////////////////////////////// CUT
@@ -1037,6 +1106,16 @@ export default {
         // get query parameter (use params for path)
         //if (this.$route.params.service) {
         this.service = this.$route.query.service || "holons";
+
+        //assign default domain
+        if (this.$route.query.domain) {
+          this.domain = this.$route.query.domain;
+        } else if (this.$cookies.get("mydomain")) {
+          this.domain = this.$cookies.get("mydomain");
+        } else {
+          this.$cookies.set("mydomain", "all");
+          this.domain = "all";
+        }
 
         //}
 
@@ -1161,6 +1240,7 @@ export default {
       // Logout
       this.service = "";
       this.domain = "";
+      this.user = "";
       this.profile = "";
       this.username = "";
       //this.$cookies.remove("username");
@@ -1196,7 +1276,7 @@ export default {
       if (menu === "Mattermost") {
         menu = "channels";
       }
-
+      //console.log(menu,dom)
       this.service = ""; // triggers an update
       this.$cookies.set("mydomain", dom);
 

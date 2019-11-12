@@ -45,20 +45,14 @@ new Vue({
     users: [],
     channels: [],
     meetings: [],
-    groups: ""
+    groups: "",
+    username: ""
   }),
   created: function() {
-    // this.axios
-    //   .get(BASEURL + "webhooks/portal_meetings.php?file=base-diglife-coop.php")
-    //   .then(response => (this.meetings = response.data.meetings))
-    //   //.then(response => console.log(this.users))
-    //   .then(response =>
-    //     db
-    //       .database()
-    //       .ref("portal_meetings")
-    //       .update(this.meetings)
-    //   );
+    // retrieve username for Firebase add .replace(".", "%2E");
+    this.username = this.$cookies.get("username");
 
+    console.log("Updating users..");
     this.axios
       .get(BASEURL + "webhooks/portal_users2.php?file=base-diglife-coop.php")
       .then(response => (this.users = response.data))
@@ -72,6 +66,7 @@ new Vue({
 
     // note that archived channels are not removed from Firebase and need to be purged from time to time
     // also note that special characters might corrupt the reutrning json file, so FB won't update
+    console.log("Updating channels..");
     this.axios
       .get(
         BASEURL +
@@ -88,7 +83,10 @@ new Vue({
           .update(this.channels)
       );
 
-    if (this.$cookies.get("username")) {
+    if (this.username) {
+      // first time this is not called
+      console.log("Updating profile..");
+
       this.axios
         .get(
           BASEURL +
@@ -100,32 +98,37 @@ new Vue({
         .then(response =>
           db
             .database()
-            .ref(
-              "portal_profiles/" +
-                this.$cookies.get("username").replace(".", "%2E")
-            )
+            .ref("portal_profiles/" + this.username.replace(".", "%2E"))
             .update(this.groups)
         );
 
+      console.log("Updating avatar..");
       this.axios.get(
         BASEURL +
           "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
-          this.$cookies.get("username")
+          this.username
+      );
+      console.log("Updating theme..");
+      // update theme for user
+      this.axios.get(
+        BASEURL +
+          "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
+          this.username
       );
     }
 
-    this.axios
-      .get(
-        BASEURL +
-          "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=ledgerbot"
-      )
-      .then(response => (this.groups = response.data))
-      //.then(response => console.log(this.groups))
-      .then(response =>
-        db
-          .database()
-          .ref("portal_profiles/ledgerbot")
-          .update(this.groups)
-      );
+    // this.axios
+    //   .get(
+    //     BASEURL +
+    //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=ledgerbot"
+    //   )
+    //   .then(response => (this.groups = response.data))
+    //   //.then(response => console.log(this.groups))
+    //   .then(response =>
+    //     db
+    //       .database()
+    //       .ref("portal_profiles/ledgerbot")
+    //       .update(this.groups)
+    //   );
   }
 }).$mount("#app");

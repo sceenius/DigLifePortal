@@ -243,14 +243,14 @@ import db from "../firebase/init.js";
 export default {
   name: "Tags",
   components: { VueTagsInput, VueMarkdown },
-  props: ["domain"],
+  props: ["domain", "username", "profile", "channels"],
   data() {
     return {
       service: "",
       tag: "",
       mode: "", // Edit or Create mode for dialog
       script: "", // Edit or Create script for execution
-      showServices: false,
+      //showServices: false,
       showCardNavigation: false,
       activeDialogchannel: false,
       activeAccess: false,
@@ -258,15 +258,10 @@ export default {
       snack: "",
       result: "",
       status: "",
-      channels: [],
       channel: "",
       card: "",
-      //domain: "",
-      domains: [],
-      channels2: [],
-      groups: [],
       tags: [],
-      favorites: [],
+      //favorites: [],
       autocompleteItems: [
         { text: "Accessibility", frequency: 5 },
         { text: "Accounting", frequency: 2 },
@@ -284,7 +279,7 @@ export default {
       icon: "",
       formtags: [],
       formindex: "",
-      username: "",
+      //username: "",
       validation: [
         {
           type: "min-length",
@@ -311,109 +306,17 @@ export default {
   //  CREATED - https://vuejs.org/v2/guide/instance.html
   ///////////////////////////////////////////////////////////////////////////////
   created: function() {
-    this.username = this.$cookies.get("username").replace(".", "%2E");
-    // instant relaod does not refresh domain prop in time
-    // if (this.domain === "") {
-    //   this.domain = this.$route.query.domain;
-    // }
+    console.log("Building channels...");
 
-    // LOAD USER GROUPS AND TAGS /////////////////////////////////////////////
-    if (this.username) {
-      let groupsRef = db.database().ref("portal_profiles/" + this.username);
-      groupsRef.on("child_added", group => {
-        var data = group.val();
-        if (group.key === "channels") {
-          this.groups = data;
-        } else if (group.key === "tags") {
-          for (const key of data) {
-            this.tags.push(key.text);
-          }
-          // convert tags to flat array
-          // this.tags =
-          //   //fails with 1 data object
-          //   data.reduce((accumulator, currentValue) => {
-          //     return [...accumulator, currentValue.text];
-          //   });
-        }
-      });
+    this.channels.sort(SortByName);
+
+    function SortByName(x, y) {
+      return x.display_name === y.display_name
+        ? 0
+        : x.display_name > y.display_name
+        ? 1
+        : -1;
     }
-
-    // LOAD USER PREFERENCES ///////////////////////////////////////////////////
-    let prefsRef = db.database().ref("portal_profiles/" + this.username);
-
-    prefsRef.on("child_added", pref => {
-      if (pref.key === "prefs") {
-        this.showServices = pref.val().showServices;
-      } else if (pref.key === "favorites") {
-        this.favorites = pref.val();
-      }
-    });
-
-    prefsRef.on("child_changed", pref => {
-      if (pref.key === "prefs") {
-        this.showServices = pref.val().showServices;
-      } else if (pref.key === "favorites") {
-        this.favorites = pref.val();
-      }
-    });
-
-    // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
-    let channelsRef = db.database().ref("portal_channels");
-    let extensionsRef = db.database().ref("portal_extensions");
-    let domainsRef = db
-      .database()
-      .ref("portal_profiles/" + this.username + "/domains");
-
-    //console.log(this.domains, domainsRef)
-    domainsRef
-      .once("value", profile => {
-        if (profile.exists()) {
-          this.domains = profile.val();
-        }
-      })
-      .then(profile => {
-        // // porta_extensions contains any channel info not stored in Mattermost
-        channelsRef.on("child_added", channel => {
-          let data = channel.val();
-
-          ///load extension data
-          extensionsRef.child(channel.key).once("value", extension => {
-            if (extension.exists()) {
-              data = _.merge(data, extension.val());
-            }
-          });
-
-          if (
-            this.domain === data.team ||
-            this.domain === "all" // && this.domains.includes(data.team))
-          ) {
-            this.channels.push(data);
-
-            //this.channels.sort(SortByName);  WARNING: SORT CORRUPTS DATA
-            // var data = _.sortByOrder(array_of_objects, ['type','name'], [true, 'desc']);
-          }
-        });
-      });
-
-    channelsRef.on("child_changed", channel => {
-      let data = channel.val();
-      this.channels.forEach(function(element, index, arr) {
-        if (element.channel_id === data.channel_id) {
-          // lodash function to merge objects recursively
-          arr[index] = _.merge(arr[index], data);
-        }
-      });
-    });
-
-    channelsRef.on("child_removed", channel => {
-      let data = channel.val();
-      this.channels.forEach(function(element, index, arr) {
-        if (element.channel_id === data.channel_id) {
-          // lodash function to merge objects recursively
-          arr.splice(index, 1);
-        }
-      });
-    });
 
     //this.$forceUpdate();
   },
@@ -447,37 +350,44 @@ export default {
   methods: {
     // is member
     members: function(channels) {
-      return channels.filter(channel => {
-        return (
-          (this.showServices &&
-            JSON.stringify(this.groups).includes(
-              channel.team + "/" + channel.name
-            )) ||
-          !this.showServices
-        );
-      });
+      return channels
+        .filter(
+          (channel, index, self) =>
+            index === self.findIndex(t => t.channel_id === channel.channel_id)
+        )
+        .filter(channel => {
+          return (
+            ((channel.team === this.domain || this.domain === "all") &&
+              this.profile.prefs.showServices &&
+              JSON.stringify(this.profile.channels).includes(
+                channel.team + "/" + channel.name
+              )) ||
+            ((channel.team === this.domain || this.domain === "all") &&
+              !this.profile.prefs.showServices)
+          );
+        });
     },
 
     switchFavorite: function(id) {
-      if (this.favorites.includes(id)) {
-        for (var i = 0; i < this.favorites.length; i++) {
-          if (this.favorites[i] === id) {
-            this.favorites.splice(i, 1);
+      if (this.profile.favorites.includes(id)) {
+        for (var i = 0; i < this.profile.favorites.length; i++) {
+          if (this.profile.favorites[i] === id) {
+            this.profile.favorites.splice(i, 1);
           }
         }
       } else {
-        this.favorites.push(id);
+        this.profile.favorites.push(id);
       }
       let profileRef = db.database().ref("portal_profiles/" + this.username);
-      profileRef.update({ favorites: this.favorites });
+      profileRef.update({ favorites: this.profile.favorites });
     },
 
     isFavorite: function(id) {
-      return this.favorites.includes(id);
+      return this.profile.favorites.includes(id);
     },
 
     isMember: function(channel) {
-      return JSON.stringify(this.groups).includes(
+      return JSON.stringify(this.profile.channels).includes(
         channel.team + "/" + channel.name
       );
     },
@@ -717,7 +627,7 @@ export default {
             )
             .then(response => (this.result = response.data))
             .then(response =>
-              this.groups.push(channel.team + "/" + channel.name)
+              this.profile.channels.push(channel.team + "/" + channel.name)
             )
             .then(response =>
               channel.members.push(this.$cookies.get("username"))
@@ -782,8 +692,10 @@ export default {
             )
             .then(response => (this.result = response.data))
             .then(response =>
-              this.groups.splice(
-                this.groups.indexOf(channel.team + "/" + channel.name),
+              this.profile.channels.splice(
+                this.profile.channels.indexOf(
+                  channel.team + "/" + channel.name
+                ),
                 1
               )
             )

@@ -235,7 +235,15 @@
           <span class="md-error">This field cannot be blank</span>
         </md-field>
 
+        <md-switch v-model="menutab" value="true">Open this link inside frame?</md-switch>
+
         <md-dialog-actions style="padding: 25px 0;">
+          <md-button
+            v-if="mode == 'Edit'"
+            class="md-success md-raised"
+            @click="onConfirmDeleteMenu(menuid);"
+            style="background: #fff; color: gray;"
+          >Remove</md-button>
           <md-button class="md-success md-raised" @click="activeMenu = false;">Cancel</md-button>
           <md-button
             v-if="mode == 'Add'"
@@ -246,14 +254,7 @@
           <md-button
             v-if="mode == 'Edit'"
             class="md-success md-raised"
-            @click="onConfirmDeleteMenu(menuindex);"
-            sty
-            le="background: #0DC9C9; color: white;"
-          >Remove</md-button>
-          <md-button
-            v-if="mode == 'Edit'"
-            class="md-success md-raised"
-            @click="onConfirmEditMenu(menuindex);"
+            @click="onConfirmEditMenu(menuid);"
             style="background: #0DC9C9; color: white;"
           >Save</md-button>
         </md-dialog-actions>
@@ -487,6 +488,23 @@
 
         <md-divider style="margin: 5px;" class="md-inset"></md-divider>
 
+        <md-list>
+          <md-list-item v-for="(menu) in menus" :key="menu.id" @click="openMenu(menu);">
+            <md-icon>{{ menu.icon }}</md-icon>
+            <span class="md-list-item-text">{{ menu.title }}</span>
+            <md-button class="md-icon-button md-list-action" @click.stop="editMenu(menu);">
+              <md-icon>edit</md-icon>
+            </md-button>
+          </md-list-item>
+
+          <md-list-item @click="addMenu()">
+            <md-icon>add_circle</md-icon>
+            <span class="md-list-item-text">Add Menu Item</span>
+          </md-list-item>
+        </md-list>
+
+        <md-divider style="margin: 5px;" class="md-inset"></md-divider>
+
         <md-list-item
           v-for="(channel) in showChannel(channels)"
           :key="channel.id"
@@ -655,6 +673,7 @@ export default {
     profile: "",
     groups: [],
     members: [],
+    menus: [],
     total: "",
     channel: "",
     card: "",
@@ -662,10 +681,12 @@ export default {
     tags: [],
     menus: [],
     mode: "",
+    menuid: "",
     menutitle: "",
     menulink: "",
     menuicon: "",
     menuindex: "",
+    menutab: true,
     foundUser: false
   }),
 
@@ -716,6 +737,13 @@ export default {
     notesRef.on("child_added", note => {
       let data = note.val();
       this.notes.push(data);
+    });
+
+    console.log("Loading menus..");
+    let menusRef = db.database().ref("portal_menus");
+    menusRef.on("child_added", menu => {
+      let data = menu.val();
+      this.menus.push(data);
     });
 
     console.log("Loading channels and extensions..");
@@ -927,18 +955,44 @@ export default {
       this.showSnackBar = true;
     },
 
-    editMenu: function(menu, index) {
+    openMenu: function(menu, index) {
+      this.showNavigation = false;
+      let timezone = Moment.tz.guess();
+
+      if (menu.tab) {
+        this.service = menu.title;
+        var element = document.getElementById("theApp");
+        element.src = "about:blank";
+        element.style.display = "block";
+        window.open(menu.link.replace("%timezone%", timezone), "theApp");
+      } else {
+        window.open(menu.link.replace("%timezone%", timezone), "_blank");
+      }
+    },
+
+    editMenu: function(menu) {
+      this.showNavigation = false;
+      this.menuid = menu.id;
       this.menutitle = menu.title;
       this.menulink = menu.link;
+      this.menutab = menu.tab;
       this.menuicon = menu.icon;
-      this.menuindex = index;
       this.mode = "Edit";
       this.activeMenu = true;
     },
 
+    deleteMenu: function(menu) {
+      this.mode = "Delete";
+      this.snack = "Menu entry successfully deleted.";
+      this.showSnackBar = true;
+    },
+
     addMenu: function() {
+      this.showNavigation = false;
+      this.menuid = "";
       this.menutitle = "";
       this.menulink = "";
+      this.menutab = "";
       this.menuicon = "";
       this.mode = "Add";
       this.activeMenu = true;
@@ -946,63 +1000,58 @@ export default {
 
     onConfirmAddMenu: function() {
       this.activeMenu = false;
-      //console.log(this.channel.channel_id);
 
-      this.channels.forEach((channel, index, arr) => {
-        console.log(channel.channel_id, this.channel.channel_id);
-        if (channel.channel_id === this.channel.channel_id) {
-          if (arr[index].menu === undefined) {
-            arr[index].menu = [];
-          }
-          // push new menu entry to channels
-          arr[index].menu.push({
-            title: this.menutitle,
-            link: this.menulink,
-            icon: this.menuicon
-          });
+      // write entire menu to Firebase
+      const menuentry = db
+        .database()
+        .ref("portal_menus/")
+        .push({
+          domain: this.domain,
+          title: this.menutitle,
+          link: this.menulink,
+          icon: this.menuicon,
+          tab: this.menutab
+        });
 
-          // write entire menu to Firebase
-          db.database()
-            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
-            .set(arr[index].menu);
+      menuentry.update({ id: menuentry.key });
 
-          this.snack = "Menu entry successfully added.";
-          this.showSnackBar = true;
-          window.open(this.menulink, "theApp");
-        }
+      // push new menu entry to channels
+      this.menus.push({
+        domain: this.domain,
+        title: this.menutitle,
+        link: this.menulink,
+        icon: this.menuicon,
+        tab: this.menutab,
+        id: menuentry.key
       });
-    },
 
-    onConfirmDeleteMenu: function(menuindex) {
-      this.activeMenu = false;
-      this.channels.forEach((channel, index, arr) => {
-        if (channel.channel_id === this.channel.channel_id) {
-          arr[index].menu.splice(menuindex, 1);
-          // write entire menu to Firebase
-          db.database()
-            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
-            .set(arr[index].menu);
-        }
-      });
-      this.snack = "Menu entry successfully removed.";
+      this.menus = this.menus.filter(
+        (channel, index, self) =>
+          index === self.findIndex(t => t.channel_id === channel.channel_id)
+      );
+
+      this.snack = "Menu entry successfully added.";
       this.showSnackBar = true;
     },
 
-    onConfirmEditMenu: function(menuindex) {
+    onConfirmEditMenu: function(menuid) {
       this.activeMenu = false;
-      //console.log(this.channel.channel_id);
-      this.channels.forEach((channel, index, arr) => {
-        if (channel.channel_id === this.channel.channel_id) {
-          // push new menu entry to channels
-          arr[index].menu[menuindex] = {
+      console.log(menuid);
+      this.menus.forEach((menu, index, arr) => {
+        if (menu.id === menuid) {
+          // update menu entry
+          arr[index] = {
+            id: this.menuid,
+            domain: this.domain,
             title: this.menutitle,
             link: this.menulink,
-            icon: this.menuicon
+            icon: this.menuicon,
+            tab: this.menutab
           };
           // write entire menu to Firebase
           db.database()
-            .ref("portal_extensions/" + this.channel.channel_id + "/menu")
-            .update(arr[index].menu);
+            .ref("portal_menus/" + menuid)
+            .update(arr[index]);
 
           this.snack = "Menu entry successfully updated.";
           this.showSnackBar = true;
@@ -1010,6 +1059,23 @@ export default {
         }
       });
     },
+
+    onConfirmDeleteMenu: function(menuid) {
+      this.activeMenu = false;
+      confirm("Are you sure you want to delete this menu entry?");
+      this.menus.forEach((menu, index, arr) => {
+        if (menu.id === menuid) {
+          this.menus.splice(index, 1);
+          // write entire menu to Firebase
+          db.database()
+            .ref("portal_menus/" + menuid)
+            .remove();
+        }
+      });
+      this.snack = "Menu entry successfully removed.";
+      this.showSnackBar = true;
+    },
+
     onConfirm: function() {
       if (
         !this.username ||
@@ -1048,70 +1114,6 @@ export default {
             index === self.findIndex(t => t.channel_id === channel.channel_id)
         );
 
-        // // update theme for user
-        // this.axios.get(
-        //   BASEURL +
-        //     "webhooks/portal_prefs.php?file=base-diglife-coop.php&username=" +
-        //     this.username
-        // );
-
-        // //update avatar
-        // this.axios.get(
-        //   BASEURL +
-        //     "webhooks/portal_avatar.php?file=base-diglife-coop.php&username=" +
-        //     this.$cookies.get("username")
-        // );
-
-        // //update groups
-        // this.axios
-        //   .get(
-        //     BASEURL +
-        //       "webhooks/portal_groups2.php?file=base-diglife-coop.php&username=" +
-        //       this.username
-        //   )
-        //   .then(response => (this.groups = response.data))
-        //   //.then(response => console.log(this.channels))
-        //   .then(response =>
-        //     db
-        //       .database()
-        //       .ref(
-        //         "portal_profiles/" +
-        //           this.username.replace(".", "%2E") +
-        //           "/channels"
-        //       )
-        //       // update channels and grouptags for this user
-        //       // note: SET  WILL  overwrite other data of this user profile
-        //       .set(this.groups.channels)
-        //   )
-        //   .then(response =>
-        //     db
-        //       .database()
-        //       .ref(
-        //         "portal_profiles/" +
-        //           this.username.replace(".", "%2E") +
-        //           "/grouptags"
-        //       )
-        //       .set(this.groups.grouptags)
-        //   );
-        // .then(response =>
-        // load personal channels and tags from group membership
-        // db.database()
-        //   .ref("portal_profiles/" + this.username)
-        //   .once("value")
-        //   .then(group => {
-        //     let data = group.val();
-        //     this.groups = data.channels;
-        //     this.tags = data.tags ? data.tags : [];
-        //     this.domains = data.domains;
-        //     this.display_domains = data.display_domains;
-
-        //   });
-        //);
-
-        /////////////////////////////// CUT
-
-        // get query parameter (use params for path)
-        //if (this.$route.params.service) {
         this.service = this.$route.query.service || "holons";
 
         //assign default domain
@@ -1124,114 +1126,12 @@ export default {
           this.domain = "all";
         }
 
-        //}
-
         //showServices cookie
         this.showServices =
           this.$cookies.get("showServices") === "true" ? true : false;
 
-        // let profilesRef = db.database().ref("portal_profiles");
-
-        // console.log("Loading profile..");
-        // this.users.forEach((user, index, arr) => {
-        // if (user.username === this.username) {
-        //     console.log("Loading user.." + user.username);
-        //     profilesRef
-        //       .child(user.username.replace(".", "%2E"))
-        //       .once("value", profile => {
-        //         let snapshot = profile.val();
-        //         this.profile = { ...user, ...snapshot };
-        //         this.activeUser = false;
-        //       });
-        //   }
-        // });
-
-        // LOAD DOMAINS AND CHANNELS /////////////////////////////////////////////
-        //let channelsRef = db.database().ref("portal_channels");
-        //if (this.$cookies.get("username")) {
-        // let domainsRef = db
-        //   .database()
-        //   .ref(
-        //     "portal_profiles/" + this.username
-        //   );
-        // //console.log(this.domains, domainsRef)
-        // domainsRef
-        //   .once("value", profile => {
-        //     if (profile.exists()) {
-        //       this.domains = profile.val().domains;
-        //       // display_domains is an object with name and display_name
-        //       this.display_domains = profile.val().display_domains;
-
-        //       if (this.$route.query.domain) {
-        //         this.domain = this.$route.query.domain;
-        //       } else if (this.$cookies.get("mydomain")) {
-        //         this.domain = this.$cookies.get("mydomain");
-        //       } else {
-        //         //this.domain = this.domains[0]; // ISSUE WITH NON-DIGLIFE USER
-        //       }
-        //       console.log("Loading domains.." + this.domain);
-        //     }
-        //   })
-        //   .then(profile => {
-        //     console.log("Loading channels..");
-        //     let channelsRef = db.database().ref("portal_channels");
-        //     // porta_extensions contains any channel info not stored in Mattermost
-        //     //let extensionsRef = db.database().ref("portal_extensions");
-        //     channelsRef.on("child_added", channel => {
-        //       var data = channel.val();
-        //       // if (channel.val().display_name.charAt(0) !== "#") {
-        //       //     extensionsRef.child(channel.key).once("value", extension => {
-        //       // if (extension.exists()) {
-        //       //   data = _.merge(data, extension.val());
-        //       // }
-        //       if (this.domains.includes(this.domain)) {
-        //         //(data.tags && this.domain === "all" && this.domains.filter(value => data.tags.includes(value)))
-        //         //(this.domain === "all" && this.domains.includes(this.domain))
-        //         this.channels.push(data);
-        //         //this.notes.sort(SortByTime);
-        //       }
-        //       //console.log(this.channels, this.domain);
-        //       //this.channels.push(channel.val());
-        //       // sort here due to asnyc promise
-        //       //this.channels.sort(SortByName);
-        //       //console.log(channel.key, data.name, extension.val());
-        //     });
-        //   });
-        //}
-
-        //console.log("This channel: ", this.channels);
-        // }
-        // });
-
-        // function SortByName(x, y) {
-        //   return x.display_name === y.display_name
-        //     ? 0
-        //     : x.display_name > y.display_name
-        //     ? 1
-        //     : -1;
-        // }
-
-        // console.log("Loading groups..");
-        // //if (this.$cookies.get("username")) {
-        //   let groupsRef = db
-        //     .database()
-        //     .ref(
-        //       "portal_profiles/" + this.username
-        //     );
-        //   groupsRef.on("child_added", group => {
-        //     //var data = group.val();
-        //     //console.log(data);
-
-        //     if (group.key === "channels") {
-        //       this.groups = group.val();
-        //     }
-        //   });
-        //}
-
         // update cookies
         this.$cookies.config("365d");
-
-        //////////////////////////////// CUT
 
         this.$nextTick(function() {
           this.activeUser = false;

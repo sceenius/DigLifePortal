@@ -489,7 +489,7 @@
         <md-divider style="margin: 5px;" class="md-inset"></md-divider>
 
         <md-list>
-          <md-list-item v-for="(menu) in menus" :key="menu.id" @click="openMenu(menu);">
+          <md-list-item v-for="(menu) in showMenu(menus)" :key="menu.id" @click="openMenu(menu);">
             <md-icon>{{ menu.icon }}</md-icon>
             <span class="md-list-item-text">{{ menu.title }}</span>
             <md-button class="md-icon-button md-list-action" @click.stop="editMenu(menu);">
@@ -889,6 +889,12 @@ export default {
         });
     },
 
+    showMenu: function(menus) {
+      return menus.filter(menu => {
+        return menu.domain === this.domain;
+      });
+    },
+
     directMessage: function(member_id) {
       // create new direct message channel, if none exists
       this.axios
@@ -1024,10 +1030,6 @@ export default {
         tab: this.menutab,
         id: menuentry.key
       });
-
-      this.menus = this.menus.filter(
-        (menu, index, self) => index === self.findIndex(t => t.id === menu.id)
-      );
 
       this.snack = "Menu entry successfully added.";
       this.showSnackBar = true;

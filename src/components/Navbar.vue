@@ -92,7 +92,7 @@
           </span>
           <span class="md-error" style="color: white !important;">The username does not exist</span>
         </md-field>
-        <md-dialog-actions style="padding: 25px 0;">
+        <md-dialog-actions style="padding: 25px 50px;">
           <md-button
             class="md-success md-raised"
             @click="onConfirm();"
@@ -338,7 +338,7 @@
     -->
     <div id="actions">
       <div id="inner">
-        <div v-if="card != ''">
+        <!-- div v-if="card != ''">
           <md-button
             title="Open app in new window"
             @click="sub('appLink');"
@@ -359,8 +359,8 @@
           <md-button title="Add Menu Entry" @click="addMenu();" class="md-fab md-mini md-plain">
             <md-icon>add</md-icon>
           </md-button>
-        </div>
-        <div v-else>
+        </div -->
+        <div>
           <md-button
             title="Show Holonic Map"
             @click="sub('holons', domain);"
@@ -383,22 +383,6 @@
             class="md-fab md-mini md-plain"
           >
             <md-icon>forum</md-icon>
-          </md-button>
-
-          <md-button
-            title="Show Calendar"
-            @click="sub('calendar', domain);"
-            class="md-fab md-mini md-plain"
-          >
-            <md-icon>event</md-icon>
-          </md-button>
-
-          <md-button
-            title="Show Folders"
-            @click="sub('folders', domain);"
-            class="md-fab md-mini md-plain"
-          >
-            <md-icon>folder</md-icon>
           </md-button>
 
           <md-button
@@ -471,14 +455,6 @@
           <md-list-item @click="sub('channels', domain);">
             <md-icon>forum</md-icon>
             <span class="md-list-item-text">Channels</span>
-          </md-list-item>
-          <md-list-item @click="sub('calendar', domain);">
-            <md-icon>event</md-icon>
-            <span class="md-list-item-text">Calendar</span>
-          </md-list-item>
-          <md-list-item @click="sub('folders', domain);">
-            <md-icon>folder</md-icon>
-            <span class="md-list-item-text">File Folders</span>
           </md-list-item>
           <md-list-item @click="sub('notes', domain);">
             <md-icon>insert_drive_file</md-icon>
@@ -1177,6 +1153,7 @@ export default {
     },
 
     sub: function(menu, dom) {
+       this.showNavigation = true;
       if (dom) {
         this.domain = dom;
       }

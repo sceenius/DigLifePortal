@@ -642,20 +642,20 @@ export default {
           element.src = "about:blank";
           element.style.display = "block";
 
-          // window.open(
-          //   CHATURL + this.domain + "/channels/" + channel.name,
-          //   "theApp"
-          // );
+          window.open(
+            CHATURL + this.domain + "/channels/" + channel.name,
+            "theApp"
+          );
 
           // needs watch?
-          this.$router.push({
-            name: "Navbar",
-            query: {
-              domain: this.domain,
-              service: "channels",
-              channel: channel.name
-            }
-          });
+          // this.$router.push({
+          //   name: "Navbar",
+          //   query: {
+          //     domain: this.domain,
+          //     service: "channels",
+          //     channel: channel.name
+          //   }
+          // });
 
           // };
           break;

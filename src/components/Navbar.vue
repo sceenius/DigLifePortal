@@ -77,18 +77,19 @@
         <md-field id="username">
           <label style="color: white !important; margin-left: 5px; ">Username</label>
           <md-input
-            style="padding-left: 5px; font-size: 24px; background: rgba(0,0,0,.2) !important; color: white !important;"
+            style="padding: 5px; margin-right: 50px; font-size: 24px; background: rgba(0,0,0,.2) !important; color: white !important;"
             v-model="username"
             @keyup.prevent.esc="onConfirm();"
             @keyup.enter="onConfirm();"
             required
           ></md-input>
           <span class="md-helper-text" style="color: white !important;">
-            Enter your Mattermost username or
+            Enter your Mattermost username.<br>
+            Not yet a member? 
             <a
               style="color: white !important; text-decoration: underline;"
               href="https://diglife.com/activate-caas/"
-            >Join us</a>
+            >Find your team here</a>
           </span>
           <span class="md-error" style="color: white !important;">The username does not exist</span>
         </md-field>
@@ -558,7 +559,7 @@
     -->
     <md-content class="md-scrollbar">
       <img v-if="!service" id="logo" v-bind:src="logoLink">
-      <p v-if="users && !service" class="counter">{{ users.length - 1 }}</p>
+      <!-- p v-if="users && !service" class="counter">{{ users.length - 1 }}</p -->
       <Particles v-if="!service"/>
 
       <Channels
@@ -757,6 +758,18 @@ export default {
         }
       });
     });
+
+    // Open a card -- REQUIRES MORE THINKING
+    // cannot open without login first
+    // if (this.service === "channels" && this.card !== "") {
+    //   var element = document.getElementById("theApp");
+    //   element.src = "about:blank";
+    //   element.style.display = "block";
+    //       window.open(
+    //         CHATURL + this.domain + "/channels/" + this.card,
+    //         "theApp"
+    //       );
+// }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1410,6 +1423,7 @@ export default {
       // } else {
       //   this.service = this.channels[index].display_name;
       // }
+      console.log(channel);
       this.service = channel.display_name;
       var element = document.getElementById("theApp");
       // if (

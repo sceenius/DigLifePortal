@@ -469,7 +469,7 @@
           <md-list-item v-for="(menu) in showMenu(menus)" :key="menu.id" @click="openMenu(menu);">
             <md-icon>{{ menu.icon }}</md-icon>
             <span class="md-list-item-text">{{ menu.title }}</span>
-            <md-button class="md-icon-button md-list-action" @click.stop="editMenu(menu);">
+            <md-button v-if="isSysadmin" class="md-icon-button md-list-action" @click.stop="editMenu(menu);">
               <md-icon>edit</md-icon>
             </md-button>
           </md-list-item>
@@ -641,6 +641,7 @@ export default {
     snack: "",
     users: [],
     user: "", // MM user
+    isSysadmin: false, // sysadmin?
     domains: [],
     display_domains: [],
     notes: [],
@@ -1084,7 +1085,10 @@ export default {
         // load personal profile from users (loading at created event)
         console.log("Loading user for " + this.username + "..");
         this.user = this.users.find(item => {
-          return item.username === this.username;
+          if (item.username === this.username) {
+            this.isSysadmin = item.roles.includes("system_admin");
+            return true;
+          } else return false;
         });
 
         console.log("Loading profile for " + this.username + "..");

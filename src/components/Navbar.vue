@@ -84,8 +84,8 @@
             required
           ></md-input>
           <span class="md-helper-text" style="color: white !important;">
-            Enter your Mattermost username.<br>
-            Not yet a member? 
+            Enter your Mattermost username.
+            <br>Not yet a member?
             <a
               style="color: white !important; text-decoration: underline;"
               href="https://diglife.com/activate-caas/"
@@ -360,7 +360,7 @@
           <md-button title="Add Menu Entry" @click="addMenu();" class="md-fab md-mini md-plain">
             <md-icon>add</md-icon>
           </md-button>
-        </div -->
+        </div-->
         <div>
           <md-button
             title="Show Holonic Map"
@@ -414,6 +414,13 @@
           v-model="showServices"
           @change="switchService();"
         ></md-switch>
+        <md-button
+          style="position: absolute; right: 0px;"
+          class="md-icon-button md-list-action"
+          @click="showNavigation = false"
+        >
+          <md-icon>close</md-icon>
+        </md-button>
         <span class="md-title" style="color: white;">{{domain.toUpperCase()}}</span>
       </md-toolbar>
 
@@ -469,12 +476,16 @@
           <md-list-item v-for="(menu) in showMenu(menus)" :key="menu.id" @click="openMenu(menu);">
             <md-icon>{{ menu.icon }}</md-icon>
             <span class="md-list-item-text">{{ menu.title }}</span>
-            <md-button v-if="isSysadmin" class="md-icon-button md-list-action" @click.stop="editMenu(menu);">
+            <md-button
+              v-if="isSysadmin"
+              class="md-icon-button md-list-action"
+              @click.stop="editMenu(menu);"
+            >
               <md-icon>edit</md-icon>
             </md-button>
           </md-list-item>
 
-          <md-list-item @click="addMenu()">
+          <md-list-item v-if="isSysadmin" @click="addMenu()">
             <md-icon>add_circle</md-icon>
             <span class="md-list-item-text">Add Menu Item</span>
           </md-list-item>
@@ -722,6 +733,11 @@ export default {
     menusRef.on("child_added", menu => {
       let data = menu.val();
       this.menus.push(data);
+      this.menus.sort(SortByName);
+
+      function SortByName(x, y) {
+        return x.title === y.title ? 0 : x.title > y.title ? 1 : -1;
+      }
     });
 
     console.log("Loading channels and extensions..");
@@ -770,7 +786,7 @@ export default {
     //         CHATURL + this.domain + "/channels/" + this.card,
     //         "theApp"
     //       );
-// }
+    // }
   },
 
   ///////////////////////////////////////////////////////////////////////////////
@@ -1170,7 +1186,7 @@ export default {
     },
 
     sub: function(menu, dom) {
-       this.showNavigation = true;
+      this.showNavigation = true;
       if (dom) {
         this.domain = dom;
       }

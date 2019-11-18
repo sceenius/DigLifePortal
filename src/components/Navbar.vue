@@ -288,8 +288,8 @@
           :key="index"
           :title="dom.display_name.replace('!', '')"
           @click="service == '' ? nav(dom.name) : sub(service, dom.name);"
-          v-bind:style="[
-            domain === dom.name ? { color: '#fec019' } : { color: '#fff' }
+          v-bind:style="[{ backgroundPosition: 'center', backgroundSize: 'cover', backgroundColor: '#F3F1F1', backgroundImage : 'url(\'https://ledger.diglife.coop/images/brand/logo_secondary_'+dom.name+'.svg\')' }
+          , domain === dom.name ? { backgroundColor: '#444' } : { color: '#000' }
           ]"
         >{{ dom.display_name.replace("!", "").substring(0, 4) }}</md-button>
 

@@ -412,7 +412,7 @@ export default {
       //this.activeAccess = false;
       this.axios.get(
         BASEURL +
-          "webhooks/portal_send_message.php?file=base-diglife-coop.php&channel_id=" +
+          "webhooks/portal_send_channel.php?file=base-diglife-coop.php&channel_id=" +
           channel.channel_id +
           "&message=" +
           "##### :closed_lock_with_key: Request for Access\n@" +

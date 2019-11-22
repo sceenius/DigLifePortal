@@ -410,13 +410,15 @@ export default {
 
     requestAccess: function(channel) {
       //this.activeAccess = false;
-this.axios
-        .get(
-          BASEURL +
-            "webhooks/portal_send_message.php?file=base-diglife-coop.php&channel_id=" +
-            this.channel.id + "&message=" + "##### :closed_lock_with_key: Request for Access\n@" +
-          this.username + " is requesting sudo access for this channel. Please add user to this channel and notify the user." 
-        )
+      this.axios.get(
+        BASEURL +
+          "webhooks/portal_send_message.php?file=base-diglife-coop.php&channel_id=" +
+          channel.channel_id +
+          "&message=" +
+          "##### :closed_lock_with_key: Request for Access\n@" +
+          this.username +
+          " is requesting sudo access for this channel. Please add user to this channel and notify the user."
+      );
       // var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
       // var err = slack.send({
       //   text:

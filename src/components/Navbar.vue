@@ -971,7 +971,7 @@ export default {
       this.showNavigation = false;
       let timezone = Moment.tz.guess();
 
-      if (menu.tab) {
+      if (menu.tab === "true") {
         this.service = menu.title;
         var element = document.getElementById("theApp");
         element.src = "about:blank";

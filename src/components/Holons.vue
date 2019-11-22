@@ -470,7 +470,7 @@ export default {
           name: "Digital Life Collective",
           children: [
             {
-              name: this.domain.replace("friends", "partners").toUpperCase(),
+              name: this.domain.toUpperCase(),
               children: this.holons[this.domain].concat(
                 {
                   name: "Interest Groups",

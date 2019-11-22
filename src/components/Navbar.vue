@@ -941,23 +941,31 @@ export default {
 
     requestAccess: function() {
       this.activeAccess = false;
+     // write a message to SUDO channel 
+      this.axios
+        .get(
+          BASEURL +
+            "webhooks/portal_send_message.php?file=base-diglife-coop.php&channel_id=" +
+            this.channel.id + "&message=" + "##### :closed_lock_with_key: Request for Access\n@" +
+          this.username + " is requesting sudo access for this channel. Please add user to this channel and notify the user." 
+        )
 
-      var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
-      slack.send({
-        text:
-          "##### :closed_lock_with_key: Request for Access\n@" +
-          this.username +
-          " is requesting sudo access to the [" +
-          this.service +
-          " Service](" +
-          this.channel.purpose.link +
-          ")",
-        channel: this.channel.name,
-        username: "ledgerbot",
-        icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
-        unfurl_links: true,
-        link_names: 1
-      });
+      // var slack = new Slack(CHATURL + "hooks/" + this.channel.purpose.hook);
+      // slack.send({
+      //   text:
+      //     "##### :closed_lock_with_key: Request for Access\n@" +
+      //     this.username +
+      //     " is requesting sudo access to the [" +
+      //     this.service +
+      //     " Service](" +
+      //     this.channel.purpose.link +
+      //     ")",
+      //   channel: this.channel.name,
+      //   username: "ledgerbot",
+      //   icon_url: "https://diglife.com/brand/logo_secondary_dark.svg",
+      //   unfurl_links: true,
+      //   link_names: 1
+      // });
       this.service = "";
       //var element = document.getElementById("particles-js");
       //element.style.display = "block";

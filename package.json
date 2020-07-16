@@ -11,7 +11,7 @@
     "hypothesis": "1.169.0",
     "jsonwebtoken": "8.4.0",
     "kinto-http": "4.6.1",
-    "lodash": "4.17.11",
+    "lodash": "4.17.19",
     "moment": "2.24.0",
     "moment-timezone": "0.5.23",
     "node-slack": "0.0.7",
